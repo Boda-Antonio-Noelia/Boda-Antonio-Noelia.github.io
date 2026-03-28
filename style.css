@@ -28,7 +28,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Fondo fijo real, totalmente independiente del scroll */
+/* Fondo fijo */
 .fixed-background {
   position: fixed;
   top: 0;
@@ -50,13 +50,14 @@ body {
     linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(0,0,0,0.08) 30%, rgba(0,0,0,0.2));
 }
 
-/* Capa principal de la web */
+/* Contenido principal */
 .site-content {
   position: relative;
   z-index: 1;
   background: transparent;
 }
 
+/* Hero */
 .hero {
   min-height: 100svh;
   display: flex;
@@ -149,105 +150,49 @@ body {
   }
 }
 
-/* Sección del reveal */
+/* Ventana geométrica */
 .reveal-strip {
   position: relative;
   background: transparent;
 }
 
-.cover-top {
-  height: 12svh;
+.cover-top,
+.cover-bottom {
   background: var(--bg);
-  border-bottom-left-radius: var(--radius-xl);
-  border-bottom-right-radius: var(--radius-xl);
+  position: relative;
+  z-index: 2;
+}
+
+.cover-top {
+  height: 18svh;
+  clip-path: polygon(0 0, 100% 0, 100% 72%, 50% 100%, 0 72%);
   box-shadow: 0 16px 30px rgba(0,0,0,0.04);
 }
 
 .window-area {
   position: relative;
-  height: 78svh;
-  min-height: 560px;
+  height: 46svh;
+  min-height: 320px;
   width: 100%;
-  overflow: hidden;
   background: transparent;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 1.2rem 1.5rem;
 }
 
-.cinematic-area {
-  isolation: isolate;
-}
-
-.cinematic-reveal {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  --open-progress: 0;
-}
-
-.cinematic-panel {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  background: var(--bg);
-  z-index: 2;
-  will-change: transform;
-}
-
-.panel-top {
-  top: 0;
-  height: 50%;
-  border-bottom-left-radius: 2.4rem;
-  border-bottom-right-radius: 2.4rem;
-  box-shadow: 0 16px 34px rgba(0,0,0,0.05);
-  transform: translateY(calc(var(--open-progress) * -42%));
-}
-
-.panel-bottom {
-  bottom: 0;
-  height: 50%;
-  border-top-left-radius: 2.4rem;
-  border-top-right-radius: 2.4rem;
-  box-shadow: 0 -16px 34px rgba(0,0,0,0.05);
-  transform: translateY(calc(var(--open-progress) * 42%));
-}
-
-.cinematic-center-line {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: min(78vw, 520px);
-  height: 1px;
-  transform: translate(-50%, -50%) scaleX(calc(0.35 + var(--open-progress) * 0.65));
-  z-index: 3;
-  opacity: calc(0.15 + var(--open-progress) * 0.7);
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    rgba(255,255,255,0.35) 20%,
-    rgba(255,255,255,0.9) 50%,
-    rgba(255,255,255,0.35) 80%,
-    transparent 100%
-  );
-  box-shadow: 0 0 18px rgba(255,255,255,0.2);
-  will-change: transform, opacity;
+.cover-bottom {
+  height: 18svh;
+  clip-path: polygon(0 28%, 50% 0, 100% 28%, 100% 100%, 0 100%);
+  box-shadow: 0 -16px 30px rgba(0,0,0,0.04);
 }
 
 .window-text {
-  position: absolute;
-  left: 50%;
-  bottom: 2rem;
-  transform: translateX(-50%);
+  width: min(calc(100vw - 2.4rem), 620px);
   color: white;
-  z-index: 4;
   text-align: center;
-  text-shadow: 0 2px 24px rgba(0,0,0,0.55);
-}
-
-.cinematic-text {
-  width: min(calc(100vw - 3rem), 620px);
-  transform: translateX(-50%) translateY(calc((1 - var(--open-progress)) * 24px));
-  opacity: calc(0.2 + var(--open-progress) * 0.8);
-  will-change: transform, opacity;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.5);
 }
 
 .window-text span {
@@ -255,7 +200,7 @@ body {
   font-size: 0.78rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  opacity: 0.9;
+  opacity: 0.92;
   margin-bottom: 0.45rem;
 }
 
@@ -265,14 +210,7 @@ body {
   letter-spacing: -0.03em;
 }
 
-.cover-bottom {
-  min-height: 16svh;
-  background: var(--bg);
-  border-top-left-radius: var(--radius-xl);
-  border-top-right-radius: var(--radius-xl);
-  box-shadow: 0 -16px 30px rgba(0,0,0,0.04);
-}
-
+/* Contenido */
 .content-section {
   background: var(--bg);
   padding: 2rem 0 5rem;
@@ -375,25 +313,22 @@ body {
   }
 
   .cover-top {
-    height: 10svh;
+    height: 16svh;
+    clip-path: polygon(0 0, 100% 0, 100% 76%, 50% 100%, 0 76%);
   }
 
   .window-area {
-    height: 82svh;
-    min-height: 700px;
-  }
-
-  .cinematic-text {
-    width: min(calc(78vw - 4rem), 760px);
-    bottom: 2.5rem;
-  }
-
-  .cinematic-center-line {
-    width: min(62vw, 720px);
+    height: 56svh;
+    min-height: 420px;
   }
 
   .cover-bottom {
-    min-height: 18svh;
+    height: 16svh;
+    clip-path: polygon(0 24%, 50% 0, 100% 24%, 100% 100%, 0 100%);
+  }
+
+  .window-text {
+    width: min(calc(78vw - 3rem), 760px);
   }
 
   .grid {
