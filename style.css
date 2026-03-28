@@ -28,14 +28,33 @@ body {
   overflow-x: hidden;
 }
 
-img {
-  max-width: 100%;
-  display: block;
+/* Fondo fijo real, totalmente independiente del scroll */
+.fixed-background {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
 }
 
-.page-shell {
+.fixed-background img {
   width: 100%;
-  overflow: hidden;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fixed-background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(0,0,0,0.08) 30%, rgba(0,0,0,0.2));
+}
+
+/* Capa principal de la web */
+.site-content {
+  position: relative;
+  z-index: 1;
+  background: transparent;
 }
 
 .hero {
@@ -130,85 +149,49 @@ img {
   }
 }
 
-.reveal-section {
+/* Aquí construimos el agujero */
+.reveal-strip {
   position: relative;
-  height: 220svh;
-  background: var(--bg);
-}
-
-.sticky-media {
-  position: sticky;
-  top: 0;
-  height: 100svh;
-  overflow: hidden;
-}
-
-.sticky-media::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.20), rgba(0,0,0,0.08) 30%, rgba(0,0,0,0.22));
-  pointer-events: none;
-}
-
-.sticky-media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: scale(1.08);
-}
-
-.cover {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.cover-top,
-.cover-bottom {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  background: var(--bg);
+  background: transparent;
 }
 
 .cover-top {
-  top: 0;
-  height: 32svh;
+  height: 34svh;
+  background: var(--bg);
   border-bottom-left-radius: var(--radius-xl);
   border-bottom-right-radius: var(--radius-xl);
   box-shadow: 0 16px 30px rgba(0,0,0,0.04);
 }
 
-.window-frame {
-  position: absolute;
-  top: 32svh;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(92vw, 520px);
-  height: 30svh;
-  min-height: 220px;
-  border-radius: var(--radius-xl);
+.window-area {
+  position: relative;
+  height: 34svh;
+  min-height: 250px;
   background: transparent;
-  box-shadow: 0 14px 40px rgba(0,0,0,0.12);
-  overflow: hidden;
+  width: 100%;
 }
 
-.window-frame::before {
-  content: "";
+.window-overlay {
   position: absolute;
   inset: 0;
-  border-radius: inherit;
-  border: 1px solid rgba(255,255,255,0.35);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+  margin: 0 auto;
+  width: min(92vw, 540px);
+  height: 100%;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(255,255,255,0.38);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.08),
+    0 14px 40px rgba(0,0,0,0.14);
   background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+  pointer-events: none;
 }
 
 .window-text {
   position: absolute;
-  inset: auto 1.2rem 1.1rem 1.2rem;
+  left: 50%;
+  bottom: 1.1rem;
+  transform: translateX(-50%);
+  width: min(calc(92vw - 2.4rem), 492px);
   color: white;
   z-index: 1;
   text-shadow: 0 2px 18px rgba(0,0,0,0.5);
@@ -230,20 +213,21 @@ img {
 }
 
 .cover-bottom {
-  top: calc(32svh + 30svh);
-  min-height: 160svh;
+  min-height: 36svh;
+  background: var(--bg);
   border-top-left-radius: var(--radius-xl);
   border-top-right-radius: var(--radius-xl);
   box-shadow: 0 -16px 30px rgba(0,0,0,0.04);
 }
 
-.content {
-  position: relative;
-  z-index: 3;
+.content-section {
+  background: var(--bg);
+  padding: 2rem 0 5rem;
+}
+
+.content-inner {
   width: min(calc(100% - 1.4rem), var(--content-width));
   margin: 0 auto;
-  padding-top: calc(32svh + 30svh + 2.2rem);
-  padding-bottom: 5rem;
 }
 
 .intro-card {
@@ -337,27 +321,25 @@ img {
     padding-right: 2rem;
   }
 
-  .reveal-section {
-    height: 240svh;
-  }
-
   .cover-top {
-    height: 26svh;
+    height: 28svh;
   }
 
-  .window-frame {
-    top: 26svh;
+  .window-area {
+    height: 42svh;
+    min-height: 320px;
+  }
+
+  .window-overlay {
     width: min(78vw, 760px);
-    height: 40svh;
+  }
+
+  .window-text {
+    width: min(calc(78vw - 3rem), 700px);
   }
 
   .cover-bottom {
-    top: calc(26svh + 40svh);
-    min-height: 174svh;
-  }
-
-  .content {
-    padding-top: calc(26svh + 40svh + 2.5rem);
+    min-height: 40svh;
   }
 
   .grid {
