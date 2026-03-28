@@ -8,10 +8,8 @@
 </head>
 <body>
 
-  <!-- Fondo fijo real -->
   <div class="fixed-background"></div>
 
-  <!-- Toda la web se mueve por encima -->
   <div class="site-content">
 
     <section class="hero">
@@ -19,8 +17,8 @@
         <div class="hero-badge">Diseño visual para móvil</div>
         <h1>Una entrada elegante que invita a seguir bajando</h1>
         <p>
-          Al hacer scroll, la página se abre durante un tramo y deja ver una imagen
-          completamente fija al fondo, como si fuese el fondo de pantalla del móvil.
+          Al hacer scroll, la página deja ver una imagen completamente fija al fondo,
+          como si fuese el fondo de pantalla del móvil.
         </p>
 
         <div class="scroll-indicator">
@@ -30,23 +28,15 @@
       </div>
     </section>
 
-    <!-- Sección que crea el “agujero” -->
     <section class="reveal-strip">
       <div class="cover-top"></div>
 
-<div class="window-area cinematic-area" id="cinematicReveal">
-  <div class="cinematic-reveal">
-    <div class="cinematic-panel panel-top"></div>
-    <div class="cinematic-panel panel-bottom"></div>
-
-    <div class="cinematic-center-line"></div>
-
-    <div class="window-text cinematic-text">
-      <span>Descubre</span>
-      <h2>Una apertura limpia que revela la imagen</h2>
-    </div>
-  </div>
-</div>
+      <div class="window-area">
+        <div class="window-text">
+          <span>Descubre</span>
+          <h2>Una imagen fija enmarcada con un corte elegante</h2>
+        </div>
+      </div>
 
       <div class="cover-bottom"></div>
     </section>
@@ -100,35 +90,5 @@
 
   </div>
 
-<script>
-    const revealSection = document.getElementById("cinematicReveal");
-
-    function clamp(value, min, max) {
-      return Math.min(Math.max(value, min), max);
-    }
-
-    function updateReveal() {
-      if (!revealSection) return;
-
-      const rect = revealSection.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-
-      const start = viewportHeight * 0.9;
-      const end = -rect.height * 0.15;
-
-      const rawProgress = (start - rect.top) / (start - end);
-      const progress = clamp(rawProgress, 0, 1);
-
-      const eased = 1 - Math.pow(1 - progress, 3);
-
-      revealSection.style.setProperty("--open-progress", eased.toFixed(4));
-    }
-
-    updateReveal();
-
-    window.addEventListener("scroll", updateReveal, { passive: true });
-    window.addEventListener("resize", updateReveal);
-  </script>
-  
 </body>
 </html>
