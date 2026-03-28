@@ -165,7 +165,7 @@ body {
 
 .window-area {
   position: relative;
-  height: 78svh;
+  height: 76svh;
   min-height: 560px;
   width: 100%;
   display: flex;
@@ -320,17 +320,13 @@ body {
     min-height: 700px;
   }
 
-  .portal-reveal {
-    width: min(78vw, 980px);
+  .cinematic-text {
+    width: min(calc(78vw - 4rem), 760px);
+    bottom: 2.5rem;
   }
 
-  .portal-hole {
-    width: min(58vw, 620px);
-  }
-
-  .window-text {
-    width: min(calc(58vw - 4rem), 500px);
-    bottom: 2.4rem;
+  .cinematic-center-line {
+    width: min(62vw, 720px);
   }
 
   .cover-bottom {
@@ -347,71 +343,117 @@ body {
   }
 }
 
-.portal-reveal {
+
+.cinematic-area {
+  isolation: isolate;
+}
+
+.cinematic-reveal {
   position: relative;
-  width: min(94vw, 760px);
+  width: 100%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow: hidden;
 }
 
-.portal-hole {
-  position: relative;
-  width: min(86vw, 560px);
-  height: 100%;
-  border-radius: 999px;
-  background: transparent;
-  box-shadow: 0 0 0 200vmax var(--bg);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  animation: portalEnter 0.95s cubic-bezier(.22,.8,.2,1) both,
-             portalFloat 5s ease-in-out infinite;
-}
-
-.portal-hole::before {
-  content: "";
+.cinematic-panel {
   position: absolute;
-  inset: 12px;
-  border-radius: inherit;
-  border: 1px solid rgba(255,255,255,0.12);
-  box-shadow:
-    inset 0 0 30px rgba(255,255,255,0.06),
-    0 0 40px rgba(255,255,255,0.05);
-  pointer-events: none;
+  left: 0;
+  width: 100%;
+  background: var(--bg);
+  z-index: 2;
 }
 
-.portal-hole::after {
-  content: "";
+.panel-top {
+  top: 0;
+  height: 50%;
+  border-bottom-left-radius: 2.4rem;
+  border-bottom-right-radius: 2.4rem;
+  box-shadow: 0 16px 34px rgba(0,0,0,0.05);
+  animation: panelTopOpen 1.05s cubic-bezier(.22,.8,.2,1) both;
+}
+
+.panel-bottom {
+  bottom: 0;
+  height: 50%;
+  border-top-left-radius: 2.4rem;
+  border-top-right-radius: 2.4rem;
+  box-shadow: 0 -16px 34px rgba(0,0,0,0.05);
+  animation: panelBottomOpen 1.05s cubic-bezier(.22,.8,.2,1) both;
+}
+
+.cinematic-center-line {
   position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.03));
-  pointer-events: none;
-  mix-blend-mode: screen;
+  left: 50%;
+  top: 50%;
+  width: min(78vw, 520px);
+  height: 1px;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255,255,255,0.35) 20%,
+    rgba(255,255,255,0.85) 50%,
+    rgba(255,255,255,0.35) 80%,
+    transparent 100%
+  );
+  box-shadow: 0 0 18px rgba(255,255,255,0.2);
+  animation: centerLineFade 1.1s ease both;
 }
 
-@keyframes portalEnter {
+.cinematic-text {
+  position: absolute;
+  left: 50%;
+  bottom: 2rem;
+  transform: translateX(-50%);
+  width: min(calc(100vw - 3rem), 620px);
+  color: white;
+  z-index: 4;
+  text-align: center;
+  text-shadow: 0 2px 24px rgba(0,0,0,0.55);
+  animation: textRise 1.1s cubic-bezier(.22,.8,.2,1) both;
+}
+
+@keyframes panelTopOpen {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-42%);
+  }
+}
+
+@keyframes panelBottomOpen {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(42%);
+  }
+}
+
+@keyframes centerLineFade {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scaleX(0.3);
+  }
+  45% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scaleX(1);
+  }
+  100% {
+    opacity: 0.35;
+    transform: translate(-50%, -50%) scaleX(1);
+  }
+}
+
+@keyframes textRise {
   from {
     opacity: 0;
-    transform: scale(0.78);
-    filter: blur(8px);
+    transform: translateX(-50%) translateY(22px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
-    filter: blur(0);
-  }
-}
-
-@keyframes portalFloat {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
-  100% {
-    transform: translateY(0);
+    transform: translateX(-50%) translateY(0);
   }
 }
