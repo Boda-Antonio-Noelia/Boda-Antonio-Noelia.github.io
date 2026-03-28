@@ -156,7 +156,7 @@ body {
 }
 
 .cover-top {
-  height: 34svh;
+  height: 16svh;
   background: var(--bg);
   border-bottom-left-radius: var(--radius-xl);
   border-bottom-right-radius: var(--radius-xl);
@@ -165,36 +165,89 @@ body {
 
 .window-area {
   position: relative;
-  height: 34svh;
-  min-height: 250px;
+  height: 75svh;
+  min-height: 520px;
   background: transparent;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.window-shape {
+  position: relative;
+  width: min(94vw, 680px);
+  height: 100%;
+  animation: floatReveal 1.2s ease both;
 }
 
 .window-overlay {
   position: absolute;
   inset: 0;
-  margin: 0 auto;
-  width: min(92vw, 540px);
-  height: 100%;
-  border-radius: var(--radius-xl);
-  border: 1px solid rgba(255,255,255,0.38);
+  border-radius: 38px 44px 34px 46px / 28px 42px 30px 40px;
+  border: 1px solid rgba(255,255,255,0.34);
   box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.08),
-    0 14px 40px rgba(0,0,0,0.14);
-  background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+    inset 0 0 0 1px rgba(255,255,255,0.06),
+    0 18px 50px rgba(0,0,0,0.18);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.03)),
+    radial-gradient(circle at 20% 15%, rgba(255,255,255,0.12), transparent 28%),
+    radial-gradient(circle at 80% 85%, rgba(255,255,255,0.08), transparent 22%);
+  backdrop-filter: blur(1px);
+  overflow: hidden;
+}
+
+.window-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: 34px 38px 28px 40px / 24px 34px 28px 34px;
+  border: 1px solid rgba(255,255,255,0.10);
   pointer-events: none;
 }
 
 .window-text {
   position: absolute;
   left: 50%;
-  bottom: 1.1rem;
+  bottom: 1.4rem;
   transform: translateX(-50%);
-  width: min(calc(92vw - 2.4rem), 492px);
+  width: min(calc(94vw - 2.8rem), 620px);
   color: white;
-  z-index: 1;
+  z-index: 2;
   text-shadow: 0 2px 18px rgba(0,0,0,0.5);
+}
+
+.tear-edge {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 26px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.tear-top {
+  top: -2px;
+  background:
+    radial-gradient(circle at 12px 18px, transparent 12px, var(--bg) 13px) 0 0 / 32px 100% repeat-x;
+}
+
+.tear-bottom {
+  bottom: -2px;
+  transform: rotate(180deg);
+  background:
+    radial-gradient(circle at 12px 18px, transparent 12px, var(--bg) 13px) 0 0 / 32px 100% repeat-x;
+}
+
+@keyframes floatReveal {
+  from {
+    opacity: 0;
+    transform: translateY(26px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .window-text span {
@@ -213,7 +266,7 @@ body {
 }
 
 .cover-bottom {
-  min-height: 36svh;
+  min-height: 22svh;
   background: var(--bg);
   border-top-left-radius: var(--radius-xl);
   border-top-right-radius: var(--radius-xl);
@@ -322,24 +375,24 @@ body {
   }
 
   .cover-top {
-    height: 28svh;
+    height: 14svh;
   }
 
   .window-area {
-    height: 42svh;
-    min-height: 320px;
+    height: 78svh;
+    min-height: 620px;
   }
 
-  .window-overlay {
-    width: min(78vw, 760px);
+  .window-shape {
+    width: min(78vw, 900px);
   }
 
   .window-text {
-    width: min(calc(78vw - 3rem), 700px);
+    width: min(calc(78vw - 3.5rem), 820px);
   }
 
   .cover-bottom {
-    min-height: 40svh;
+    min-height: 24svh;
   }
 
   .grid {
