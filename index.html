@@ -34,7 +34,7 @@
     <section class="reveal-strip">
       <div class="cover-top"></div>
 
-<div class="window-area cinematic-area">
+<div class="window-area cinematic-area" id="cinematicReveal">
   <div class="cinematic-reveal">
     <div class="cinematic-panel panel-top"></div>
     <div class="cinematic-panel panel-bottom"></div>
@@ -99,5 +99,36 @@
     </section>
 
   </div>
+
+<script>
+    const revealSection = document.getElementById("cinematicReveal");
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function updateReveal() {
+      if (!revealSection) return;
+
+      const rect = revealSection.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+
+      const start = viewportHeight * 0.9;
+      const end = -rect.height * 0.15;
+
+      const rawProgress = (start - rect.top) / (start - end);
+      const progress = clamp(rawProgress, 0, 1);
+
+      const eased = 1 - Math.pow(1 - progress, 3);
+
+      revealSection.style.setProperty("--open-progress", eased.toFixed(4));
+    }
+
+    updateReveal();
+
+    window.addEventListener("scroll", updateReveal, { passive: true });
+    window.addEventListener("resize", updateReveal);
+  </script>
+  
 </body>
 </html>
