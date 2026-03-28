@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Demo fondo fijo con ventana</title>
+  <title>Demo fondo fijo con guía visual</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -17,7 +17,7 @@
         <div class="hero-badge">Diseño visual para móvil</div>
         <h1>Una entrada elegante que invita a seguir bajando</h1>
         <p>
-          Al hacer scroll, la páaagina deja ver una imagen completamente fija al fondo,
+          Al hacer scroll, la página deja ver una imagen completamente fija al fondo,
           como si fuese el fondo de pantalla del móvil.
         </p>
 
@@ -32,9 +32,24 @@
       <div class="cover-top"></div>
 
       <div class="window-area">
+        <svg class="guide-svg" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true">
+          <path class="guide-line" d="M500 0 L500 120" />
+
+          <path class="guide-line" d="M500 120 C500 170, 430 180, 390 220" />
+          <path class="guide-line" d="M500 120 C500 170, 570 180, 610 220" />
+
+          <path class="guide-line" d="M390 220 L390 760" />
+          <path class="guide-line" d="M610 220 L610 760" />
+
+          <path class="guide-line" d="M390 760 C430 800, 470 815, 500 860" />
+          <path class="guide-line" d="M610 760 C570 800, 530 815, 500 860" />
+
+          <path class="guide-line" d="M500 860 L500 1000" />
+        </svg>
+
         <div class="window-text">
           <span>Descubre</span>
-          <h2>Una imagen fija enmarcada con un corte elegante</h2>
+          <h2>Una imagen fija enmarcada por una guía visual elegante</h2>
         </div>
       </div>
 
