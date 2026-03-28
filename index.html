@@ -1,12 +1,95 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mi web</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demo efecto scroll</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Hola, esta es mi web</h1>
-  <p>Publicada con GitHub Pages.</p>
+  <div class="page-shell">
+
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-badge">Diseño visual para móvil</div>
+        <h1>Una entrada elegante que invita a seguir bajando</h1>
+        <p>
+          Este bloque inicial sirve como presentación. Al hacer scroll, aparece el efecto
+          de “ventana” que deja ver tu imagen principal fija al fondo.
+        </p>
+
+        <div class="scroll-indicator">
+          <span>Desliza</span>
+          <div class="line"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="reveal-section">
+      <div class="sticky-media">
+        <img src="principal.jpg" alt="Imagen principal de la web">
+      </div>
+
+      <div class="cover">
+        <div class="cover-top"></div>
+
+        <div class="window-frame">
+          <div class="window-text">
+            <span>Descubre</span>
+            <h2>La imagen principal cobra protagonismo</h2>
+          </div>
+        </div>
+
+        <div class="cover-bottom"></div>
+      </div>
+
+      <div class="content">
+        <div class="intro-card">
+          <p>
+            Aquí empieza de nuevo el contenido de la página. La imagen de fondo ya ha tenido
+            su momento visual, y ahora el usuario vuelve a leer información normal de la web.
+          </p>
+        </div>
+
+        <div class="grid">
+          <article class="card">
+            <h3>Bloque uno</h3>
+            <p>
+              Puedes usar esta tarjeta para presentar un servicio, una idea principal o una
+              pequeña introducción visual.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3>Bloque dos</h3>
+            <p>
+              Este diseño tiene bastante presencia en móvil y queda bien con imágenes verticales
+              o fondos con buena composición.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3>Bloque tres</h3>
+            <p>
+              Más adelante se le pueden añadir animaciones de aparición, texto flotante o una
+              segunda sección con otro efecto.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-section">
+      <div class="final-inner">
+        <h2>Después del efecto, sigue tu contenido</h2>
+        <p>
+          Aquí puedes colocar una llamada a la acción, información importante o la continuación
+          natural de la web.
+        </p>
+        <a href="#" class="btn">Botón de ejemplo</a>
+      </div>
+    </section>
+
+  </div>
 </body>
 </html>
