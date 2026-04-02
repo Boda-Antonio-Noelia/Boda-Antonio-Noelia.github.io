@@ -1,6 +1,5 @@
 :root {
   --bg: #f6ede4;
-  --bg-strong: #ead8ca;
   --card: rgba(255, 248, 242, 0.92);
   --text: #4b1020;
   --muted: #6a2a3d;
@@ -35,9 +34,6 @@ body.intro-lock {
   inset: 0;
   z-index: 9999;
   background: linear-gradient(180deg, #f8f1ea 0%, #f3e6db 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   transition: opacity 0.6s ease, visibility 0.6s ease;
 }
 
@@ -47,22 +43,29 @@ body.intro-lock {
   pointer-events: none;
 }
 
-/* AQUÍ CENTRAMOS MEJOR TODA LA ESCENA */
-.envelope-scene {
+/* CONTENEDOR REAL DE LA ESCENA */
+.intro-stage {
   width: 100%;
   min-height: 100vh;
-  padding: 0 0.4rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
+  padding: 2vh 1.5vw;
 }
 
-/* SOBRE MÁS GRANDE Y MÁS CENTRADO */
+/* ENVOLTORIO QUE GOBIERNA EL TAMAÑO */
+.envelope-wrap {
+  width: min(98vw, 680px);
+  height: min(88vh, 980px);
+  display: grid;
+  place-items: center;
+}
+
+/* SOBRE ESCALADO POR EL CONTENEDOR */
 .envelope {
   position: relative;
-  width: min(96vw, 560px);
+  width: 100%;
+  max-width: 680px;
   aspect-ratio: 960 / 1440;
-  margin-top: -2vh;
 }
 
 /* BASE */
@@ -70,7 +73,8 @@ body.intro-lock {
   position: absolute;
   inset: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: contain;
   display: block;
   z-index: 1;
   transition:
@@ -81,10 +85,10 @@ body.intro-lock {
 /* SOLAPA */
 .envelope-top-img {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: contain;
   display: block;
   z-index: 3;
   transition:
@@ -95,13 +99,13 @@ body.intro-lock {
 /* NOMBRES */
 .intro-names {
   position: absolute;
-  top: 8%;
+  top: 8.5%;
   left: 50%;
   transform: translateX(-50%);
   width: 88%;
   text-align: center;
   color: rgba(255, 240, 232, 0.96);
-  font-size: clamp(2.6rem, 8.6vw, 5.3rem);
+  font-size: clamp(2.2rem, 7.8vw, 5.6rem);
   line-height: 0.9;
   opacity: 0;
   text-shadow: 0 2px 10px rgba(55, 10, 20, 0.16);
@@ -115,14 +119,17 @@ body.intro-lock {
   font-size: 0.9em;
 }
 
-/* SELLO REALMENTE COLOCADO SOBRE EL CIERRE */
+/* SELLO ANCLADO A LA GEOMETRÍA DEL SOBRE */
 .seal {
   position: absolute;
   left: 50%;
-  top: 45.5%;
+  top: 39.2%;
   transform: translate(-50%, -50%);
-  width: clamp(98px, 24vw, 150px);
-  height: auto;
+  width: 18%;
+  max-width: 126px;
+  min-width: 92px;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
   display: block;
   z-index: 6;
   filter: drop-shadow(0 8px 12px rgba(75, 16, 32, 0.18));
