@@ -8,7 +8,7 @@
   --accent-soft: #8b233f;
   --paper: #7b1e34;
   --paper-dark: #5d1325;
-  --paper-line: #a84b67;
+  --paper-line: #1f0d11;
   --shadow: 0 18px 50px rgba(75, 16, 32, 0.14);
 }
 
@@ -78,43 +78,53 @@ body.intro-lock {
     opacity 0.6s ease 4.25s;
 }
 
-/* FRANJA SUPERIOR RECTA */
+/* FRANJA SUPERIOR RECTA MÁS LARGA */
 .envelope-top-cap {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 26%;
-  background: linear-gradient(180deg, #8f2741 0%, #7b1e34 100%);
+  height: 34%;
+  background: var(--paper);
   border-top-left-radius: 18px;
   border-top-right-radius: 18px;
   z-index: 1;
 }
 
-/* TRIÁNGULO DE LA SOLAPA */
+/* TRIÁNGULO DE LA SOLAPA, NACIENDO JUSTO EN LA LÍNEA INFERIOR DEL RECTÁNGULO */
 .envelope-top-flap {
   position: absolute;
-  top: 20%;
+  top: 34%;
   left: 0;
   width: 100%;
-  height: 80%;
-  background: linear-gradient(180deg, #89233c 0%, #6f1026 100%);
+  height: 66%;
+  background: var(--paper);
   clip-path: polygon(0 0, 100% 0, 50% 100%);
   z-index: 2;
-  box-shadow: 0 20px 34px rgba(75, 16, 32, 0.18);
 }
 
-/* FILO OSCURO DE LA SOLAPA */
-.envelope-top-flap::before {
+/* CONTORNO OSCURO REAL SOLO EN LOS BORDES EXTERIORES VISIBLES */
+.envelope-top-cap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-top: 2px solid var(--paper-line);
+  border-left: 2px solid var(--paper-line);
+  border-right: 2px solid var(--paper-line);
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.envelope-top-flap::after {
   content: "";
   position: absolute;
   inset: 0;
   clip-path: polygon(0 0, 100% 0, 50% 100%);
-  background: transparent;
-  border-left: 2px solid rgba(25, 10, 14, 0.42);
-  border-right: 2px solid rgba(25, 10, 14, 0.42);
-  border-bottom: 2px solid rgba(25, 10, 14, 0.42);
-  box-sizing: border-box;
+  background:
+    linear-gradient(to bottom right, transparent 49.2%, var(--paper-line) 49.2%, var(--paper-line) 50.8%, transparent 50.8%),
+    linear-gradient(to bottom left, transparent 49.2%, var(--paper-line) 49.2%, var(--paper-line) 50.8%, transparent 50.8%);
   pointer-events: none;
 }
 
