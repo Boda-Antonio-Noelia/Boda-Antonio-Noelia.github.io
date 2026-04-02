@@ -96,7 +96,7 @@ body {
   background: rgba(255, 248, 242, 0.72);
   border: 1px solid rgba(111, 16, 38, 0.18);
   color: var(--muted);
-  font-size: 1rem;
+  font-size: clamp(2.8rem, 10vw, 5.6rem);
   margin-bottom: 1.1rem;
   backdrop-filter: blur(10px);
   box-shadow: 0 8px 24px rgba(111, 16, 38, 0.08);
