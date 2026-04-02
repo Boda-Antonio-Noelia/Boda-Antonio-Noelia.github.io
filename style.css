@@ -88,18 +88,31 @@ body {
   z-index: 1;
 }
 
-.hero-badge {
-  display: inline-block;
-  width: calc(100% - 2rem);
-  padding: 0.55rem 1.1rem;
-  border-radius: 999px;
-  background: rgba(255, 248, 242, 0.72);
-  border: 1px solid rgba(111, 16, 38, 0.18);
+.hero-badge.hero-seal {
+  width: min(86vw, 420px);
+  aspect-ratio: 1 / 1;
+  margin: 0 auto 1.4rem auto;
+  background-image: url("./img/bueno.png");
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18%;
+}
+
+.hero-seal-text {
+  width: 100%;
+  text-align: center;
   color: var(--muted);
-  font-size: clamp(2.8rem, 10vw, 5.6rem);
-  margin-bottom: 1.1rem;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 24px rgba(111, 16, 38, 0.08);
+  font-size: clamp(2rem, 7vw, 3.8rem);
+  line-height: 0.95;
+  text-shadow: 0 2px 10px rgba(255, 248, 242, 0.35);
+}
+
+.hero-seal-text strong {
+  font-weight: 700;
 }
 
 .hero h1 {
