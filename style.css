@@ -92,10 +92,7 @@ body {
   width: min(86vw, 420px);
   aspect-ratio: 1 / 1;
   margin: 0 auto 1.4rem auto;
-  background-image: url("./img/bueno.png");
-  background-position: center;
-  background-size: contain;
-  background-repeat: no-repeat;
+  background: red;
   display: flex;
   align-items: center;
   justify-content: center;
