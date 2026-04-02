@@ -65,10 +65,63 @@ body.intro-lock {
   height: 88%;
 }
 
+/* SOLAPA SUPERIOR COMPLETA */
+.envelope-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 46%;
+  z-index: 3;
+  transition:
+    transform 1.25s cubic-bezier(.22,.8,.2,1) 3.4s,
+    opacity 0.6s ease 4.25s;
+}
+
+/* FRANJA SUPERIOR RECTA */
+.envelope-top-cap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 26%;
+  background: linear-gradient(180deg, #8f2741 0%, #7b1e34 100%);
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  z-index: 1;
+}
+
+/* TRIÁNGULO DE LA SOLAPA */
+.envelope-top-flap {
+  position: absolute;
+  top: 20%;
+  left: 0;
+  width: 100%;
+  height: 80%;
+  background: linear-gradient(180deg, #89233c 0%, #6f1026 100%);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  z-index: 2;
+  box-shadow: 0 20px 34px rgba(75, 16, 32, 0.18);
+}
+
+/* FILO OSCURO DE LA SOLAPA */
+.envelope-top-flap::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  background: transparent;
+  border-left: 2px solid rgba(25, 10, 14, 0.42);
+  border-right: 2px solid rgba(25, 10, 14, 0.42);
+  border-bottom: 2px solid rgba(25, 10, 14, 0.42);
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
 /* NOMBRES */
 .intro-names {
   position: absolute;
-  top: 17%;
+  top: 11%;
   left: 50%;
   transform: translateX(-50%);
   width: 82%;
@@ -88,57 +141,15 @@ body.intro-lock {
   font-size: 0.9em;
 }
 
-/* SOLAPA SUPERIOR */
-.envelope-top {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 46%;
-  background: linear-gradient(180deg, #89233c 0%, #6f1026 100%);
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-  z-index: 3;
-  box-shadow: 0 20px 34px rgba(75, 16, 32, 0.18);
-  border-top: 2px solid rgba(255, 239, 230, 0.2);
-  transition:
-    transform 1.25s cubic-bezier(.22,.8,.2,1) 3.4s,
-    opacity 0.6s ease 4.25s;
-}
-
-.envelope-top::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-  border: 2px solid rgba(245, 220, 205, 0.22);
-  pointer-events: none;
-}
-
-/* BASE INFERIOR */
-.envelope-bottom {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 80%;
-  background: linear-gradient(180deg, var(--paper) 0%, var(--paper-dark) 100%);
-  border-bottom-left-radius: 22px;
-  border-bottom-right-radius: 22px;
-  box-shadow: 0 26px 44px rgba(75, 16, 32, 0.2);
-  transition:
-    transform 1.25s cubic-bezier(.22,.8,.2,1) 3.4s,
-    opacity 0.6s ease 4.25s;
-}
-
-/* SELLO */
+/* SELLO EN PRIMER PLANO */
 .seal {
   position: absolute;
   left: 50%;
-  bottom: -7%;
+  top: 39%;
   transform: translateX(-50%);
   width: clamp(88px, 20vw, 124px);
   aspect-ratio: 1 / 1;
-  z-index: 5;
+  z-index: 8;
   transition: opacity 0.6s ease 2.9s, transform 0.6s ease 2.9s;
 }
 
@@ -148,6 +159,22 @@ body.intro-lock {
   object-fit: contain;
   display: block;
   filter: drop-shadow(0 10px 14px rgba(75, 16, 32, 0.26));
+}
+
+/* BASE INFERIOR */
+.envelope-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 82%;
+  background: linear-gradient(180deg, var(--paper) 0%, var(--paper-dark) 100%);
+  border-bottom-left-radius: 22px;
+  border-bottom-right-radius: 22px;
+  box-shadow: 0 26px 44px rgba(75, 16, 32, 0.2);
+  transition:
+    transform 1.25s cubic-bezier(.22,.8,.2,1) 3.4s,
+    opacity 0.6s ease 4.25s;
 }
 
 /* PLAY */
