@@ -54,17 +54,18 @@ body.intro-lock {
 
 /* ENVOLTORIO QUE GOBIERNA EL TAMAÑO */
 .envelope-wrap {
-  width: min(98vw, 680px);
-  height: min(88vh, 980px);
+  width: 100vw;
+  height: 100vh;
   display: grid;
   place-items: center;
+  padding: 0;
 }
 
 /* SOBRE ESCALADO POR EL CONTENEDOR */
 .envelope {
   position: relative;
-  width: 100%;
-  max-width: 680px;
+  width: 96vw;
+  height: auto;
   aspect-ratio: 960 / 1440;
 }
 
@@ -88,7 +89,7 @@ body.intro-lock {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: fill;
   display: block;
   z-index: 3;
   transition:
