@@ -56,7 +56,6 @@ body.intro-lock {
   pointer-events: none;
 }
 
-/* La tarjeta completa se adapta al alto real disponible */
 .intro-card {
   width: min(92vw, calc((100dvh - 24px) * 0.56));
   aspect-ratio: 0.56 / 1;
@@ -88,7 +87,7 @@ body.intro-lock {
 .intro-photo-wrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 3.8;
+  aspect-ratio: 4 / 3.7;
   border-radius: 26px;
   overflow: hidden;
   box-shadow: var(--shadow-soft);
@@ -103,7 +102,6 @@ body.intro-lock {
   transform: scale(1.04);
 }
 
-/* Difuminado inferior para integrar el texto */
 .intro-photo-wrap::after {
   content: "";
   position: absolute;
@@ -111,21 +109,21 @@ body.intro-lock {
   background:
     linear-gradient(
       to bottom,
-      rgba(246, 239, 232, 0) 42%,
-      rgba(246, 239, 232, 0.14) 54%,
-      rgba(246, 239, 232, 0.34) 66%,
-      rgba(246, 239, 232, 0.70) 80%,
-      rgba(246, 239, 232, 0.95) 100%
+      rgba(246, 239, 232, 0) 46%,
+      rgba(246, 239, 232, 0.14) 58%,
+      rgba(246, 239, 232, 0.32) 70%,
+      rgba(246, 239, 232, 0.66) 84%,
+      rgba(246, 239, 232, 0.9) 100%
     );
   pointer-events: none;
 }
 
-.intro-copy {
+.intro-photo-label {
   position: absolute;
   left: 50%;
-  bottom: 4.5%;
+  bottom: 5.5%;
   transform: translateX(-50%);
-  width: 90%;
+  width: 88%;
   text-align: center;
   z-index: 2;
 }
@@ -134,18 +132,22 @@ body.intro-lock {
   font-family: "Cormorant Garamond", serif;
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  font-size: clamp(0.95rem, 3.3cqw, 1.28rem);
+  font-size: clamp(0.72rem, 2.7cqw, 1rem);
   color: rgba(63, 32, 40, 0.82);
-  margin-bottom: 0.18em;
+}
+
+.intro-text-block {
+  text-align: center;
+  padding: 0.1rem 0.2rem 0;
 }
 
 .intro-names {
   font-family: "Parisienne", cursive;
   font-weight: 400;
   color: var(--burgundy);
-  font-size: clamp(2.15rem, 12.2cqw, 4.95rem);
+  font-size: clamp(2rem, 11cqw, 4.7rem);
   line-height: 0.92;
-  margin-bottom: 0.08em;
+  margin-bottom: 0.12em;
   text-shadow: 0 2px 10px rgba(111, 16, 38, 0.08);
   white-space: nowrap;
 }
@@ -157,8 +159,8 @@ body.intro-lock {
 .intro-date {
   font-family: "Cormorant Garamond", serif;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
-  font-size: clamp(0.92rem, 3.1cqw, 1.18rem);
+  letter-spacing: 0.14em;
+  font-size: clamp(0.72rem, 2.5cqw, 1rem);
   color: rgba(63, 32, 40, 0.72);
 }
 
@@ -166,10 +168,11 @@ body.intro-lock {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding-top: 0.15rem;
 }
 
 .intro-envelope {
-  width: 62%;
+  width: 58%;
   height: auto;
   display: block;
   filter: drop-shadow(0 10px 22px rgba(70, 20, 30, 0.12));
@@ -194,7 +197,7 @@ body.intro-lock {
   transform: translateY(-1px);
 }
 
-/* Transición de entrada a la web */
+/* Transición */
 .intro-screen.is-opening .intro-card {
   animation: introCardOut 1.15s cubic-bezier(.22,.8,.2,1) forwards;
 }
@@ -362,24 +365,7 @@ body.intro-lock {
     aspect-ratio: 4 / 3.45;
   }
 
-  .intro-copy {
-    bottom: 3.8%;
-    width: 91%;
-  }
-
-  .intro-kicker {
-    font-size: clamp(0.88rem, 3.2cqw, 1.12rem);
-  }
-
-  .intro-names {
-    font-size: clamp(1.95rem, 11.6cqw, 4.25rem);
-  }
-
-  .intro-date {
-    font-size: clamp(0.84rem, 2.9cqw, 1.05rem);
-  }
-
   .intro-envelope {
-    width: 58%;
+    width: 54%;
   }
 }
