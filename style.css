@@ -121,7 +121,7 @@ body.intro-lock {
 .intro-photo-label {
   position: absolute;
   left: 50%;
-  bottom: 2%;
+  bottom: 1%;
   transform: translateX(-50%);
   width: 88%;
   text-align: center;
@@ -132,21 +132,21 @@ body.intro-lock {
   font-family: "Cormorant Garamond", serif;
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  font-size: clamp(0.72rem, 2.7cqw, 1rem);
+  font-size: clamp(1rem, 3.2cqw, 1.2rem);
   color: rgba(63, 32, 40, 0.82);
 }
 
 .intro-text-block {
   text-align: center;
   padding: 0;
-  margin-top: -14px;
+  margin-top: -40px;
 }
 
 .intro-names {
   font-family: "Parisienne", cursive;
   font-weight: 400;
   color: var(--burgundy);
-  font-size: clamp(2rem, 11cqw, 4.7rem);
+  font-size: clamp(2.4rem, 12.8cqw, 5.4rem);
   line-height: 0.92;
   margin-bottom: 0.04em;
   text-shadow: 0 2px 10px rgba(111, 16, 38, 0.08);
@@ -161,7 +161,7 @@ body.intro-lock {
   font-family: "Cormorant Garamond", serif;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  font-size: clamp(0.72rem, 2.5cqw, 1rem);
+  font-size: clamp(1rem, 3cqw, 1.2rem);
   color: rgba(63, 32, 40, 0.72);
 }
 
