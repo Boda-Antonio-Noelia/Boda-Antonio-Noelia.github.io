@@ -60,7 +60,6 @@ body.intro-lock {
   width: min(92vw, calc((100dvh - 24px) * 0.56));
   aspect-ratio: 0.56 / 1;
   border-radius: 36px;
-  padding: 14px 14px 18px;
   background: rgba(255, 252, 248, 0.58);
   border: 1px solid rgba(255,255,255,0.45);
   box-shadow: 0 22px 60px rgba(50, 18, 26, 0.10);
