@@ -68,7 +68,7 @@ body.intro-lock {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 10px;
+  gap: 6px;
   overflow: hidden;
   container-type: inline-size;
   position: relative;
@@ -121,7 +121,7 @@ body.intro-lock {
 .intro-photo-label {
   position: absolute;
   left: 50%;
-  bottom: 5.5%;
+  bottom: 2%;
   transform: translateX(-50%);
   width: 88%;
   text-align: center;
@@ -138,7 +138,8 @@ body.intro-lock {
 
 .intro-text-block {
   text-align: center;
-  padding: 0.1rem 0.2rem 0;
+  padding: 0;
+  margin-top: -14px;
 }
 
 .intro-names {
@@ -147,7 +148,7 @@ body.intro-lock {
   color: var(--burgundy);
   font-size: clamp(2rem, 11cqw, 4.7rem);
   line-height: 0.92;
-  margin-bottom: 0.12em;
+  margin-bottom: 0.04em;
   text-shadow: 0 2px 10px rgba(111, 16, 38, 0.08);
   white-space: nowrap;
 }
