@@ -192,6 +192,7 @@ body.intro-lock {
   transition: opacity 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
   animation: openPulse 1.8s ease-in-out infinite;
   box-shadow: 0 0 0 0 rgba(111, 16, 38, 0.18);
+  margin: 0 14px 14px;
 }
 
 .intro-open:hover {
