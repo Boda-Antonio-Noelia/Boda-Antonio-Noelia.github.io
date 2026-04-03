@@ -62,7 +62,7 @@ body.intro-lock {
   position: relative;
   width: min(96vw, 560px);
   aspect-ratio: 960 / 1440;
-  margin-top: -2vh;
+  margin-top: 0vh;
 }
 
 /* BASE */
