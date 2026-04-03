@@ -51,9 +51,9 @@ body.intro-lock {
 .envelope-scene {
   width: 100%;
   min-height: 100vh;
-  padding: 0 0.4rem;
+  padding: 8vh 0.4rem 0;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 }
 
@@ -62,7 +62,6 @@ body.intro-lock {
   position: relative;
   width: min(96vw, 560px);
   aspect-ratio: 960 / 1440;
-  transform: translateY(4vh);
 }
 
 /* BASE */
