@@ -40,12 +40,12 @@ body.intro-lock {
 .intro-screen {
   position: fixed;
   inset: 0;
+  min-height: 100dvh;
   z-index: 9999;
   background: linear-gradient(180deg, #f8f3ee 0%, #f2e8df 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
+  display: grid;
+  place-items: center;
+  padding: 12px;
   overflow: hidden;
   transition: opacity 0.9s ease, visibility 0.9s ease;
 }
@@ -56,23 +56,12 @@ body.intro-lock {
   pointer-events: none;
 }
 
-.intro-bg {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at top left, rgba(111, 16, 38, 0.06), transparent 28%),
-    radial-gradient(circle at bottom right, rgba(111, 16, 38, 0.08), transparent 30%),
-    linear-gradient(180deg, rgba(255,255,255,0.35), rgba(255,255,255,0));
-  pointer-events: none;
-}
-
+/* La tarjeta completa se adapta al alto real disponible */
 .intro-card {
-  position: relative;
-  z-index: 2;
-  width: min(92vw, 430px);
-  min-height: 82svh;
+  width: min(92vw, calc((100dvh - 24px) * 0.56));
+  aspect-ratio: 0.56 / 1;
   border-radius: 36px;
-  padding: 1.2rem 1.1rem 1.5rem;
+  padding: 14px 14px 18px;
   background: rgba(255, 252, 248, 0.58);
   border: 1px solid rgba(255,255,255,0.45);
   box-shadow: 0 22px 60px rgba(50, 18, 26, 0.10);
@@ -80,8 +69,10 @@ body.intro-lock {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 12px;
   overflow: hidden;
+  container-type: inline-size;
+  position: relative;
 }
 
 .intro-card::before {
@@ -97,10 +88,11 @@ body.intro-lock {
 .intro-photo-wrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 4.6;
+  aspect-ratio: 4 / 3.8;
   border-radius: 26px;
   overflow: hidden;
   box-shadow: var(--shadow-soft);
+  flex-shrink: 1;
 }
 
 .intro-photo {
@@ -111,60 +103,73 @@ body.intro-lock {
   transform: scale(1.04);
 }
 
+/* Difuminado inferior para integrar el texto */
 .intro-photo-wrap::after {
   content: "";
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(255, 248, 242, 0.30), rgba(255, 248, 242, 0.48)),
-    radial-gradient(circle at center, transparent 15%, rgba(255,248,242,0.26) 100%);
+    linear-gradient(
+      to bottom,
+      rgba(246, 239, 232, 0) 46%,
+      rgba(246, 239, 232, 0.18) 58%,
+      rgba(246, 239, 232, 0.42) 70%,
+      rgba(246, 239, 232, 0.78) 84%,
+      rgba(246, 239, 232, 0.96) 100%
+    );
+  pointer-events: none;
 }
 
 .intro-copy {
+  position: absolute;
+  left: 50%;
+  bottom: 7%;
+  transform: translateX(-50%);
+  width: 88%;
   text-align: center;
-  padding: 0.2rem 0.2rem 0;
+  z-index: 2;
 }
 
 .intro-kicker {
   font-family: "Cormorant Garamond", serif;
   text-transform: uppercase;
-  letter-spacing: 0.22em;
-  font-size: 1.05rem;
+  letter-spacing: 0.18em;
+  font-size: clamp(0.72rem, 2.7cqw, 1rem);
   color: rgba(63, 32, 40, 0.82);
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.2em;
 }
 
 .intro-names {
   font-family: "Parisienne", cursive;
   font-weight: 400;
   color: var(--burgundy);
-  font-size: clamp(3.1rem, 10vw, 4.8rem);
-  line-height: 0.95;
-  margin-bottom: 0.45rem;
+  font-size: clamp(2rem, 12cqw, 4.8rem);
+  line-height: 0.92;
+  margin-bottom: 0.1em;
   text-shadow: 0 2px 10px rgba(111, 16, 38, 0.08);
+  white-space: nowrap;
 }
 
 .intro-names span {
-  font-size: 0.9em;
+  font-size: 0.88em;
 }
 
 .intro-date {
   font-family: "Cormorant Garamond", serif;
-  letter-spacing: 0.18em;
   text-transform: uppercase;
-  font-size: 1rem;
-  color: rgba(63, 32, 40, 0.70);
+  letter-spacing: 0.14em;
+  font-size: clamp(0.72rem, 2.5cqw, 1rem);
+  color: rgba(63, 32, 40, 0.72);
 }
 
 .intro-envelope-wrap {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-top: 0.3rem;
 }
 
 .intro-envelope {
-  width: min(76vw, 300px);
+  width: 58%;
   height: auto;
   display: block;
   filter: drop-shadow(0 10px 22px rgba(70, 20, 30, 0.12));
@@ -175,11 +180,11 @@ body.intro-lock {
   border: none;
   background: transparent;
   font-family: "Cormorant Garamond", serif;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  font-size: 0.95rem;
+  font-size: clamp(0.7rem, 2.5cqw, 0.95rem);
   color: rgba(63, 32, 40, 0.72);
-  padding: 0.3rem 0 0.2rem;
+  padding: 0;
   cursor: pointer;
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
@@ -189,17 +194,13 @@ body.intro-lock {
   transform: translateY(-1px);
 }
 
-/* Transición moderna */
+/* Transición de entrada a la web */
 .intro-screen.is-opening .intro-card {
   animation: introCardOut 1.15s cubic-bezier(.22,.8,.2,1) forwards;
 }
 
 .intro-screen.is-opening .intro-photo {
   animation: photoSoftOut 1.15s ease forwards;
-}
-
-.intro-screen.is-opening .intro-bg {
-  animation: washAway 1.25s ease forwards;
 }
 
 @keyframes introCardOut {
@@ -227,17 +228,6 @@ body.intro-lock {
   100% {
     transform: scale(1.12);
     filter: grayscale(12%) blur(8px) brightness(1.05) saturate(0.72);
-  }
-}
-
-@keyframes washAway {
-  0% {
-    opacity: 1;
-    filter: blur(0);
-  }
-  100% {
-    opacity: 0;
-    filter: blur(12px);
   }
 }
 
@@ -354,4 +344,25 @@ body.intro-lock {
   font-size: 1.35rem;
   line-height: 1.5;
   color: var(--ink);
+}
+
+/* Ajuste extra para pantallas con poco alto */
+@media (max-height: 780px) {
+  .intro-screen {
+    padding: 8px;
+  }
+
+  .intro-card {
+    width: min(94vw, calc((100dvh - 16px) * 0.56));
+    padding: 12px 12px 14px;
+    gap: 10px;
+  }
+
+  .intro-photo-wrap {
+    aspect-ratio: 4 / 3.5;
+  }
+
+  .intro-envelope {
+    width: 54%;
+  }
 }
