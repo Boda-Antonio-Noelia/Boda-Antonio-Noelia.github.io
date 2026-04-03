@@ -89,7 +89,6 @@ body.intro-lock {
   width: 100%;
   aspect-ratio: 4 / 3.7;
   overflow: hidden;
-  box-shadow: var(--shadow-soft);
   flex-shrink: 1;
 }
 
