@@ -7,69 +7,82 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Parisienne&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="intro-lock">
 
-  <div class="intro-overlay" id="introOverlay">
-    <div class="intro-stage">
-      <div class="envelope-wrap">
-        <div class="envelope">
+  <!-- PORTADA INICIAL -->
+  <div class="intro-screen" id="introScreen">
+    <div class="intro-bg"></div>
 
-          <img class="envelope-bottom-img" src="img/abajo.png" alt="Base del sobre">
-          <img class="envelope-top-img" src="img/arriba.png" alt="Solapa del sobre">
-
-          <div class="intro-names">
-            Antonio <span>&</span> Noelia
-          </div>
-
-          <img class="seal" src="img/sello.png" alt="Sello con iniciales">
-        </div>
+    <div class="intro-card">
+      <div class="intro-photo-wrap">
+        <img src="img/principal.jpg" alt="Foto principal" class="intro-photo">
       </div>
+
+      <div class="intro-copy">
+        <p class="intro-kicker">Nuestra boda</p>
+        <h1 class="intro-names">Antonio <span>&</span> Noelia</h1>
+        <p class="intro-date">16 · mayo · 2026</p>
+      </div>
+
+      <div class="intro-envelope-wrap">
+        <img src="img/sobre.png" alt="Sobre" class="intro-envelope">
+      </div>
+
+      <button class="intro-open" id="openInvitation" type="button">
+        Pulsa para abrir la invitación
+      </button>
     </div>
   </div>
 
-  <div class="fixed-background"></div>
+  <!-- WEB REAL -->
+  <div class="site-shell" id="siteShell">
+    <div class="fixed-background"></div>
 
-  <div class="site-content">
-    <section class="hero">
-      <div class="hero-inner">
-        <h1>Es para nosotros un placer invitarte a nuestra boda</h1>
-        <p>
-          Muy pronto compartiremos con vosotros uno de los días más especiales de nuestra vida.
-        </p>
-      </div>
-    </section>
-
-    <section class="content-section">
-      <div class="content-inner">
-        <div class="intro-card">
-          <p>
-            Aquí empezará el contenido real de la web: fecha, lugar, cronograma, confirmación y todo lo que quieras añadir.
+    <div class="site-content">
+      <section class="hero">
+        <div class="hero-inner">
+          <p class="hero-kicker">Nos casamos</p>
+          <h2>Es para nosotros un placer invitarte a nuestra boda</h2>
+          <p class="hero-text">
+            Muy pronto compartiremos con vosotros uno de los días más especiales de nuestra vida.
           </p>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <section class="content-section">
+        <div class="content-inner">
+          <div class="info-card">
+            <p>
+              Aquí empezará el contenido real de la web: fecha, lugar, cronograma,
+              confirmación y todo lo que quieras añadir.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
   </div>
 
   <script>
-    window.addEventListener("load", () => {
-      const overlay = document.getElementById("introOverlay");
+    const introScreen = document.getElementById("introScreen");
+    const siteShell = document.getElementById("siteShell");
+    const openInvitation = document.getElementById("openInvitation");
+
+    function openSite() {
+      introScreen.classList.add("is-opening");
+      siteShell.classList.add("is-visible");
+      document.body.classList.remove("intro-lock");
 
       setTimeout(() => {
-        overlay.classList.add("play");
-      }, 150);
+        introScreen.classList.add("is-hidden");
+      }, 1400);
+    }
 
-      setTimeout(() => {
-        document.body.classList.remove("intro-lock");
-      }, 5000);
-
-      setTimeout(() => {
-        overlay.classList.add("hide");
-      }, 5400);
-    });
+    openInvitation.addEventListener("click", openSite);
+    openInvitation.addEventListener("touchstart", openSite, { passive: true, once: true });
   </script>
 </body>
 </html>
