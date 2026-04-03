@@ -374,7 +374,6 @@ body.intro-lock {
 
   .intro-card {
     width: min(94vw, calc((100dvh - 16px) * 0.56));
-    padding: 12px 12px 14px;
     gap: 8px;
   }
 
