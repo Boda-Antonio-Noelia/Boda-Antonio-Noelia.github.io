@@ -385,3 +385,130 @@ body.intro-lock {
     width: 64%;
   }
 }
+
+.countdown-section {
+  background: linear-gradient(180deg, var(--cream-2) 0%, var(--cream) 100%);
+  padding: 0 1rem 5rem;
+}
+
+.countdown-card {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  background: rgba(255, 250, 245, 0.66);
+  border: 1px solid rgba(111, 16, 38, 0.12);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+  padding: 2rem 1.2rem;
+}
+
+.countdown-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top center, rgba(255, 255, 255, 0.38), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.20), rgba(255,255,255,0));
+  pointer-events: none;
+}
+
+.countdown-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.countdown-kicker {
+  font-family: "Cormorant Garamond", serif;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.9rem;
+  color: rgba(63, 32, 40, 0.68);
+  margin-bottom: 0.4rem;
+}
+
+.countdown-title {
+  font-family: "Parisienne", cursive;
+  font-weight: 400;
+  color: var(--burgundy);
+  font-size: clamp(2.6rem, 8vw, 4.8rem);
+  line-height: 1;
+  margin-bottom: 1.4rem;
+}
+
+.countdown-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.countdown-item {
+  background: rgba(255, 252, 248, 0.58);
+  border: 1px solid rgba(111, 16, 38, 0.10);
+  border-radius: 20px;
+  box-shadow: var(--shadow-soft);
+  padding: 1rem 0.45rem;
+}
+
+.countdown-item span {
+  display: block;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 600;
+  color: var(--burgundy);
+  font-size: clamp(1.8rem, 8vw, 3rem);
+  line-height: 1;
+}
+
+.countdown-item small {
+  display: block;
+  margin-top: 0.45rem;
+  font-family: "Cormorant Garamond", serif;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  color: rgba(63, 32, 40, 0.66);
+}
+
+.countdown-note {
+  margin-top: 1.4rem;
+  font-family: "Cormorant Garamond", serif;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.95rem;
+  color: rgba(63, 32, 40, 0.72);
+}
+
+.countdown-ended {
+  grid-column: 1 / -1;
+  background: rgba(255, 252, 248, 0.60);
+  border: 1px solid rgba(111, 16, 38, 0.10);
+  border-radius: 22px;
+  box-shadow: var(--shadow-soft);
+  padding: 1.8rem 1rem;
+}
+
+.countdown-ended h3 {
+  font-family: "Parisienne", cursive;
+  font-weight: 400;
+  color: var(--burgundy);
+  font-size: clamp(2.5rem, 9vw, 4.5rem);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.countdown-ended p {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.25rem;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+@media (max-width: 620px) {
+  .countdown-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .countdown-card {
+    padding: 1.6rem 0.9rem;
+  }
+}
