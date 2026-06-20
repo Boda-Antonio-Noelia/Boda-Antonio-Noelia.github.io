@@ -570,13 +570,28 @@ body.intro-lock {
 
 .floating-countdown span {
   position: relative;
-  min-width: 2ch;
+  min-width: 3ch;
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.08rem;
   font-family: "Cormorant Garamond", serif;
+  color: rgba(111, 16, 38, 0.82);
+  text-align: center;
+}
+
+.floating-countdown strong {
   font-size: clamp(0.95rem, 3vw, 1.15rem);
   font-weight: 600;
   line-height: 1;
-  color: rgba(111, 16, 38, 0.82);
-  text-align: center;
+}
+
+.floating-countdown small {
+  font-size: 0.62em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(63, 32, 40, 0.52);
+  margin-left: 0.02rem;
 }
 
 .floating-countdown span:not(:last-child)::after {
