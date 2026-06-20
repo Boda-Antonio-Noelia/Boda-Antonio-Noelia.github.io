@@ -67,9 +67,19 @@
   </div>
 
 
-<section id="cuenta-atras">
-  <h2>Falta para el evento</h2>
-  <div id="contador"></div>
+<section class="countdown-section">
+  <div class="content-inner">
+    <div class="countdown-card" id="cuenta-atras">
+      <p class="countdown-kicker">Cuenta atrás</p>
+      <h2 class="countdown-title">Cada vez queda menos</h2>
+
+      <div class="countdown-grid" id="contador"></div>
+
+      <p class="countdown-note">
+        07 · diciembre · 2026
+      </p>
+    </div>
+  </div>
 </section>
 
 <script>
@@ -83,8 +93,10 @@
 
     if (diferencia <= 0) {
       contador.innerHTML = `
-        <h2>Gracias por venir al evento</h2>
-        <p>Esperamos que hayas disfrutado de este día tan especial.</p>
+        <div class="countdown-ended">
+          <h3>Gracias por venir</h3>
+          <p>Esperamos que hayas disfrutado de este día tan especial.</p>
+        </div>
       `;
       return;
     }
@@ -95,10 +107,25 @@
     const segundos = Math.floor((diferencia / 1000) % 60);
 
     contador.innerHTML = `
-      <strong>${dias}</strong> días 
-      <strong>${horas}</strong> horas 
-      <strong>${minutos}</strong> minutos 
-      <strong>${segundos}</strong> segundos
+      <div class="countdown-item">
+        <span>${dias}</span>
+        <small>Días</small>
+      </div>
+
+      <div class="countdown-item">
+        <span>${horas}</span>
+        <small>Horas</small>
+      </div>
+
+      <div class="countdown-item">
+        <span>${minutos}</span>
+        <small>Minutos</small>
+      </div>
+
+      <div class="countdown-item">
+        <span>${segundos}</span>
+        <small>Segundos</small>
+      </div>
     `;
   }
 
