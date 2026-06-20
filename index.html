@@ -67,11 +67,11 @@
   </div>
 
 
-<section class="countdown-section">
+<section class="countdown-section" id="cuenta-atras">
   <div class="content-inner">
-    <div class="countdown-card" id="cuenta-atras">
-      <p class="countdown-kicker">Id buscando modelito...</p>
-      <h2 class="countdown-title">¡Esto ya no hay quien lo pare!</h2>
+    <div class="countdown-card">
+      <p class="countdown-kicker">Cuenta atrás</p>
+      <h2 class="countdown-title">Cada vez queda menos</h2>
 
       <div class="countdown-grid" id="contador"></div>
 
@@ -82,10 +82,71 @@
   </div>
 </section>
 
-<script>
-  const fechaEvento = new Date("2026-06-20T14:40:00+02:00").getTime();
+  <div class="floating-countdown" id="floatingCountdown" aria-hidden="true">
+  <span id="floatingDias">000</span>
+  <span id="floatingHoras">00</span>
+  <span id="floatingMinutos">00</span>
+  <span id="floatingSegundos">00</span>
+</div>
 
+<script>
+  const fechaEvento = new Date("2026-12-07T12:00:00+01:00").getTime();
+
+  const countdownSection = document.getElementById("cuenta-atras");
   const contador = document.getElementById("contador");
+
+  const floatingCountdown = document.getElementById("floatingCountdown");
+  const floatingDias = document.getElementById("floatingDias");
+  const floatingHoras = document.getElementById("floatingHoras");
+  const floatingMinutos = document.getElementById("floatingMinutos");
+  const floatingSegundos = document.getElementById("floatingSegundos");
+
+  function formatearNumero(numero, digitos = 2) {
+    return String(numero).padStart(digitos, "0");
+  }
+
+  function ocultarCuentaFlotante() {
+    if (!floatingCountdown) return;
+
+    floatingCountdown.classList.remove("is-visible", "is-bottom", "is-top");
+  }
+
+  function desactivarCuentaFlotante() {
+    if (!floatingCountdown) return;
+
+    ocultarCuentaFlotante();
+    floatingCountdown.classList.add("is-disabled");
+    floatingCountdown.setAttribute("aria-hidden", "true");
+  }
+
+  function actualizarPosicionFlotante() {
+    if (!countdownSection || !floatingCountdown) return;
+
+    if (floatingCountdown.classList.contains("is-disabled")) {
+      ocultarCuentaFlotante();
+      return;
+    }
+
+    const rect = countdownSection.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+
+    const estaEnPantalla = rect.top < viewportHeight && rect.bottom > 0;
+
+    if (estaEnPantalla) {
+      ocultarCuentaFlotante();
+      return;
+    }
+
+    floatingCountdown.classList.add("is-visible");
+
+    if (rect.top >= viewportHeight) {
+      floatingCountdown.classList.add("is-bottom");
+      floatingCountdown.classList.remove("is-top");
+    } else if (rect.bottom <= 0) {
+      floatingCountdown.classList.add("is-top");
+      floatingCountdown.classList.remove("is-bottom");
+    }
+  }
 
   function actualizarCuentaAtras() {
     const ahora = new Date().getTime();
@@ -98,6 +159,8 @@
           <p>Esperamos que hayas disfrutado de este día tan especial.</p>
         </div>
       `;
+
+      desactivarCuentaFlotante();
       return;
     }
 
@@ -113,24 +176,35 @@
       </div>
 
       <div class="countdown-item">
-        <span>${horas}</span>
+        <span>${formatearNumero(horas)}</span>
         <small>Horas</small>
       </div>
 
       <div class="countdown-item">
-        <span>${minutos}</span>
+        <span>${formatearNumero(minutos)}</span>
         <small>Minutos</small>
       </div>
 
       <div class="countdown-item">
-        <span>${segundos}</span>
+        <span>${formatearNumero(segundos)}</span>
         <small>Segundos</small>
       </div>
     `;
+
+    if (floatingDias) floatingDias.textContent = formatearNumero(dias, 3);
+    if (floatingHoras) floatingHoras.textContent = formatearNumero(horas);
+    if (floatingMinutos) floatingMinutos.textContent = formatearNumero(minutos);
+    if (floatingSegundos) floatingSegundos.textContent = formatearNumero(segundos);
+
+    actualizarPosicionFlotante();
   }
 
   actualizarCuentaAtras();
+
   setInterval(actualizarCuentaAtras, 1000);
+
+  window.addEventListener("scroll", actualizarPosicionFlotante, { passive: true });
+  window.addEventListener("resize", actualizarPosicionFlotante);
 </script>
   
   
