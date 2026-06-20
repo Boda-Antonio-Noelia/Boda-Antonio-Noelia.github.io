@@ -512,3 +512,94 @@ body.intro-lock {
     padding: 1.6rem 0.9rem;
   }
 }
+
+
+/* =========================
+   CUENTA ATRÁS FLOTANTE
+   ========================= */
+
+.floating-countdown {
+  position: fixed;
+  left: 50%;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(255, 250, 245, 0.58);
+  border: 1px solid rgba(111, 16, 38, 0.10);
+  box-shadow: 0 10px 26px rgba(70, 20, 30, 0.08);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  pointer-events: none;
+  filter: blur(8px);
+  transition:
+    opacity 0.55s ease,
+    filter 0.55s ease,
+    transform 0.55s ease,
+    top 0.55s ease,
+    bottom 0.55s ease;
+}
+
+.floating-countdown.is-visible {
+  opacity: 1;
+  filter: blur(0);
+}
+
+.floating-countdown.is-bottom {
+  bottom: 1rem;
+  top: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.floating-countdown.is-top {
+  top: 1rem;
+  bottom: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.floating-countdown:not(.is-visible).is-bottom {
+  transform: translateX(-50%) translateY(12px);
+}
+
+.floating-countdown:not(.is-visible).is-top {
+  transform: translateX(-50%) translateY(-12px);
+}
+
+.floating-countdown span {
+  position: relative;
+  min-width: 2ch;
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(0.95rem, 3vw, 1.15rem);
+  font-weight: 600;
+  line-height: 1;
+  color: rgba(111, 16, 38, 0.82);
+  text-align: center;
+}
+
+.floating-countdown span:not(:last-child)::after {
+  content: "·";
+  position: absolute;
+  right: -0.43rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(63, 32, 40, 0.34);
+}
+
+@media (max-width: 620px) {
+  .floating-countdown {
+    gap: 0.42rem;
+    padding: 0.42rem 0.68rem;
+  }
+
+  .floating-countdown span {
+    font-size: 0.95rem;
+  }
+
+  .floating-countdown span:not(:last-child)::after {
+    right: -0.34rem;
+  }
+}
+
