@@ -66,6 +66,47 @@
     </div>
   </div>
 
+
+<section id="cuenta-atras">
+  <h2>Falta para el evento</h2>
+  <div id="contador"></div>
+</section>
+
+<script>
+  const fechaEvento = new Date("2026-07-20T20:00:00+02:00").getTime();
+
+  const contador = document.getElementById("contador");
+
+  function actualizarCuentaAtras() {
+    const ahora = new Date().getTime();
+    const diferencia = fechaEvento - ahora;
+
+    if (diferencia <= 0) {
+      contador.innerHTML = `
+        <h2>Gracias por venir al evento</h2>
+        <p>Esperamos que hayas disfrutado de este día tan especial.</p>
+      `;
+      return;
+    }
+
+    const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+    const horas = Math.floor((diferencia / (1000 * 60 * 60)) % 24);
+    const minutos = Math.floor((diferencia / (1000 * 60)) % 60);
+    const segundos = Math.floor((diferencia / 1000) % 60);
+
+    contador.innerHTML = `
+      <strong>${dias}</strong> días 
+      <strong>${horas}</strong> horas 
+      <strong>${minutos}</strong> minutos 
+      <strong>${segundos}</strong> segundos
+    `;
+  }
+
+  actualizarCuentaAtras();
+  setInterval(actualizarCuentaAtras, 1000);
+</script>
+  
+  
   <script>
     const introScreen = document.getElementById("introScreen");
     const siteShell = document.getElementById("siteShell");
