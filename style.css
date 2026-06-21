@@ -350,7 +350,7 @@ body.intro-lock {
 }
 
 .content-section {
-  background: linear-gradient(180deg, var(--cream) 0%, var(--cream-2) 100%);
+  background: linear-gradient(180deg, #fbf6f1 0%, #f5ece3 100%);
   padding: 2rem 1rem 2rem;
 }
 
@@ -360,7 +360,7 @@ body.intro-lock {
 }
 
 .info-card {
-  background: var(--paper);
+  background: rgba(255, 252, 248, 0.92);
   border: 1px solid var(--paper-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
@@ -405,7 +405,7 @@ body.intro-lock {
   position: relative;
   overflow: hidden;
   text-align: center;
-  background: rgba(255, 250, 245, 0.66);
+  background: rgba(255, 252, 248, 0.92);
   border: 1px solid rgba(111, 16, 38, 0.12);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
@@ -453,7 +453,7 @@ body.intro-lock {
 }
 
 .countdown-item {
-  background: rgba(255, 252, 248, 0.58);
+  background: rgba(255, 252, 248, 0.86);
   border: 1px solid rgba(111, 16, 38, 0.10);
   border-radius: 20px;
   box-shadow: var(--shadow-soft);
