@@ -108,16 +108,23 @@
   function ocultarCuentaFlotante() {
     if (!floatingCountdown) return;
 
-    floatingCountdown.classList.remove("is-visible", "is-bottom", "is-top");
+    floatingCountdown.classList.remove("is-visible");
   }
 
   function desactivarCuentaFlotante() {
     if (!floatingCountdown) return;
 
-    ocultarCuentaFlotante();
-    floatingCountdown.classList.add("is-disabled");
-    floatingCountdown.setAttribute("aria-hidden", "true");
-  }
+ function desactivarCuentaFlotante() {
+  if (!floatingCountdown) return;
+
+  floatingCountdown.classList.remove("is-visible");
+  floatingCountdown.classList.add("is-disabled");
+  floatingCountdown.setAttribute("aria-hidden", "true");
+
+  setTimeout(() => {
+    floatingCountdown.classList.remove("is-bottom", "is-top");
+  }, 550);
+}
 
   function actualizarPosicionFlotante() {
     if (!countdownSection || !floatingCountdown) return;
