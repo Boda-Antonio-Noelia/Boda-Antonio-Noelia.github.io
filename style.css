@@ -275,15 +275,20 @@ body.intro-lock {
 
 .fixed-background {
   position: fixed;
-  inset: 0;
+  left: 0;
+  top: 0;
   z-index: 0;
+
   width: 100vw;
-  height: 100svh;
+  height: 100lvh;
+
   background-image: url("./img/principal.jpg");
   background-position: center center;
   background-size: cover;
   background-repeat: no-repeat;
+
   pointer-events: none;
+  overflow: hidden;
 }
 
 .fixed-background::after {
