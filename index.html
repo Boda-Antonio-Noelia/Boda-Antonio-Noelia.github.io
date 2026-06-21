@@ -287,23 +287,37 @@
 </script>
   
   
-  <script>
-    const introScreen = document.getElementById("introScreen");
-    const siteShell = document.getElementById("siteShell");
-    const openInvitation = document.getElementById("openInvitation");
+<script>
+  const introScreen = document.getElementById("introScreen");
+  const siteShell = document.getElementById("siteShell");
+  const openInvitation = document.getElementById("openInvitation");
+  const openEnvelope = document.getElementById("openEnvelope");
 
-    function openSite() {
-      introScreen.classList.add("is-opening");
-      siteShell.classList.add("is-visible");
-      document.body.classList.remove("intro-lock");
+  let invitationOpened = false;
 
-      setTimeout(() => {
-        introScreen.classList.add("is-hidden");
-      }, 1400);
+  function openSite() {
+    if (invitationOpened) return;
+
+    invitationOpened = true;
+
+    introScreen.classList.add("is-opening");
+    siteShell.classList.add("is-visible");
+    document.body.classList.remove("intro-lock");
+
+    setTimeout(() => {
+      introScreen.classList.add("is-hidden");
+    }, 1400);
+  }
+
+  openInvitation.addEventListener("click", openSite);
+  openEnvelope.addEventListener("click", openSite);
+
+  openEnvelope.addEventListener("keydown", function(event) {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openSite();
     }
-
-    openInvitation.addEventListener("click", openSite);
-    openInvitation.addEventListener("touchstart", openSite, { passive: true, once: true });
-  </script>
+  });
+</script>
 </body>
 </html>
