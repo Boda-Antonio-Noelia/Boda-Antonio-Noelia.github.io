@@ -711,3 +711,132 @@ body.intro-lock {
 }
 
 
+/* =========================
+   SECCIÓN LUGAR
+   ========================= */
+
+.location-section {
+  background: linear-gradient(180deg, #fbf6f1 0%, #f5ece3 100%);
+}
+
+.location-card {
+  overflow: hidden;
+  text-align: center;
+  background: rgba(255, 252, 248, 0.90);
+  border: 1px solid rgba(111, 16, 38, 0.12);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+
+.location-text {
+  padding: 1.7rem 1.2rem 1.2rem;
+}
+
+.location-kicker {
+  font-family: "Cormorant Garamond", serif;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.85rem;
+  color: rgba(63, 32, 40, 0.68);
+  margin-bottom: 0.45rem;
+}
+
+.location-title {
+  font-family: "Parisienne", cursive;
+  font-weight: 400;
+  color: var(--burgundy);
+  font-size: clamp(2.6rem, 9vw, 4.8rem);
+  line-height: 1;
+  margin-bottom: 0.45rem;
+}
+
+.location-time {
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(1.25rem, 4vw, 1.55rem);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.location-image-wrap {
+  width: 100%;
+  padding: 0 1rem;
+}
+
+.location-image {
+  width: 100%;
+  max-width: 620px;
+  aspect-ratio: 1158 / 1358;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+  margin: 0 auto;
+  border-radius: 22px;
+  box-shadow: var(--shadow-soft);
+}
+
+.location-buttons {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+  padding: 1.3rem 1rem 1.5rem;
+  flex-wrap: wrap;
+}
+
+.location-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.75rem 1.15rem;
+  border-radius: 999px;
+  text-decoration: none;
+
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+
+  color: #fffaf5;
+  background: var(--burgundy);
+  border: 1px solid rgba(111, 16, 38, 0.22);
+  box-shadow: 0 10px 22px rgba(70, 20, 30, 0.12);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+.location-button-secondary {
+  color: var(--burgundy);
+  background: rgba(255, 250, 245, 0.72);
+  border: 1px solid rgba(111, 16, 38, 0.22);
+}
+
+.location-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(70, 20, 30, 0.16);
+}
+
+@media (max-width: 620px) {
+  .location-text {
+    padding: 1.5rem 1rem 1rem;
+  }
+
+  .location-image-wrap {
+    padding: 0 0.85rem;
+  }
+
+  .location-buttons {
+    flex-direction: column;
+    padding: 1.2rem 0.85rem 1.4rem;
+  }
+
+  .location-button {
+    width: 100%;
+  }
+}
+
+
+
