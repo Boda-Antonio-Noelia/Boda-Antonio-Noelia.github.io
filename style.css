@@ -57,7 +57,7 @@ body.intro-lock {
 }
 
 .intro-card {
-  width: min(92vw, calc((100dvh - 24px) * 0.56));
+  width: min(calc(100vw - 24px), calc((100dvh - 24px) * 0.56));
   aspect-ratio: 0.56 / 1;
   border-radius: 36px;
   background: rgba(255, 252, 248);
@@ -407,7 +407,7 @@ body.intro-lock {
   }
 
   .intro-card {
-    width: min(94vw, calc((100dvh - 16px) * 0.56));
+    width: min(calc(100vw - 16px), calc((100dvh - 16px) * 0.56));
     gap: 8px;
   }
 
