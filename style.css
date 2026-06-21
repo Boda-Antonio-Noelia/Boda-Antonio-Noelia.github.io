@@ -298,9 +298,9 @@ body.intro-lock {
 .hero {
   min-height: 100svh;
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: center;
-  padding: 2rem 1.2rem 7rem;
+  padding: 1.8rem 1.2rem 0;
 }
 
 .hero-inner {
@@ -631,3 +631,45 @@ body.intro-lock {
   border-radius: 18px;
   box-shadow: var(--shadow-soft);
 }
+
+
+/* =========================
+   RIBETE INFERIOR / TRANSICIÓN
+   ========================= */
+
+.ribete-transition {
+  position: relative;
+  z-index: 2;
+  margin-top: -34svh;
+  line-height: 0;
+  pointer-events: none;
+}
+
+.ribete-transition img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.ribete-transition + .content-section {
+  padding-top: 0;
+}
+
+.site-content {
+  position: relative;
+  z-index: 1;
+}
+
+.content-section,
+.countdown-section {
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 720px) {
+  .ribete-transition {
+    margin-top: -32svh;
+  }
+}
+
+
