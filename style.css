@@ -630,6 +630,7 @@ body.intro-lock {
 
 .calendar-card {
   padding: 1rem;
+  border-bottom: 2rem;
 }
 
 .calendar-image {
