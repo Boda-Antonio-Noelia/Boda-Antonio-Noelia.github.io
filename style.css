@@ -841,14 +841,37 @@ body.intro-lock {
 
 .intro-envelope-wrap {
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
 }
 
-.intro-envelope-wrap:active .intro-envelope {
-  transform: scale(0.985);
+.intro-envelope-wrap:focus,
+.intro-envelope-wrap:focus-visible {
+  outline: none;
 }
 
 .intro-envelope {
-  transition: transform 0.25s ease, filter 0.25s ease;
+  transition:
+    transform 0.35s ease,
+    filter 0.35s ease;
+}
+
+.intro-envelope-wrap:active .intro-envelope {
+  animation: envelopeTapPulse 0.42s ease;
+}
+
+@keyframes envelopeTapPulse {
+  0% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.035);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 
