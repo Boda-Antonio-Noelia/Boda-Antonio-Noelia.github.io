@@ -618,3 +618,16 @@ body.intro-lock {
   }
 }
 
+.calendar-card {
+  padding: 1rem;
+}
+
+.calendar-image {
+  width: 100%;
+  max-width: 680px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 18px;
+  box-shadow: var(--shadow-soft);
+}
