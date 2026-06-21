@@ -839,4 +839,16 @@ body.intro-lock {
 }
 
 
+.intro-envelope-wrap {
+  cursor: pointer;
+}
+
+.intro-envelope-wrap:active .intro-envelope {
+  transform: scale(0.985);
+}
+
+.intro-envelope {
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+
 
