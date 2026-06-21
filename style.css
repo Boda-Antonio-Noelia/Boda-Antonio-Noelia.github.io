@@ -343,10 +343,37 @@ body.intro-lock {
 }
 
 .hero-text {
+  position: relative;
+  max-width: 680px;
+  margin: 0 auto 1.6rem;
+  padding: 1.25rem 1.15rem;
+  text-align: center;
+
   font-family: "Cormorant Garamond", serif;
-  font-size: clamp(1.2rem, 4vw, 1.6rem);
-  line-height: 1.45;
+  font-size: clamp(1.25rem, 4.4vw, 1.75rem);
+  font-weight: 500;
+  line-height: 1.42;
   color: var(--ink);
+
+  background: rgba(255, 252, 248, 0.72);
+  border: 1px solid rgba(111, 16, 38, 0.10);
+  border-radius: 22px;
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(8px);
+}
+
+.hero-text::before,
+.hero-text::after {
+  content: "";
+  display: block;
+  width: 54px;
+  height: 1px;
+  margin: 0.15rem auto 0.75rem;
+  background: rgba(111, 16, 38, 0.28);
+}
+
+.hero-text::after {
+  margin: 0.75rem auto 0.1rem;
 }
 
 .content-section {
