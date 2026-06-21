@@ -298,9 +298,9 @@ body.intro-lock {
 .hero {
   min-height: 100svh;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  padding: 2rem 1.2rem 3rem;
+  padding: 2rem 1.2rem 7rem;
 }
 
 .hero-inner {
