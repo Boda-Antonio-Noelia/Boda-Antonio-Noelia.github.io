@@ -278,6 +278,18 @@
 
   let scrollFramePendiente = false;
 
+let progresoAntesActual = 0;
+let progresoAntesObjetivo = 0;
+
+let progresoDespuesActual = 0;
+let progresoDespuesObjetivo = 0;
+
+const SUAVIZADO_MORPH = 0.18;
+
+  function acercar(actual, objetivo, intensidad) {
+  return actual + (objetivo - actual) * intensidad;
+}
+
 
   function limitar(valor, minimo, maximo) {
     return Math.min(
@@ -748,207 +760,271 @@
   }
 
 
-  function actualizarPosicionFlotante() {
-    if (
-      !countdownSection ||
-      !floatingCountdown ||
-      !contador
-    ) {
-      return;
-    }
+function actualizarPosicionFlotante() {
+  if (
+    !countdownSection ||
+    !floatingCountdown ||
+    !contador
+  ) {
+    return;
+  }
 
 
-    /*
-       Durante la portada inicial no existe
-       visualmente la cuenta atrás flotante.
-    */
+  if (
+    document.body.classList.contains("intro-lock")
+  ) {
+    ocultarMorph();
+    ocultarCuentaFlotante();
+    mostrarGridReal();
 
-    if (
-      document.body.classList.contains("intro-lock")
-    ) {
-      ocultarMorph();
-      ocultarCuentaFlotante();
-      mostrarGridReal();
+    progresoAntesActual = 0;
+    progresoAntesObjetivo = 0;
 
-      return;
-    }
+    progresoDespuesActual = 0;
+    progresoDespuesObjetivo = 0;
 
-
-    /*
-       Evento terminado.
-    */
-
-    if (
-      floatingCountdown.classList.contains(
-        "is-disabled"
-      )
-    ) {
-      ocultarMorph();
-      ocultarCuentaFlotante();
-      mostrarGridReal();
-
-      return;
-    }
+    return;
+  }
 
 
-    const gridRect =
-      contador.getBoundingClientRect();
+  if (
+    floatingCountdown.classList.contains(
+      "is-disabled"
+    )
+  ) {
+    ocultarMorph();
+    ocultarCuentaFlotante();
+    mostrarGridReal();
 
-    const viewportHeight =
-      window.innerHeight;
-
-
-    /*
-       =========================================
-       EL ANTES
-       inicio -> checkpoint
-
-       flotante inferior -> cuatro bloques
-       =========================================
-    */
-
-    const progresoAntes = limitar(
-      (
-        viewportHeight + 20 -
-        gridRect.top
-      ) /
-      DISTANCIA_MORPH_ENTRADA,
-      0,
-      1
-    );
+    return;
+  }
 
 
-    /*
-       INICIO
+  const gridRect =
+    contador.getBoundingClientRect();
 
-       Todavía no ha comenzado el antes.
-    */
-
-    if (progresoAntes <= 0) {
-      ocultarMorph();
-      mostrarGridReal();
-      mostrarFlotanteAbajo();
-
-      return;
-    }
+  const viewportHeight =
+    window.innerHeight;
 
 
-    /*
-       EL ANTES
+  /*
+     =========================================
+     OBJETIVOS SEGÚN SCROLL
+     =========================================
+  */
 
-       Al bajar:
-       compacto inferior -> grid
-
-       Al subir:
-       EL ANTES INVERSO
-       grid -> compacto inferior
-    */
-
-    if (
-      progresoAntes > 0 &&
-      progresoAntes < 1
-    ) {
-      ocultarGridReal();
-
-
-      representarMorph(
-        progresoAntes,
-        "bottom",
-        "compacto-a-grid"
-      );
+  progresoAntesObjetivo = limitar(
+    (
+      viewportHeight + 20 -
+      gridRect.top
+    ) /
+    DISTANCIA_MORPH_ENTRADA,
+    0,
+    1
+  );
 
 
-      return;
-    }
+  progresoDespuesObjetivo = limitar(
+    (
+      DISTANCIA_MORPH_SALIDA -
+      gridRect.bottom
+    ) /
+    DISTANCIA_MORPH_SALIDA,
+    0,
+    1
+  );
 
 
-    /*
-       =========================================
-       CHECKPOINT
+  /*
+     =========================================
+     SUAVIZADO
 
-       La cuenta fija está completamente formada.
-       =========================================
-    */
+     El scroll manda.
+     El estado visual se aproxima suavemente.
+     =========================================
+  */
 
-
-    /*
-       Mientras el borde inferior del grid siga
-       lejos del margen superior, permanecemos
-       en el checkpoint.
-    */
-
-    if (
-      gridRect.bottom >= DISTANCIA_MORPH_SALIDA
-    ) {
-      ocultarMorph();
-      ocultarCuentaFlotante();
-      mostrarGridReal();
+  progresoAntesActual = acercar(
+    progresoAntesActual,
+    progresoAntesObjetivo,
+    SUAVIZADO_MORPH
+  );
 
 
-      floatingCountdown.setAttribute(
-        "aria-hidden",
-        "true"
-      );
+  progresoDespuesActual = acercar(
+    progresoDespuesActual,
+    progresoDespuesObjetivo,
+    SUAVIZADO_MORPH
+  );
 
 
-      return;
-    }
+  /*
+     Evitamos residuos infinitesimales.
+  */
+
+  if (
+    Math.abs(
+      progresoAntesActual -
+      progresoAntesObjetivo
+    ) < 0.001
+  ) {
+    progresoAntesActual =
+      progresoAntesObjetivo;
+  }
 
 
-    /*
-       =========================================
-       EL DESPUÉS
-       checkpoint -> final
-
-       grid -> flotante superior
-
-       Al subir:
-       EL DESPUÉS INVERSO
-       flotante superior -> grid
-       =========================================
-    */
-
-    const progresoDespues = limitar(
-      (
-        DISTANCIA_MORPH_SALIDA -
-        gridRect.bottom
-      ) /
-      DISTANCIA_MORPH_SALIDA,
-      0,
-      1
-    );
+  if (
+    Math.abs(
+      progresoDespuesActual -
+      progresoDespuesObjetivo
+    ) < 0.001
+  ) {
+    progresoDespuesActual =
+      progresoDespuesObjetivo;
+  }
 
 
-    if (
-      progresoDespues > 0 &&
-      progresoDespues < 1
-    ) {
-      ocultarGridReal();
+  /*
+     =========================================
+     EL ANTES
+     =========================================
+  */
 
-
-      representarMorph(
-        progresoDespues,
-        "top",
-        "grid-a-compacto"
-      );
-
-
-      return;
-    }
-
-
-    /*
-       =========================================
-       FINAL
-
-       Flotante superior estable.
-       =========================================
-    */
-
+  if (progresoAntesActual <= 0.001) {
     ocultarMorph();
     mostrarGridReal();
-    mostrarFlotanteArriba();
+    mostrarFlotanteAbajo();
+
+    return;
   }
+
+
+  if (progresoAntesActual < 0.985) {
+    representarMorph(
+      progresoAntesActual,
+      "bottom",
+      "compacto-a-grid"
+    );
+
+    /*
+       En el tramo final ya dejamos aparecer
+       progresivamente el checkpoint real.
+    */
+
+    const mezclaCheckpoint = limitar(
+      (
+        progresoAntesActual -
+        0.88
+      ) / 0.105,
+      0,
+      1
+    );
+
+
+    contador.classList.add("is-morphing");
+
+    contador.style.opacity =
+      `${mezclaCheckpoint}`;
+
+
+    if (countdownMorph) {
+      countdownMorph.style.opacity =
+        `${1 - mezclaCheckpoint}`;
+    }
+
+
+    return;
+  }
+
+
+  /*
+     =========================================
+     CHECKPOINT
+     =========================================
+  */
+
+  if (
+    progresoDespuesActual <= 0.015
+  ) {
+    ocultarMorph();
+
+    if (countdownMorph) {
+      countdownMorph.style.removeProperty(
+        "opacity"
+      );
+    }
+
+    ocultarCuentaFlotante();
+    mostrarGridReal();
+
+    floatingCountdown.setAttribute(
+      "aria-hidden",
+      "true"
+    );
+
+    return;
+  }
+
+
+  /*
+     =========================================
+     EL DESPUÉS
+     =========================================
+  */
+
+  if (progresoDespuesActual < 0.985) {
+    representarMorph(
+      progresoDespuesActual,
+      "top",
+      "grid-a-compacto"
+    );
+
+
+    /*
+       Al inicio del después hacemos el intercambio
+       progresivo checkpoint -> morph.
+    */
+
+    const mezclaMorph = limitar(
+      progresoDespuesActual / 0.12,
+      0,
+      1
+    );
+
+
+    contador.classList.add("is-morphing");
+
+    contador.style.opacity =
+      `${1 - mezclaMorph}`;
+
+
+    if (countdownMorph) {
+      countdownMorph.style.opacity =
+        `${mezclaMorph}`;
+    }
+
+
+    return;
+  }
+
+
+  /*
+     =========================================
+     FINAL
+     =========================================
+  */
+
+  ocultarMorph();
+
+  if (countdownMorph) {
+    countdownMorph.style.removeProperty(
+      "opacity"
+    );
+  }
+
+  mostrarGridReal();
+  mostrarFlotanteArriba();
+}
 
 
   function solicitarActualizacionScroll() {
