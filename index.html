@@ -177,20 +177,98 @@
   
   
 <script>
-  const fechaEvento = new Date("2026-12-07T12:00:00+01:00").getTime();
+  const fechaEvento = new Date(
+    "2026-12-07T12:00:00+01:00"
+  ).getTime();
 
-  const countdownSection = document.getElementById("cuenta-atras");
-  const contador = document.getElementById("contador");
+  const countdownSection =
+    document.getElementById("cuenta-atras");
 
-  const floatingCountdown = document.getElementById("floatingCountdown");
-  const floatingDias = document.getElementById("floatingDias");
-  const floatingHoras = document.getElementById("floatingHoras");
-  const floatingMinutos = document.getElementById("floatingMinutos");
-  const floatingSegundos = document.getElementById("floatingSegundos");
+  const countdownCard =
+    countdownSection?.querySelector(".countdown-card");
+
+  const contador =
+    document.getElementById("contador");
+
+  const floatingCountdown =
+    document.getElementById("floatingCountdown");
+
+  const floatingDias =
+    document.getElementById("floatingDias");
+
+  const floatingHoras =
+    document.getElementById("floatingHoras");
+
+  const floatingMinutos =
+    document.getElementById("floatingMinutos");
+
+  const floatingSegundos =
+    document.getElementById("floatingSegundos");
+
+  const countdownLinkPath =
+    document.getElementById("countdownLinkPath");
+
+  const countdownLinkLayer =
+    document.getElementById("countdownLinkLayer");
+
+
+  /*
+     Distancia de transición.
+
+     Cuanto mayor sea, más recorrido de scroll
+     durará la transformación.
+  */
+
+  const DISTANCIA_CONEXION = 220;
+
+
+  let scrollFramePendiente = false;
+
+
+  function limitar(valor, minimo, maximo) {
+    return Math.min(
+      Math.max(valor, minimo),
+      maximo
+    );
+  }
+
 
   function formatearNumero(numero, digitos = 2) {
     return String(numero).padStart(digitos, "0");
   }
+
+
+  function ocultarLineaConexion() {
+    if (!countdownLinkPath) return;
+
+    countdownLinkPath.style.opacity = "0";
+    countdownLinkPath.setAttribute("d", "");
+  }
+
+
+  function limpiarConexionScroll() {
+    if (floatingCountdown) {
+      floatingCountdown.classList.remove(
+        "is-scroll-linking"
+      );
+
+      floatingCountdown.style.removeProperty("opacity");
+      floatingCountdown.style.removeProperty("filter");
+    }
+
+    if (countdownCard) {
+      countdownCard.classList.remove(
+        "is-scroll-linking"
+      );
+
+      countdownCard.style.removeProperty(
+        "--countdown-link-glow"
+      );
+    }
+
+    ocultarLineaConexion();
+  }
+
 
   function ocultarCuentaFlotante() {
     if (!floatingCountdown) return;
@@ -198,67 +276,514 @@
     floatingCountdown.classList.remove("is-visible");
   }
 
- function desactivarCuentaFlotante() {
-  if (!floatingCountdown) return;
 
-  floatingCountdown.classList.remove("is-visible");
-  floatingCountdown.classList.add("is-disabled");
-  floatingCountdown.setAttribute("aria-hidden", "true");
+  function desactivarCuentaFlotante() {
+    if (!floatingCountdown) return;
 
-  setTimeout(() => {
-    floatingCountdown.classList.remove("is-bottom", "is-top");
-  }, 550);
-}
+    limpiarConexionScroll();
+
+    floatingCountdown.classList.remove("is-visible");
+
+    floatingCountdown.classList.add("is-disabled");
+
+    floatingCountdown.setAttribute(
+      "aria-hidden",
+      "true"
+    );
+
+    setTimeout(() => {
+      floatingCountdown.classList.remove(
+        "is-bottom",
+        "is-top"
+      );
+    }, 550);
+  }
+
+
+  /*
+     Genera una curva vertical suave entre
+     dos puntos de la pantalla.
+  */
+
+  function dibujarConexion(
+    inicioX,
+    inicioY,
+    finalX,
+    finalY,
+    progreso,
+    invertir = false
+  ) {
+    if (!countdownLinkPath) return;
+
+    progreso = limitar(progreso, 0, 1);
+
+    const distanciaY = finalY - inicioY;
+
+    const control1Y =
+      inicioY + distanciaY * 0.38;
+
+    const control2Y =
+      inicioY + distanciaY * 0.72;
+
+    const pathCompleto = `
+      M ${inicioX} ${inicioY}
+      C ${inicioX} ${control1Y},
+        ${finalX} ${control2Y},
+        ${finalX} ${finalY}
+    `;
+
+    countdownLinkPath.setAttribute(
+      "d",
+      pathCompleto
+    );
+
+    const longitud =
+      countdownLinkPath.getTotalLength();
+
+    countdownLinkPath.style.strokeDasharray =
+      `${longitud}`;
+
+    countdownLinkPath.style.strokeDashoffset =
+      invertir
+        ? `${longitud * progreso}`
+        : `${longitud * (1 - progreso)}`;
+
+    countdownLinkPath.style.opacity =
+      `${limitar(progreso * 1.7, 0, 1)}`;
+  }
+
+
+  /*
+     Transición antes de llegar a la tarjeta.
+
+     Flotante abajo -> tarjeta.
+  */
+
+  function conectarDesdeAbajo(rect, viewportHeight) {
+    if (
+      !floatingCountdown ||
+      !countdownCard
+    ) {
+      return;
+    }
+
+    const progreso = limitar(
+      (
+        viewportHeight -
+        rect.top
+      ) / DISTANCIA_CONEXION,
+      0,
+      1
+    );
+
+
+    floatingCountdown.classList.add(
+      "is-bottom",
+      "is-visible",
+      "is-scroll-linking"
+    );
+
+    floatingCountdown.classList.remove("is-top");
+
+    floatingCountdown.setAttribute(
+      "aria-hidden",
+      progreso >= 1 ? "true" : "false"
+    );
+
+
+    /*
+       La flotante se desvanece progresivamente.
+    */
+
+    const opacidadFlotante =
+      1 - limitar(
+        (progreso - 0.48) / 0.52,
+        0,
+        1
+      );
+
+    const blurFlotante =
+      limitar(
+        (progreso - 0.55) / 0.45,
+        0,
+        1
+      ) * 7;
+
+    floatingCountdown.style.opacity =
+      `${opacidadFlotante}`;
+
+    floatingCountdown.style.filter =
+      `blur(${blurFlotante}px)`;
+
+
+    /*
+       Coordenadas reales de ambos elementos.
+    */
+
+    const floatingRect =
+      floatingCountdown.getBoundingClientRect();
+
+    const cardRect =
+      countdownCard.getBoundingClientRect();
+
+
+    const inicioX =
+      floatingRect.left +
+      floatingRect.width / 2;
+
+    const inicioY =
+      floatingRect.top;
+
+    const finalX =
+      cardRect.left +
+      cardRect.width / 2;
+
+    /*
+       Si la tarjeta aún está parcialmente
+       fuera de pantalla, usamos su posición real.
+    */
+
+    const finalY = cardRect.top;
+
+
+    dibujarConexion(
+      inicioX,
+      inicioY,
+      finalX,
+      finalY,
+      progreso
+    );
+
+
+    /*
+       La tarjeta recibe la línea visualmente.
+    */
+
+    countdownCard.classList.add(
+      "is-scroll-linking"
+    );
+
+    countdownCard.style.setProperty(
+      "--countdown-link-glow",
+      limitar(
+        (progreso - 0.65) / 0.35,
+        0,
+        1
+      )
+    );
+  }
+
+
+  /*
+     Transición al abandonar la tarjeta.
+
+     Tarjeta -> flotante superior.
+  */
+
+  function conectarHaciaArriba(rect) {
+    if (
+      !floatingCountdown ||
+      !countdownCard
+    ) {
+      return;
+    }
+
+    const progreso = limitar(
+      (
+        DISTANCIA_CONEXION -
+        rect.bottom
+      ) / DISTANCIA_CONEXION,
+      0,
+      1
+    );
+
+
+    floatingCountdown.classList.add(
+      "is-top",
+      "is-visible",
+      "is-scroll-linking"
+    );
+
+    floatingCountdown.classList.remove("is-bottom");
+
+    floatingCountdown.setAttribute(
+      "aria-hidden",
+      progreso <= 0 ? "true" : "false"
+    );
+
+
+    /*
+       La flotante nace progresivamente.
+    */
+
+    const opacidadFlotante =
+      limitar(
+        (progreso - 0.45) / 0.55,
+        0,
+        1
+      );
+
+    const blurFlotante =
+      (
+        1 -
+        limitar(
+          (progreso - 0.45) / 0.55,
+          0,
+          1
+        )
+      ) * 7;
+
+    floatingCountdown.style.opacity =
+      `${opacidadFlotante}`;
+
+    floatingCountdown.style.filter =
+      `blur(${blurFlotante}px)`;
+
+
+    const floatingRect =
+      floatingCountdown.getBoundingClientRect();
+
+    const cardRect =
+      countdownCard.getBoundingClientRect();
+
+
+    const inicioX =
+      cardRect.left +
+      cardRect.width / 2;
+
+    const inicioY =
+      cardRect.bottom;
+
+    const finalX =
+      floatingRect.left +
+      floatingRect.width / 2;
+
+    const finalY =
+      floatingRect.bottom;
+
+
+    /*
+       La línea crece desde la tarjeta
+       hacia la cuenta superior.
+    */
+
+    dibujarConexion(
+      inicioX,
+      inicioY,
+      finalX,
+      finalY,
+      progreso
+    );
+
+
+    countdownCard.classList.add(
+      "is-scroll-linking"
+    );
+
+    countdownCard.style.setProperty(
+      "--countdown-link-glow",
+      1 - progreso
+    );
+  }
+
 
   function actualizarPosicionFlotante() {
-    if (!countdownSection || !floatingCountdown) return;
-
-    if (floatingCountdown.classList.contains("is-disabled")) {
-      ocultarCuentaFlotante();
+    if (
+      !countdownSection ||
+      !floatingCountdown
+    ) {
       return;
     }
 
-    const rect = countdownSection.getBoundingClientRect();
-    const viewportHeight = window.innerHeight;
 
-    const estaEnPantalla = rect.top < viewportHeight && rect.bottom > 0;
-
-    if (estaEnPantalla) {
+    if (
+      floatingCountdown.classList.contains(
+        "is-disabled"
+      )
+    ) {
       ocultarCuentaFlotante();
+      ocultarLineaConexion();
+
       return;
     }
 
-    floatingCountdown.classList.add("is-visible");
+
+    const rect =
+      countdownSection.getBoundingClientRect();
+
+    const viewportHeight =
+      window.innerHeight;
+
+
+    /*
+       1. La cuenta está todavía por debajo.
+
+       Flotante inferior normal.
+    */
 
     if (rect.top >= viewportHeight) {
-      floatingCountdown.classList.add("is-bottom");
+      limpiarConexionScroll();
+
+      floatingCountdown.classList.add(
+        "is-visible",
+        "is-bottom"
+      );
+
       floatingCountdown.classList.remove("is-top");
-    } else if (rect.bottom <= 0) {
-      floatingCountdown.classList.add("is-top");
-      floatingCountdown.classList.remove("is-bottom");
+
+      floatingCountdown.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+      return;
+    }
+
+
+    /*
+       2. La cuenta empieza a entrar desde abajo.
+
+       Transición flotante -> tarjeta.
+    */
+
+    if (
+      rect.top < viewportHeight &&
+      rect.top >
+        viewportHeight - DISTANCIA_CONEXION
+    ) {
+      conectarDesdeAbajo(
+        rect,
+        viewportHeight
+      );
+
+      return;
+    }
+
+
+    /*
+       3. La tarjeta ocupa la pantalla.
+
+       No existe cuenta flotante.
+    */
+
+    if (
+      rect.bottom >= DISTANCIA_CONEXION
+    ) {
+      limpiarConexionScroll();
+      ocultarCuentaFlotante();
+
+      floatingCountdown.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+      return;
+    }
+
+
+    /*
+       4. La tarjeta empieza a marcharse por arriba.
+
+       Transición tarjeta -> flotante superior.
+    */
+
+    if (
+      rect.bottom < DISTANCIA_CONEXION &&
+      rect.bottom > 0
+    ) {
+      conectarHaciaArriba(rect);
+
+      return;
+    }
+
+
+    /*
+       5. La tarjeta ya quedó completamente arriba.
+
+       Flotante superior normal.
+    */
+
+    if (rect.bottom <= 0) {
+      limpiarConexionScroll();
+
+      floatingCountdown.classList.add(
+        "is-visible",
+        "is-top"
+      );
+
+      floatingCountdown.classList.remove(
+        "is-bottom"
+      );
+
+      floatingCountdown.setAttribute(
+        "aria-hidden",
+        "false"
+      );
     }
   }
 
+
+  function solicitarActualizacionScroll() {
+    if (scrollFramePendiente) return;
+
+    scrollFramePendiente = true;
+
+    requestAnimationFrame(() => {
+      actualizarPosicionFlotante();
+      scrollFramePendiente = false;
+    });
+  }
+
+
   function actualizarCuentaAtras() {
     const ahora = new Date().getTime();
-    const diferencia = fechaEvento - ahora;
+
+    const diferencia =
+      fechaEvento - ahora;
+
 
     if (diferencia <= 0) {
       contador.innerHTML = `
         <div class="countdown-ended">
           <h3>Gracias por venir</h3>
-          <p>Esperamos que hayas disfrutado de este día tan especial.</p>
+          <p>
+            Esperamos que hayas disfrutado
+            de este día tan especial.
+          </p>
         </div>
       `;
 
       desactivarCuentaFlotante();
+
       return;
     }
 
-    const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
-    const horas = Math.floor((diferencia / (1000 * 60 * 60)) % 24);
-    const minutos = Math.floor((diferencia / (1000 * 60)) % 60);
-    const segundos = Math.floor((diferencia / 1000) % 60);
+
+    const dias = Math.floor(
+      diferencia /
+      (1000 * 60 * 60 * 24)
+    );
+
+    const horas = Math.floor(
+      (
+        diferencia /
+        (1000 * 60 * 60)
+      ) % 24
+    );
+
+    const minutos = Math.floor(
+      (
+        diferencia /
+        (1000 * 60)
+      ) % 60
+    );
+
+    const segundos = Math.floor(
+      (
+        diferencia / 1000
+      ) % 60
+    );
+
 
     contador.innerHTML = `
       <div class="countdown-item">
@@ -282,20 +807,54 @@
       </div>
     `;
 
-    if (floatingDias) floatingDias.textContent = formatearNumero(dias, 3);
-    if (floatingHoras) floatingHoras.textContent = formatearNumero(horas);
-    if (floatingMinutos) floatingMinutos.textContent = formatearNumero(minutos);
-    if (floatingSegundos) floatingSegundos.textContent = formatearNumero(segundos);
 
-    actualizarPosicionFlotante();
+    if (floatingDias) {
+      floatingDias.textContent =
+        formatearNumero(dias, 3);
+    }
+
+    if (floatingHoras) {
+      floatingHoras.textContent =
+        formatearNumero(horas);
+    }
+
+    if (floatingMinutos) {
+      floatingMinutos.textContent =
+        formatearNumero(minutos);
+    }
+
+    if (floatingSegundos) {
+      floatingSegundos.textContent =
+        formatearNumero(segundos);
+    }
+
+
+    solicitarActualizacionScroll();
   }
+
 
   actualizarCuentaAtras();
 
-  setInterval(actualizarCuentaAtras, 1000);
 
-  window.addEventListener("scroll", actualizarPosicionFlotante, { passive: true });
-  window.addEventListener("resize", actualizarPosicionFlotante);
+  setInterval(
+    actualizarCuentaAtras,
+    1000
+  );
+
+
+  window.addEventListener(
+    "scroll",
+    solicitarActualizacionScroll,
+    {
+      passive: true
+    }
+  );
+
+
+  window.addEventListener(
+    "resize",
+    solicitarActualizacionScroll
+  );
 </script>
   
   
