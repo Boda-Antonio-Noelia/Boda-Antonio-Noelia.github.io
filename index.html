@@ -208,18 +208,13 @@
   const countdownLinkPath =
     document.getElementById("countdownLinkPath");
 
-  const countdownLinkLayer =
-    document.getElementById("countdownLinkLayer");
-
 
   /*
-     Distancia de transición.
-
-     Cuanto mayor sea, más recorrido de scroll
-     durará la transformación.
+     Espacio de scroll durante el que ocurre
+     la transferencia visual.
   */
 
-  const DISTANCIA_CONEXION = 220;
+  const DISTANCIA_CONEXION = 260;
 
 
   let scrollFramePendiente = false;
@@ -283,7 +278,6 @@
     limpiarConexionScroll();
 
     floatingCountdown.classList.remove("is-visible");
-
     floatingCountdown.classList.add("is-disabled");
 
     floatingCountdown.setAttribute(
@@ -301,317 +295,327 @@
 
 
   /*
-     Genera una curva vertical suave entre
-     dos puntos de la pantalla.
+     Dibuja una línea vertical entre dos Y.
+
+     Nunca dibuja fuera del espacio comprendido
+     entre los dos puntos recibidos.
   */
 
-  function dibujarConexion(
-    inicioX,
-    inicioY,
-    finalX,
-    finalY,
-    progreso,
-    invertir = false
-  ) {
+  function dibujarLineaVertical(x, y1, y2, opacidad = 1) {
     if (!countdownLinkPath) return;
 
-    progreso = limitar(progreso, 0, 1);
+    const inicioY = Math.min(y1, y2);
+    const finalY = Math.max(y1, y2);
 
-    const distanciaY = finalY - inicioY;
-
-    const control1Y =
-      inicioY + distanciaY * 0.38;
-
-    const control2Y =
-      inicioY + distanciaY * 0.72;
-
-    const pathCompleto = `
-      M ${inicioX} ${inicioY}
-      C ${inicioX} ${control1Y},
-        ${finalX} ${control2Y},
-        ${finalX} ${finalY}
-    `;
+    if (finalY <= inicioY) {
+      ocultarLineaConexion();
+      return;
+    }
 
     countdownLinkPath.setAttribute(
       "d",
-      pathCompleto
+      `M ${x} ${inicioY} L ${x} ${finalY}`
     );
 
-    const longitud =
-      countdownLinkPath.getTotalLength();
-
-    countdownLinkPath.style.strokeDasharray =
-      `${longitud}`;
-
-    countdownLinkPath.style.strokeDashoffset =
-      invertir
-        ? `${longitud * progreso}`
-        : `${longitud * (1 - progreso)}`;
+    countdownLinkPath.style.strokeDasharray = "none";
+    countdownLinkPath.style.strokeDashoffset = "0";
 
     countdownLinkPath.style.opacity =
-      `${limitar(progreso * 1.7, 0, 1)}`;
+      `${limitar(opacidad, 0, 1)}`;
   }
 
 
   /*
-     Transición antes de llegar a la tarjeta.
+     Antes de alcanzar la sección.
 
-     Flotante abajo -> tarjeta.
+     La línea une exclusivamente:
+
+     borde superior de la flotante inferior
+               ↓
+     borde superior de la sección
   */
 
-function conectarDesdeAbajo(rect, viewportHeight) {
-  if (
-    !floatingCountdown ||
-    !countdownSection
-  ) {
-    return;
-  }
-
-  const progreso = limitar(
-    (
-      viewportHeight -
-      rect.top
-    ) / DISTANCIA_CONEXION,
-    0,
-    1
-  );
-
-  floatingCountdown.classList.add(
-    "is-bottom",
-    "is-visible",
-    "is-scroll-linking"
-  );
-
-  floatingCountdown.classList.remove("is-top");
-
-  floatingCountdown.setAttribute(
-    "aria-hidden",
-    progreso >= 1 ? "true" : "false"
-  );
+  function conectarDesdeAbajo(sectionRect) {
+    if (
+      !floatingCountdown ||
+      !countdownSection
+    ) {
+      return;
+    }
 
 
-  /*
-     La flotante desaparece progresivamente.
-  */
-
-  const opacidadFlotante =
-    1 - limitar(
-      (progreso - 0.48) / 0.52,
-      0,
-      1
-    );
-
-  const blurFlotante =
-    limitar(
-      (progreso - 0.55) / 0.45,
-      0,
-      1
-    ) * 7;
-
-  floatingCountdown.style.opacity =
-    `${opacidadFlotante}`;
-
-  floatingCountdown.style.filter =
-    `blur(${blurFlotante}px)`;
-
-
-  /*
-     Coordenadas de la flotante y de la
-     SECCIÓN COMPLETA de cuenta atrás.
-  */
-
-  const floatingRect =
-    floatingCountdown.getBoundingClientRect();
-
-  const sectionRect =
-    countdownSection.getBoundingClientRect();
-
-
-  /*
-     Origen:
-     centro del borde superior de la flotante.
-  */
-
-  const inicioX =
-    floatingRect.left +
-    floatingRect.width / 2;
-
-  const inicioY =
-    floatingRect.top;
-
-
-  /*
-     Destino:
-     centro del BORDE SUPERIOR de la sección.
-  */
-
-  const finalX =
-    sectionRect.left +
-    sectionRect.width / 2;
-
-  const finalY =
-    sectionRect.top;
-
-
-  dibujarConexion(
-    inicioX,
-    inicioY,
-    finalX,
-    finalY,
-    progreso
-  );
-
-
-  /*
-     Conservamos el eco visual de la tarjeta.
-  */
-
-  if (countdownCard) {
-    countdownCard.classList.add(
+    floatingCountdown.classList.add(
+      "is-bottom",
+      "is-visible",
       "is-scroll-linking"
     );
 
-    countdownCard.style.setProperty(
-      "--countdown-link-glow",
-      limitar(
-        (progreso - 0.65) / 0.35,
-        0,
-        1
-      )
-    );
-  }
-}
+    floatingCountdown.classList.remove("is-top");
 
 
-  /*
-     Transición al abandonar la tarjeta.
+    /*
+       Primero colocamos la flotante para poder
+       conocer su posición real.
+    */
 
-     Tarjeta -> flotante superior.
-  */
-
-function conectarHaciaArriba(rect) {
-  if (
-    !floatingCountdown ||
-    !countdownSection
-  ) {
-    return;
-  }
-
-  const progreso = limitar(
-    (
-      DISTANCIA_CONEXION -
-      rect.bottom
-    ) / DISTANCIA_CONEXION,
-    0,
-    1
-  );
+    const floatingRect =
+      floatingCountdown.getBoundingClientRect();
 
 
-  floatingCountdown.classList.add(
-    "is-top",
-    "is-visible",
-    "is-scroll-linking"
-  );
+    /*
+       PUNTO FIJO DE ANCLAJE.
 
-  floatingCountdown.classList.remove("is-bottom");
+       La línea nace en el centro del borde
+       superior de la flotante.
+    */
 
-  floatingCountdown.setAttribute(
-    "aria-hidden",
-    progreso <= 0 ? "true" : "false"
-  );
+    const anclaFlotanteY =
+      floatingRect.top;
+
+    const anclaX =
+      floatingRect.left +
+      floatingRect.width / 2;
 
 
-  /*
-     La flotante superior nace progresivamente.
-  */
+    /*
+       La línea muere exclusivamente en el
+       borde superior de la sección.
+    */
 
-  const opacidadFlotante =
-    limitar(
-      (progreso - 0.45) / 0.55,
+    const bordeSeccionY =
+      sectionRect.top;
+
+
+    /*
+       Distancia real entre la sección y
+       la flotante.
+
+       Cuando vale 0, ambas ya se han encontrado.
+    */
+
+    const distancia =
+      anclaFlotanteY - bordeSeccionY;
+
+
+    /*
+       El progreso depende únicamente de esa
+       distancia física.
+
+       Lejos  -> 0
+       Contacto -> 1
+    */
+
+    const progreso = limitar(
+      1 - distancia / DISTANCIA_CONEXION,
       0,
       1
     );
 
-  const blurFlotante =
-    (
-      1 -
+
+    /*
+       IMPORTANTE.
+
+       Si la sección ya ha alcanzado o superado
+       el ancla de la flotante, la línea deja
+       inmediatamente de existir.
+
+       Nunca atraviesa la sección.
+    */
+
+    if (bordeSeccionY >= anclaFlotanteY) {
+      dibujarLineaVertical(
+        anclaX,
+        anclaFlotanteY,
+        bordeSeccionY,
+        limitar(progreso * 1.5, 0, 1)
+      );
+    } else {
+      ocultarLineaConexion();
+    }
+
+
+    /*
+       La flotante desaparece estrictamente
+       ligada al progreso del scroll.
+    */
+
+    const opacidadFlotante =
+      1 - limitar(
+        (progreso - 0.35) / 0.65,
+        0,
+        1
+      );
+
+    const blurFlotante =
       limitar(
         (progreso - 0.45) / 0.55,
         0,
         1
-      )
-    ) * 7;
-
-  floatingCountdown.style.opacity =
-    `${opacidadFlotante}`;
-
-  floatingCountdown.style.filter =
-    `blur(${blurFlotante}px)`;
+      ) * 7;
 
 
-  /*
-     Coordenadas de la SECCIÓN COMPLETA
-     y de la flotante superior.
-  */
+    floatingCountdown.style.opacity =
+      `${opacidadFlotante}`;
 
-  const sectionRect =
-    countdownSection.getBoundingClientRect();
-
-  const floatingRect =
-    floatingCountdown.getBoundingClientRect();
+    floatingCountdown.style.filter =
+      `blur(${blurFlotante}px)`;
 
 
-  /*
-     Origen:
-     centro del BORDE INFERIOR de la sección.
-  */
+    floatingCountdown.setAttribute(
+      "aria-hidden",
+      progreso >= 1 ? "true" : "false"
+    );
 
-  const inicioX =
-    sectionRect.left +
-    sectionRect.width / 2;
 
-  const inicioY =
-    sectionRect.bottom;
+    if (countdownCard) {
+      countdownCard.classList.add(
+        "is-scroll-linking"
+      );
+
+      countdownCard.style.setProperty(
+        "--countdown-link-glow",
+        limitar(
+          (progreso - 0.72) / 0.28,
+          0,
+          1
+        )
+      );
+    }
+  }
 
 
   /*
-     Destino:
-     centro del borde inferior de la flotante
-     situada arriba.
+     Después de abandonar la sección.
+
+     La línea une exclusivamente:
+
+     borde inferior de la sección
+               ↓
+     borde inferior de la flotante superior
   */
 
-  const finalX =
-    floatingRect.left +
-    floatingRect.width / 2;
-
-  const finalY =
-    floatingRect.bottom;
-
-
-  dibujarConexion(
-    inicioX,
-    inicioY,
-    finalX,
-    finalY,
-    progreso
-  );
+  function conectarHaciaArriba(sectionRect) {
+    if (
+      !floatingCountdown ||
+      !countdownSection
+    ) {
+      return;
+    }
 
 
-  /*
-     Conservamos el eco visual de la tarjeta.
-  */
-
-  if (countdownCard) {
-    countdownCard.classList.add(
+    floatingCountdown.classList.add(
+      "is-top",
+      "is-visible",
       "is-scroll-linking"
     );
 
-    countdownCard.style.setProperty(
-      "--countdown-link-glow",
-      1 - progreso
+    floatingCountdown.classList.remove("is-bottom");
+
+
+    const floatingRect =
+      floatingCountdown.getBoundingClientRect();
+
+
+    /*
+       Punto fijo superior.
+    */
+
+    const anclaFlotanteY =
+      floatingRect.bottom;
+
+    const anclaX =
+      floatingRect.left +
+      floatingRect.width / 2;
+
+
+    /*
+       La línea nace del borde inferior
+       de la sección completa.
+    */
+
+    const bordeSeccionY =
+      sectionRect.bottom;
+
+
+    const distancia =
+      bordeSeccionY - anclaFlotanteY;
+
+
+    /*
+       Lejos de la flotante -> 0
+       Contacto -> 1
+    */
+
+    const progreso = limitar(
+      1 - distancia / DISTANCIA_CONEXION,
+      0,
+      1
     );
+
+
+    /*
+       La línea solo vive mientras existe
+       espacio real entre sección y flotante.
+    */
+
+    if (bordeSeccionY <= anclaFlotanteY) {
+      dibujarLineaVertical(
+        anclaX,
+        bordeSeccionY,
+        anclaFlotanteY,
+        limitar(progreso * 1.5, 0, 1)
+      );
+    } else {
+      ocultarLineaConexion();
+    }
+
+
+    /*
+       Nacimiento progresivo de la flotante.
+    */
+
+    const opacidadFlotante =
+      limitar(
+        (progreso - 0.35) / 0.65,
+        0,
+        1
+      );
+
+    const blurFlotante =
+      (
+        1 -
+        limitar(
+          (progreso - 0.35) / 0.65,
+          0,
+          1
+        )
+      ) * 7;
+
+
+    floatingCountdown.style.opacity =
+      `${opacidadFlotante}`;
+
+    floatingCountdown.style.filter =
+      `blur(${blurFlotante}px)`;
+
+
+    floatingCountdown.setAttribute(
+      "aria-hidden",
+      progreso <= 0 ? "true" : "false"
+    );
+
+
+    if (countdownCard) {
+      countdownCard.classList.add(
+        "is-scroll-linking"
+      );
+
+      countdownCard.style.setProperty(
+        "--countdown-link-glow",
+        1 - progreso
+      );
+    }
   }
-}
 
 
   function actualizarPosicionFlotante() {
@@ -624,18 +628,28 @@ function conectarHaciaArriba(rect) {
 
 
     if (
-      floatingCountdown.classList.contains(
-        "is-disabled"
-      )
+      document.body.classList.contains("intro-lock")
     ) {
+      limpiarConexionScroll();
       ocultarCuentaFlotante();
-      ocultarLineaConexion();
 
       return;
     }
 
 
-    const rect =
+    if (
+      floatingCountdown.classList.contains(
+        "is-disabled"
+      )
+    ) {
+      limpiarConexionScroll();
+      ocultarCuentaFlotante();
+
+      return;
+    }
+
+
+    const sectionRect =
       countdownSection.getBoundingClientRect();
 
     const viewportHeight =
@@ -643,12 +657,10 @@ function conectarHaciaArriba(rect) {
 
 
     /*
-       1. La cuenta está todavía por debajo.
-
-       Flotante inferior normal.
+       Antes de la sección.
     */
 
-    if (rect.top >= viewportHeight) {
+    if (sectionRect.top >= viewportHeight) {
       limpiarConexionScroll();
 
       floatingCountdown.classList.add(
@@ -668,33 +680,36 @@ function conectarHaciaArriba(rect) {
 
 
     /*
-       2. La cuenta empieza a entrar desde abajo.
+       La sección está entrando por abajo.
 
-       Transición flotante -> tarjeta.
+       Toda la transferencia depende de la
+       posición real del borde superior.
     */
 
+    const floatingBottomAnchor =
+      viewportHeight - 50;
+
     if (
-      rect.top < viewportHeight &&
-      rect.top >
-        viewportHeight - DISTANCIA_CONEXION
+      sectionRect.top > floatingBottomAnchor -
+      DISTANCIA_CONEXION &&
+      sectionRect.top > 0
     ) {
-      conectarDesdeAbajo(
-        rect,
-        viewportHeight
-      );
+      conectarDesdeAbajo(sectionRect);
 
       return;
     }
 
 
     /*
-       3. La tarjeta ocupa la pantalla.
+       Sección visible.
 
-       No existe cuenta flotante.
+       La flotante no existe.
     */
 
     if (
-      rect.bottom >= DISTANCIA_CONEXION
+      sectionRect.top <=
+        floatingBottomAnchor - DISTANCIA_CONEXION &&
+      sectionRect.bottom >= DISTANCIA_CONEXION
     ) {
       limpiarConexionScroll();
       ocultarCuentaFlotante();
@@ -709,28 +724,25 @@ function conectarHaciaArriba(rect) {
 
 
     /*
-       4. La tarjeta empieza a marcharse por arriba.
-
-       Transición tarjeta -> flotante superior.
+       La sección abandona la pantalla
+       por arriba.
     */
 
     if (
-      rect.bottom < DISTANCIA_CONEXION &&
-      rect.bottom > 0
+      sectionRect.bottom < DISTANCIA_CONEXION &&
+      sectionRect.bottom > 0
     ) {
-      conectarHaciaArriba(rect);
+      conectarHaciaArriba(sectionRect);
 
       return;
     }
 
 
     /*
-       5. La tarjeta ya quedó completamente arriba.
-
-       Flotante superior normal.
+       Sección completamente superada.
     */
 
-    if (rect.bottom <= 0) {
+    if (sectionRect.bottom <= 0) {
       limpiarConexionScroll();
 
       floatingCountdown.classList.add(
@@ -757,6 +769,7 @@ function conectarHaciaArriba(rect) {
 
     requestAnimationFrame(() => {
       actualizarPosicionFlotante();
+
       scrollFramePendiente = false;
     });
   }
