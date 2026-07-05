@@ -239,9 +239,7 @@
 
 
   /*
-     Referencias estables del checkpoint.
-
-     Las tarjetas se crean una sola vez.
+     CHECKPOINT ESTABLE
   */
 
   let checkpointInicializado = false;
@@ -251,6 +249,10 @@
   let checkpointMinutos = null;
   let checkpointSegundos = null;
 
+
+  /*
+     FLOTANTE REAL
+  */
 
   const floatingCountdown =
     document.getElementById("floatingCountdown");
@@ -268,6 +270,10 @@
     document.getElementById("floatingSegundos");
 
 
+  /*
+     CAPA MORPH
+  */
+
   const countdownMorph =
     document.getElementById("countdownMorph");
 
@@ -281,35 +287,36 @@
 
 
   /*
-     EL ANTES
-     flotante inferior -> checkpoint
+     RECORRIDO DE SCROLL
   */
 
   const DISTANCIA_MORPH_ENTRADA = 280;
-
-
-  /*
-     EL DESPUÉS
-     checkpoint -> flotante superior
-  */
 
   const DISTANCIA_MORPH_SALIDA = 240;
 
 
   /*
-     Margen mínimo respecto al viewport.
+     MÁRGENES
   */
 
   const MARGEN_MORPH_VIEWPORT = 16;
 
-
-  /*
-     Corredor seguro dentro de la tarjeta.
-  */
-
   const MARGEN_MORPH_TARJETA_SUPERIOR = 28;
 
   const MARGEN_MORPH_TARJETA_INFERIOR = 24;
+
+
+  /*
+     TOLERANCIA DEL RELEVO.
+
+     El morph se considera ya convertido
+     en la flotante cuando prácticamente
+     coincide con su geometría.
+  */
+
+  const TOLERANCIA_RELEVO_POSICION = 3;
+
+  const TOLERANCIA_RELEVO_TAMANO = 3;
 
 
   let scrollFramePendiente = false;
@@ -328,10 +335,6 @@
   }
 
 
-  /*
-     El scroll manda directamente.
-  */
-
   function suavizar(progreso) {
     return limitar(progreso, 0, 1);
   }
@@ -343,10 +346,7 @@
 
 
   /*
-     Viewport visual real.
-
-     Importante en móvil por las barras
-     superior e inferior del navegador.
+     VIEWPORT VISUAL MÓVIL
   */
 
   function obtenerViewportVisual() {
@@ -374,8 +374,7 @@
 
 
   /*
-     Convierte coordenadas de pantalla
-     a coordenadas del documento.
+     COORDENADAS DEL DOCUMENTO
   */
 
   function rectDocumento(elemento) {
@@ -406,74 +405,7 @@
 
 
   /*
-     Comprueba si el morph ya ha llegado
-     al margen superior reservado
-     para la flotante superior.
-  */
-
-  function morphHaLlegadoAlMargenSuperior() {
-    if (!countdownMorphShell) return false;
-
-
-    const rect =
-      countdownMorphShell.getBoundingClientRect();
-
-
-    const viewport =
-      window.visualViewport;
-
-
-    const limiteSuperior =
-      viewport
-        ? viewport.offsetTop +
-          MARGEN_MORPH_VIEWPORT
-        : MARGEN_MORPH_VIEWPORT;
-
-
-    return (
-      rect.top <=
-      limiteSuperior + 1
-    );
-  }
-
-
-  /*
-     Comprueba si el morph ya ha llegado
-     al margen inferior reservado
-     para la flotante inferior.
-  */
-
-  function morphHaLlegadoAlMargenInferior() {
-    if (!countdownMorphShell) return false;
-
-
-    const rect =
-      countdownMorphShell.getBoundingClientRect();
-
-
-    const viewport =
-      window.visualViewport;
-
-
-    const limiteInferior =
-      viewport
-        ? viewport.offsetTop +
-          viewport.height -
-          MARGEN_MORPH_VIEWPORT
-        : window.innerHeight -
-          MARGEN_MORPH_VIEWPORT;
-
-
-    return (
-      rect.bottom >=
-      limiteInferior - 1
-    );
-  }
-
-
-  /*
-     Mantiene el morph dentro de los márgenes
-     superior e inferior del viewport.
+     CORRECCIÓN DEL VIEWPORT
   */
 
   function obtenerCorreccionViewport(rectShell) {
@@ -516,8 +448,7 @@
 
 
   /*
-     Corredor vertical seguro dentro
-     de la tarjeta de cuenta atrás.
+     CORREDOR SEGURO DENTRO DEL CHECKPOINT
   */
 
   function obtenerCorreccionTarjeta(rectShell) {
@@ -602,6 +533,10 @@
   }
 
 
+  /*
+     VALORES DEL MORPH
+  */
+
   function actualizarValoresMorph(
     dias,
     horas,
@@ -648,6 +583,10 @@
   }
 
 
+  /*
+     VISIBILIDAD
+  */
+
   function ocultarMorph() {
     if (!countdownMorph) return;
 
@@ -684,97 +623,6 @@
   }
 
 
-  /*
-     Relevo inmediato morph -> flotante real.
-  */
-
-  function mostrarFlotanteInstantanea(posicion) {
-    if (!floatingCountdown) return;
-
-
-    floatingCountdown.classList.add(
-      "is-morph-handoff"
-    );
-
-
-    if (posicion === "bottom") {
-
-      floatingCountdown.classList.remove(
-        "is-top",
-        "is-morphing"
-      );
-
-
-      floatingCountdown.classList.add(
-        "is-bottom",
-        "is-visible"
-      );
-
-    } else {
-
-      floatingCountdown.classList.remove(
-        "is-bottom",
-        "is-morphing"
-      );
-
-
-      floatingCountdown.classList.add(
-        "is-top",
-        "is-visible"
-      );
-
-    }
-
-
-    floatingCountdown.style.opacity = "1";
-
-    floatingCountdown.style.filter = "none";
-
-
-    floatingCountdown.setAttribute(
-      "aria-hidden",
-      "false"
-    );
-
-
-    /*
-       Fuerza el estado final antes
-       de devolver las transiciones normales.
-    */
-
-    void floatingCountdown.offsetWidth;
-
-
-    requestAnimationFrame(() => {
-
-      floatingCountdown.classList.remove(
-        "is-morph-handoff"
-      );
-
-
-      floatingCountdown.style.removeProperty(
-        "opacity"
-      );
-
-
-      floatingCountdown.style.removeProperty(
-        "filter"
-      );
-
-    });
-  }
-
-
-  function mostrarFlotanteAbajo() {
-    mostrarFlotanteInstantanea("bottom");
-  }
-
-
-  function mostrarFlotanteArriba() {
-    mostrarFlotanteInstantanea("top");
-  }
-
-
   function ocultarGridReal() {
     if (!contador) return;
 
@@ -804,8 +652,8 @@
 
 
   /*
-     La flotante real queda invisible
-     pero conserva su geometría.
+     COLOCA LA FLOTANTE EN SU POSICIÓN REAL
+     PERO INVISIBLE PARA PODER MEDIRLA
   */
 
   function prepararFlotanteParaMedir(posicion) {
@@ -849,6 +697,137 @@
     floatingCountdown.style.filter = "none";
   }
 
+
+  /*
+     INTERCAMBIO ATÓMICO MORPH -> FLOTANTE
+
+     El navegador solo pinta el resultado final
+     de este bloque.
+
+     Nunca ve ambas simultáneamente.
+  */
+
+  function entregarMorphAFlotante(posicion) {
+    if (
+      !floatingCountdown ||
+      !countdownMorph
+    ) {
+      return;
+    }
+
+
+    floatingCountdown.classList.add(
+      "is-morph-handoff"
+    );
+
+
+    if (posicion === "bottom") {
+
+      floatingCountdown.classList.remove(
+        "is-top",
+        "is-morphing"
+      );
+
+
+      floatingCountdown.classList.add(
+        "is-bottom",
+        "is-visible"
+      );
+
+    } else {
+
+      floatingCountdown.classList.remove(
+        "is-bottom",
+        "is-morphing"
+      );
+
+
+      floatingCountdown.classList.add(
+        "is-top",
+        "is-visible"
+      );
+
+    }
+
+
+    /*
+       Flotante final totalmente visible.
+    */
+
+    floatingCountdown.style.opacity = "1";
+
+    floatingCountdown.style.filter = "none";
+
+
+    floatingCountdown.setAttribute(
+      "aria-hidden",
+      "false"
+    );
+
+
+    /*
+       MORPH desaparece en el mismo frame.
+    */
+
+    countdownMorph.classList.remove(
+      "is-active"
+    );
+
+
+    /*
+       Muy importante:
+
+       el checkpoint sigue oculto.
+
+       En inicio/final no debe aparecer detrás
+       de la flotante.
+    */
+
+    ocultarGridReal();
+
+
+    /*
+       Restauramos CSS normal después
+       de haberse pintado el relevo.
+    */
+
+    requestAnimationFrame(() => {
+
+      floatingCountdown.classList.remove(
+        "is-morph-handoff"
+      );
+
+
+      floatingCountdown.style.removeProperty(
+        "opacity"
+      );
+
+
+      floatingCountdown.style.removeProperty(
+        "filter"
+      );
+
+    });
+  }
+
+
+  /*
+     ESTADOS ESTABLES DE FLOTANTE
+  */
+
+  function mostrarFlotanteAbajo() {
+    entregarMorphAFlotante("bottom");
+  }
+
+
+  function mostrarFlotanteArriba() {
+    entregarMorphAFlotante("top");
+  }
+
+
+  /*
+     GEOMETRÍA
+  */
 
   function obtenerRectangulosFlotante() {
     if (!floatingCountdown) return [];
@@ -939,8 +918,82 @@
 
 
   /*
-     0 = flotante compacta
-     1 = cuatro tarjetas del checkpoint
+     ¿EL MORPH YA ES GEOMÉTRICAMENTE
+     LA FLOTANTE REAL?
+  */
+
+  function morphCoincideConFlotante(posicion) {
+    if (
+      !countdownMorphShell ||
+      !floatingCountdown
+    ) {
+      return false;
+    }
+
+
+    /*
+       Garantizamos que la flotante esté
+       exactamente en la posición a comparar.
+    */
+
+    prepararFlotanteParaMedir(posicion);
+
+
+    const morphRect =
+      countdownMorphShell.getBoundingClientRect();
+
+
+    const floatingRect =
+      floatingCountdown.getBoundingClientRect();
+
+
+    const diferenciaLeft =
+      Math.abs(
+        morphRect.left -
+        floatingRect.left
+      );
+
+
+    const diferenciaTop =
+      Math.abs(
+        morphRect.top -
+        floatingRect.top
+      );
+
+
+    const diferenciaWidth =
+      Math.abs(
+        morphRect.width -
+        floatingRect.width
+      );
+
+
+    const diferenciaHeight =
+      Math.abs(
+        morphRect.height -
+        floatingRect.height
+      );
+
+
+    return (
+      diferenciaLeft <=
+        TOLERANCIA_RELEVO_POSICION &&
+
+      diferenciaTop <=
+        TOLERANCIA_RELEVO_POSICION &&
+
+      diferenciaWidth <=
+        TOLERANCIA_RELEVO_TAMANO &&
+
+      diferenciaHeight <=
+        TOLERANCIA_RELEVO_TAMANO
+    );
+  }
+
+
+  /*
+     0 = FLOTANTE COMPACTA
+     1 = CHECKPOINT
   */
 
   function representarMorph(
@@ -1016,10 +1069,6 @@
       );
 
 
-    /*
-       Primero respeta el viewport.
-    */
-
     const correccionViewport =
       obtenerCorreccionViewport(
         rectShell
@@ -1033,11 +1082,6 @@
       );
 
 
-    /*
-       Después respeta el corredor seguro
-       dentro de la tarjeta.
-    */
-
     const correccionTarjeta =
       obtenerCorreccionTarjeta(
         rectShell
@@ -1050,10 +1094,6 @@
         correccionTarjeta
       );
 
-
-    /*
-       Corrección total del cuerpo completo.
-    */
 
     const correccionTotal =
       correccionViewport +
@@ -1179,15 +1219,7 @@
 
 
         /*
-           Relevo de texto sin solapamiento.
-
-           Compacto:
-           visible hasta 42 %
-           desaparece 42-50 %
-
-           Tarjeta:
-           invisible hasta 50 %
-           aparece 50-58 %
+           RELEVO DE TEXTO SIN SOLAPAMIENTO
         */
 
         const opacidadCompacto =
@@ -1228,7 +1260,7 @@
 
 
   /*
-     El checkpoint se crea una sola vez.
+     INICIALIZACIÓN DEL CHECKPOINT
   */
 
   function inicializarCheckpoint() {
@@ -1291,6 +1323,10 @@
   }
 
 
+  /*
+     EVENTO TERMINADO
+  */
+
   function desactivarCuentaFlotante() {
     ocultarMorph();
 
@@ -1312,6 +1348,10 @@
   }
 
 
+  /*
+     MÁQUINA DE ESTADOS DE SCROLL
+  */
+
   function actualizarPosicionFlotante() {
     if (
       !countdownSection ||
@@ -1323,7 +1363,7 @@
 
 
     /*
-       PORTADA INICIAL
+       INTRO
     */
 
     if (
@@ -1335,14 +1375,14 @@
 
       ocultarCuentaFlotante();
 
-      mostrarGridReal();
+      ocultarGridReal();
 
       return;
     }
 
 
     /*
-       EVENTO FINALIZADO
+       EVENTO TERMINADO
     */
 
     if (
@@ -1388,15 +1428,14 @@
 
 
     /*
-       INICIO
-       FINAL DEL ANTES INVERSO
+       INICIO / FINAL DEL ANTES INVERSO
     */
 
     if (progresoAntes <= 0) {
 
       ocultarMorph();
 
-      mostrarGridReal();
+      ocultarGridReal();
 
       mostrarFlotanteAbajo();
 
@@ -1405,8 +1444,7 @@
 
 
     /*
-       EL ANTES
-       EL ANTES INVERSO
+       EL ANTES / ANTES INVERSO
     */
 
     if (progresoAntes < 1) {
@@ -1422,23 +1460,19 @@
 
 
       /*
-         El margen inferior actúa ahora
-         como punto físico final
-         del antes inverso.
-
-         No esperamos a progreso = 0.
+         El relevo solo se produce cuando
+         el morph ya coincide físicamente
+         con la flotante inferior.
       */
 
       if (
-        morphHaLlegadoAlMargenInferior() &&
-        progresoAntes < 0.35
+        progresoAntes < 0.50 &&
+        morphCoincideConFlotante("bottom")
       ) {
 
-        ocultarMorph();
-
-        mostrarGridReal();
-
-        mostrarFlotanteAbajo();
+        entregarMorphAFlotante(
+          "bottom"
+        );
       }
 
 
@@ -1488,8 +1522,7 @@
 
 
     /*
-       EL DESPUÉS
-       EL DESPUÉS INVERSO
+       EL DESPUÉS / DESPUÉS INVERSO
     */
 
     if (progresoDespues < 1) {
@@ -1505,24 +1538,19 @@
 
 
       /*
-         El margen superior es ahora
-         el punto físico final del después.
-
-         Cuando el morph llega al margen
-         y ya está suficientemente compacto,
-         se sustituye por la flotante real.
+         El morph solo entrega el relevo
+         cuando ya tiene la geometría
+         de la flotante superior.
       */
 
       if (
-        morphHaLlegadoAlMargenSuperior() &&
-        progresoDespues > 0.65
+        progresoDespues > 0.50 &&
+        morphCoincideConFlotante("top")
       ) {
 
-        ocultarMorph();
-
-        mostrarGridReal();
-
-        mostrarFlotanteArriba();
+        entregarMorphAFlotante(
+          "top"
+        );
       }
 
 
@@ -1534,17 +1562,16 @@
        FINAL
     */
 
-    ocultarMorph();
+    ocultarGridReal();
 
-    mostrarGridReal();
-
-    mostrarFlotanteArriba();
+    entregarMorphAFlotante(
+      "top"
+    );
   }
 
 
   /*
-     La posición actual del scroll manda
-     directamente sobre la transmutación.
+     FRAME DE SCROLL
   */
 
   function solicitarActualizacionScroll() {
@@ -1565,6 +1592,10 @@
   }
 
 
+  /*
+     RELOJ
+  */
+
   function actualizarCuentaAtras() {
     const ahora =
       new Date().getTime();
@@ -1574,10 +1605,6 @@
       fechaEvento -
       ahora;
 
-
-    /*
-       EVENTO TERMINADO
-    */
 
     if (diferencia <= 0) {
 
@@ -1637,7 +1664,7 @@
 
 
     /*
-       CHECKPOINT ESTABLE
+       CHECKPOINT
     */
 
     inicializarCheckpoint();
@@ -1677,7 +1704,7 @@
 
 
     /*
-       FLOTANTE REAL
+       FLOTANTE
     */
 
     if (floatingDias) {
@@ -1714,7 +1741,7 @@
 
 
     /*
-       CAPA MORPH
+       MORPH
     */
 
     actualizarValoresMorph(
@@ -1737,7 +1764,7 @@
 
 
   /*
-     RELOJ
+     CONTADOR
   */
 
   setInterval(
@@ -1760,7 +1787,7 @@
 
 
   /*
-     CAMBIOS DE VIEWPORT
+     VIEWPORT
   */
 
   window.addEventListener(
