@@ -261,13 +261,18 @@
 
 
   /*
-     Distancia de scroll durante la que ocurre
-     la transmutación.
-
-     Cuanto mayor, más lenta y visible.
+     EL ANTES:
+     flotante inferior -> checkpoint
   */
 
   const DISTANCIA_MORPH_ENTRADA = 420;
+
+
+  /*
+     EL DESPUÉS:
+     checkpoint -> flotante superior
+  */
+
   const DISTANCIA_MORPH_SALIDA = 360;
 
 
@@ -421,6 +426,7 @@
       "is-morphing"
     );
 
+
     if (posicion === "bottom") {
       floatingCountdown.classList.add("is-bottom");
       floatingCountdown.classList.remove("is-top");
@@ -429,9 +435,12 @@
       floatingCountdown.classList.remove("is-bottom");
     }
 
+
     /*
-       Sigue ocupando su posición real,
+       La flotante sigue ocupando su posición real,
        pero no se ve.
+
+       El morph usa esa geometría como origen/destino.
     */
 
     floatingCountdown.style.opacity = "0";
@@ -500,13 +509,35 @@
   }
 
 
+  /*
+     Esta función trabaja con un único concepto:
+
+     progresoVisual = 0
+     estado compacto / flotante
+
+     progresoVisual = 1
+     estado grid / cuatro tarjetas
+
+     La dirección decide si recorremos
+     esa geometría hacia delante o hacia atrás.
+  */
+
   function representarMorph(
     progreso,
-    posicionFlotante
+    posicionFlotante,
+    direccion = "compacto-a-grid"
   ) {
     progreso = limitar(progreso, 0, 1);
 
-    const progresoSuave = suavizar(progreso);
+
+    const progresoVisual =
+      direccion === "grid-a-compacto"
+        ? 1 - progreso
+        : progreso;
+
+
+    const progresoSuave =
+      suavizar(progresoVisual);
 
 
     prepararFlotanteParaMedir(posicionFlotante);
@@ -539,12 +570,12 @@
 
 
     /*
-       Cápsula general.
+       ==========================
+       FONDO COMÚN / CÁPSULA
+       ==========================
 
-       Empieza siendo la cuenta flotante
-       y se expande hasta cubrir el grid.
-
-       Su fondo desaparece progresivamente.
+       0 = píldora flotante
+       1 = expandida y disuelta en el grid
     */
 
     const rectShell =
@@ -597,9 +628,9 @@
 
 
     /*
-       Los cuatro valores viajan desde
-       sus posiciones en la cápsula hasta
-       las cuatro tarjetas.
+       ==========================
+       CUATRO VALORES
+       ==========================
     */
 
     morphItems.forEach(
@@ -656,6 +687,7 @@
             ".countdown-morph-compact"
           );
 
+
         const tarjeta =
           item.querySelector(
             ".countdown-morph-card"
@@ -663,10 +695,10 @@
 
 
         /*
-           Primero desaparece la disposición
-           compacta.
+           Texto compacto:
+           169 Días / 23 Horas / etc.
 
-           Después nace la disposición vertical.
+           Muere durante la primera mitad.
         */
 
         compacto.style.opacity =
@@ -679,6 +711,13 @@
             )
           }`;
 
+
+        /*
+           Texto de tarjeta:
+           número arriba + nombre debajo.
+
+           Nace después.
+        */
 
         tarjeta.style.opacity =
           `${
@@ -719,6 +758,11 @@
     }
 
 
+    /*
+       Durante la portada inicial no existe
+       visualmente la cuenta atrás flotante.
+    */
+
     if (
       document.body.classList.contains("intro-lock")
     ) {
@@ -729,6 +773,10 @@
       return;
     }
 
+
+    /*
+       Evento terminado.
+    */
 
     if (
       floatingCountdown.classList.contains(
@@ -751,12 +799,15 @@
 
 
     /*
-       ==========================
-       ANTES DE LA CUENTA ATRÁS
-       ==========================
+       =========================================
+       EL ANTES
+       inicio -> checkpoint
+
+       flotante inferior -> cuatro bloques
+       =========================================
     */
 
-    const progresoEntrada = limitar(
+    const progresoAntes = limitar(
       (
         viewportHeight + 20 -
         gridRect.top
@@ -767,7 +818,13 @@
     );
 
 
-    if (progresoEntrada <= 0) {
+    /*
+       INICIO
+
+       Todavía no ha comenzado el antes.
+    */
+
+    if (progresoAntes <= 0) {
       ocultarMorph();
       mostrarGridReal();
       mostrarFlotanteAbajo();
@@ -776,52 +833,82 @@
     }
 
 
+    /*
+       EL ANTES
+
+       Al bajar:
+       compacto inferior -> grid
+
+       Al subir:
+       EL ANTES INVERSO
+       grid -> compacto inferior
+    */
+
     if (
-      progresoEntrada > 0 &&
-      progresoEntrada < 1
+      progresoAntes > 0 &&
+      progresoAntes < 1
     ) {
       ocultarGridReal();
 
+
       representarMorph(
-        progresoEntrada,
-        "bottom"
+        progresoAntes,
+        "bottom",
+        "compacto-a-grid"
       );
+
 
       return;
     }
 
 
     /*
-       ==========================
-       CUENTA ATRÁS EN PANTALLA
-       ==========================
+       =========================================
+       CHECKPOINT
+
+       La cuenta fija está completamente formada.
+       =========================================
     */
 
 
+    /*
+       Mientras el borde inferior del grid siga
+       lejos del margen superior, permanecemos
+       en el checkpoint.
+    */
+
     if (
-      gridRect.bottom >=
-      DISTANCIA_MORPH_SALIDA
+      gridRect.bottom >= DISTANCIA_MORPH_SALIDA
     ) {
       ocultarMorph();
       ocultarCuentaFlotante();
       mostrarGridReal();
+
 
       floatingCountdown.setAttribute(
         "aria-hidden",
         "true"
       );
 
+
       return;
     }
 
 
     /*
-       ==========================
-       SALIDA HACIA ARRIBA
-       ==========================
+       =========================================
+       EL DESPUÉS
+       checkpoint -> final
+
+       grid -> flotante superior
+
+       Al subir:
+       EL DESPUÉS INVERSO
+       flotante superior -> grid
+       =========================================
     */
 
-    const progresoSalida = limitar(
+    const progresoDespues = limitar(
       (
         DISTANCIA_MORPH_SALIDA -
         gridRect.bottom
@@ -833,24 +920,29 @@
 
 
     if (
-      progresoSalida > 0 &&
-      progresoSalida < 1
+      progresoDespues > 0 &&
+      progresoDespues < 1
     ) {
       ocultarGridReal();
 
+
       representarMorph(
-        progresoSalida,
-        "top"
+        progresoDespues,
+        "top",
+        "grid-a-compacto"
       );
+
 
       return;
     }
 
 
     /*
-       ==========================
-       CUENTA YA SUPERADA
-       ==========================
+       =========================================
+       FINAL
+
+       Flotante superior estable.
+       =========================================
     */
 
     ocultarMorph();
@@ -861,6 +953,7 @@
 
   function solicitarActualizacionScroll() {
     if (scrollFramePendiente) return;
+
 
     scrollFramePendiente = true;
 
@@ -883,6 +976,14 @@
     const diferencia =
       fechaEvento - ahora;
 
+
+    /*
+       EVENTO TERMINADO
+
+       El checkpoint cambia a agradecimiento
+       y desaparece definitivamente cualquier
+       versión flotante o morph.
+    */
 
     if (diferencia <= 0) {
 
@@ -932,6 +1033,10 @@
     );
 
 
+    /*
+       CHECKPOINT REAL
+    */
+
     contador.innerHTML = `
       <div class="countdown-item">
         <span>${dias}</span>
@@ -954,6 +1059,10 @@
       </div>
     `;
 
+
+    /*
+       FLOTANTE REAL
+    */
 
     if (floatingDias) {
       floatingDias.textContent =
@@ -979,6 +1088,10 @@
     }
 
 
+    /*
+       CAPA TEMPORAL DE TRANSMUTACIÓN
+    */
+
     actualizarValoresMorph(
       dias,
       horas,
@@ -991,14 +1104,29 @@
   }
 
 
+  /*
+     INICIO
+  */
+
   actualizarCuentaAtras();
 
+
+  /*
+     ACTUALIZACIÓN DEL TIEMPO
+  */
 
   setInterval(
     actualizarCuentaAtras,
     1000
   );
 
+
+  /*
+     SCROLL
+
+     La transmutación avanza y retrocede
+     directamente según la posición del scroll.
+  */
 
   window.addEventListener(
     "scroll",
@@ -1008,6 +1136,13 @@
     }
   );
 
+
+  /*
+     CAMBIOS DE VIEWPORT
+
+     Importante en móvil por las barras
+     superior e inferior del navegador.
+  */
 
   window.addEventListener(
     "resize",
