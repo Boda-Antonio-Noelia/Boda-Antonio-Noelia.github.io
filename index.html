@@ -278,18 +278,6 @@
 
   let scrollFramePendiente = false;
 
-let progresoAntesActual = 0;
-let progresoAntesObjetivo = 0;
-
-let progresoDespuesActual = 0;
-let progresoDespuesObjetivo = 0;
-
-const SUAVIZADO_MORPH = 0.18;
-
-  function acercar(actual, objetivo, intensidad) {
-  return actual + (objetivo - actual) * intensidad;
-}
-
 
   function limitar(valor, minimo, maximo) {
     return Math.min(
@@ -304,11 +292,14 @@ const SUAVIZADO_MORPH = 0.18;
   }
 
 
-function suavizar(progreso) {
-  progreso = limitar(progreso, 0, 1);
+  /*
+     En esta interacción el scroll manda
+     directamente sobre el progreso visual.
+  */
 
-  return progreso;
-}
+  function suavizar(progreso) {
+    return limitar(progreso, 0, 1);
+  }
 
 
   function formatearNumero(numero, digitos = 2) {
@@ -421,18 +412,24 @@ function suavizar(progreso) {
 
 
   function ocultarGridReal() {
+    if (!contador) return;
+
     contador.classList.add("is-morphing");
     contador.style.opacity = "0";
   }
 
 
   function mostrarGridReal() {
+    if (!contador) return;
+
     contador.classList.remove("is-morphing");
     contador.style.removeProperty("opacity");
   }
 
 
   function prepararFlotanteParaMedir(posicion) {
+    if (!floatingCountdown) return;
+
     floatingCountdown.classList.add(
       "is-visible",
       "is-morphing"
@@ -450,9 +447,9 @@ function suavizar(progreso) {
 
     /*
        La flotante sigue ocupando su posición real,
-       pero no se ve.
+       pero queda invisible.
 
-       El morph usa esa geometría como origen/destino.
+       El morph utiliza su geometría.
     */
 
     floatingCountdown.style.opacity = "0";
@@ -461,6 +458,8 @@ function suavizar(progreso) {
 
 
   function obtenerRectangulosFlotante() {
+    if (!floatingCountdown) return [];
+
     return Array.from(
       floatingCountdown.children
     ).map(
@@ -471,6 +470,8 @@ function suavizar(progreso) {
 
 
   function obtenerRectangulosTarjetas() {
+    if (!contador) return [];
+
     return Array.from(
       contador.querySelectorAll(".countdown-item")
     ).map(
@@ -481,6 +482,8 @@ function suavizar(progreso) {
 
 
   function colocarElemento(elemento, rect) {
+    if (!elemento) return;
+
     elemento.style.left = `${rect.left}px`;
     elemento.style.top = `${rect.top}px`;
     elemento.style.width = `${rect.width}px`;
@@ -522,8 +525,6 @@ function suavizar(progreso) {
 
 
   /*
-     Esta función trabaja con un único concepto:
-
      progresoVisual = 0
      estado compacto / flotante
 
@@ -531,7 +532,7 @@ function suavizar(progreso) {
      estado grid / cuatro tarjetas
 
      La dirección decide si recorremos
-     esa geometría hacia delante o hacia atrás.
+     el proceso hacia grid o hacia compacto.
   */
 
   function representarMorph(
@@ -585,9 +586,6 @@ function suavizar(progreso) {
        ==========================
        FONDO COMÚN / CÁPSULA
        ==========================
-
-       0 = píldora flotante
-       1 = expandida y disuelta en el grid
     */
 
     const rectShell =
@@ -706,13 +704,6 @@ function suavizar(progreso) {
           );
 
 
-        /*
-           Texto compacto:
-           169 Días / 23 Horas / etc.
-
-           Muere durante la primera mitad.
-        */
-
         compacto.style.opacity =
           `${
             1 -
@@ -723,13 +714,6 @@ function suavizar(progreso) {
             )
           }`;
 
-
-        /*
-           Texto de tarjeta:
-           número arriba + nombre debajo.
-
-           Nace después.
-        */
 
         tarjeta.style.opacity =
           `${
@@ -760,193 +744,207 @@ function suavizar(progreso) {
   }
 
 
-function actualizarPosicionFlotante() {
-  if (
-    !countdownSection ||
-    !floatingCountdown ||
-    !contador
-  ) {
-    return;
-  }
+  function actualizarPosicionFlotante() {
+    if (
+      !countdownSection ||
+      !floatingCountdown ||
+      !contador
+    ) {
+      return;
+    }
 
-
-  if (
-    document.body.classList.contains("intro-lock")
-  ) {
-    ocultarMorph();
-    ocultarCuentaFlotante();
-    mostrarGridReal();
-
-    progresoAntesActual = 0;
-    progresoAntesObjetivo = 0;
-
-    progresoDespuesActual = 0;
-    progresoDespuesObjetivo = 0;
-
-    return;
-  }
-
-
-  if (
-    floatingCountdown.classList.contains(
-      "is-disabled"
-    )
-  ) {
-    ocultarMorph();
-    ocultarCuentaFlotante();
-    mostrarGridReal();
-
-    return;
-  }
-
-
-  const gridRect =
-    contador.getBoundingClientRect();
-
-  const viewportHeight =
-    window.innerHeight;
-
-
-  /*
-     =========================================
-     OBJETIVOS SEGÚN SCROLL
-     =========================================
-  */
-
-  progresoAntesObjetivo = limitar(
-    (
-      viewportHeight + 20 -
-      gridRect.top
-    ) /
-    DISTANCIA_MORPH_ENTRADA,
-    0,
-    1
-  );
-
-
-  progresoDespuesObjetivo = limitar(
-    (
-      DISTANCIA_MORPH_SALIDA -
-      gridRect.bottom
-    ) /
-    DISTANCIA_MORPH_SALIDA,
-    0,
-    1
-  );
-
-
-  /*
-     =========================================
-     SUAVIZADO
-
-     El scroll manda.
-     El estado visual se aproxima suavemente.
-     =========================================
-  */
-
-  progresoAntesActual = acercar(
-    progresoAntesActual,
-    progresoAntesObjetivo,
-    SUAVIZADO_MORPH
-  );
-
-
-  progresoDespuesActual = acercar(
-    progresoDespuesActual,
-    progresoDespuesObjetivo,
-    SUAVIZADO_MORPH
-  );
-
-
-  /*
-     Evitamos residuos infinitesimales.
-  */
-
-  if (
-    Math.abs(
-      progresoAntesActual -
-      progresoAntesObjetivo
-    ) < 0.001
-  ) {
-    progresoAntesActual =
-      progresoAntesObjetivo;
-  }
-
-
-  if (
-    Math.abs(
-      progresoDespuesActual -
-      progresoDespuesObjetivo
-    ) < 0.001
-  ) {
-    progresoDespuesActual =
-      progresoDespuesObjetivo;
-  }
-
-
-  /*
-     =========================================
-     EL ANTES
-     =========================================
-  */
-
-  if (progresoAntesActual <= 0.001) {
-    ocultarMorph();
-    mostrarGridReal();
-    mostrarFlotanteAbajo();
-
-    return;
-  }
-
-
-  if (progresoAntesActual < 0.985) {
-    representarMorph(
-      progresoAntesActual,
-      "bottom",
-      "compacto-a-grid"
-    );
 
     /*
-       En el tramo final ya dejamos aparecer
-       progresivamente el checkpoint real.
+       PORTADA INICIAL
     */
 
-    const mezclaCheckpoint = limitar(
+    if (
+      document.body.classList.contains("intro-lock")
+    ) {
+      ocultarMorph();
+      ocultarCuentaFlotante();
+      mostrarGridReal();
+
+      return;
+    }
+
+
+    /*
+       EVENTO FINALIZADO
+    */
+
+    if (
+      floatingCountdown.classList.contains(
+        "is-disabled"
+      )
+    ) {
+      ocultarMorph();
+      ocultarCuentaFlotante();
+      mostrarGridReal();
+
+      return;
+    }
+
+
+    const gridRect =
+      contador.getBoundingClientRect();
+
+    const viewportHeight =
+      window.innerHeight;
+
+
+    /*
+       =========================================
+       EL ANTES
+       inicio -> checkpoint
+       =========================================
+    */
+
+    const progresoAntes = limitar(
       (
-        progresoAntesActual -
-        0.88
-      ) / 0.105,
+        viewportHeight + 20 -
+        gridRect.top
+      ) /
+      DISTANCIA_MORPH_ENTRADA,
       0,
       1
     );
 
 
-    contador.classList.add("is-morphing");
+    /*
+       INICIO
+    */
 
-    contador.style.opacity =
-      `${mezclaCheckpoint}`;
+    if (progresoAntes <= 0) {
+      ocultarMorph();
 
+      if (countdownMorph) {
+        countdownMorph.style.removeProperty(
+          "opacity"
+        );
+      }
 
-    if (countdownMorph) {
-      countdownMorph.style.opacity =
-        `${1 - mezclaCheckpoint}`;
+      mostrarGridReal();
+      mostrarFlotanteAbajo();
+
+      return;
     }
 
 
-    return;
-  }
+    /*
+       EL ANTES / EL ANTES INVERSO
+
+       Solo existe visualmente el morph.
+       El checkpoint real está oculto.
+    */
+
+    if (progresoAntes < 1) {
+      ocultarGridReal();
+      ocultarCuentaFlotante();
 
 
-  /*
-     =========================================
-     CHECKPOINT
-     =========================================
-  */
+      if (countdownMorph) {
+        countdownMorph.style.opacity = "1";
+      }
 
-  if (
-    progresoDespuesActual <= 0.015
-  ) {
+
+      representarMorph(
+        progresoAntes,
+        "bottom",
+        "compacto-a-grid"
+      );
+
+
+      return;
+    }
+
+
+    /*
+       =========================================
+       CHECKPOINT Y EL DESPUÉS
+       =========================================
+    */
+
+    const progresoDespues = limitar(
+      (
+        DISTANCIA_MORPH_SALIDA -
+        gridRect.bottom
+      ) /
+      DISTANCIA_MORPH_SALIDA,
+      0,
+      1
+    );
+
+
+    /*
+       CHECKPOINT PURO
+
+       Solo existen los cuatro bloques reales.
+    */
+
+    if (progresoDespues <= 0) {
+      ocultarMorph();
+
+
+      if (countdownMorph) {
+        countdownMorph.style.removeProperty(
+          "opacity"
+        );
+      }
+
+
+      ocultarCuentaFlotante();
+      mostrarGridReal();
+
+
+      floatingCountdown.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+
+      return;
+    }
+
+
+    /*
+       EL DESPUÉS / EL DESPUÉS INVERSO
+
+       Solo existe visualmente el morph.
+       El checkpoint real está oculto.
+    */
+
+    if (progresoDespues < 1) {
+      ocultarGridReal();
+      ocultarCuentaFlotante();
+
+
+      if (countdownMorph) {
+        countdownMorph.style.opacity = "1";
+      }
+
+
+      representarMorph(
+        progresoDespues,
+        "top",
+        "grid-a-compacto"
+      );
+
+
+      return;
+    }
+
+
+    /*
+       =========================================
+       FINAL
+
+       Flotante superior estable.
+       =========================================
+    */
+
     ocultarMorph();
+
 
     if (countdownMorph) {
       countdownMorph.style.removeProperty(
@@ -954,116 +952,37 @@ function actualizarPosicionFlotante() {
       );
     }
 
-    ocultarCuentaFlotante();
+
     mostrarGridReal();
-
-    floatingCountdown.setAttribute(
-      "aria-hidden",
-      "true"
-    );
-
-    return;
+    mostrarFlotanteArriba();
   }
 
 
   /*
-     =========================================
-     EL DESPUÉS
-     =========================================
+     Un único frame visual por actualización
+     de scroll.
+
+     No existe una velocidad independiente
+     de transmutación.
+
+     El scroll determina directamente el estado.
   */
 
-  if (progresoDespuesActual < 0.985) {
-    representarMorph(
-      progresoDespuesActual,
-      "top",
-      "grid-a-compacto"
-    );
+  function solicitarActualizacionScroll() {
+    if (scrollFramePendiente) return;
 
 
-    /*
-       Al inicio del después hacemos el intercambio
-       progresivo checkpoint -> morph.
-    */
-
-    const mezclaMorph = limitar(
-      progresoDespuesActual / 0.12,
-      0,
-      1
-    );
+    scrollFramePendiente = true;
 
 
-    contador.classList.add("is-morphing");
+    requestAnimationFrame(() => {
 
-    contador.style.opacity =
-      `${1 - mezclaMorph}`;
+      actualizarPosicionFlotante();
 
-
-    if (countdownMorph) {
-      countdownMorph.style.opacity =
-        `${mezclaMorph}`;
-    }
-
-
-    return;
-  }
-
-
-  /*
-     =========================================
-     FINAL
-     =========================================
-  */
-
-  ocultarMorph();
-
-  if (countdownMorph) {
-    countdownMorph.style.removeProperty(
-      "opacity"
-    );
-  }
-
-  mostrarGridReal();
-  mostrarFlotanteArriba();
-}
-
-
-function solicitarActualizacionScroll() {
-  if (scrollFramePendiente) return;
-
-  scrollFramePendiente = true;
-
-
-  function frame() {
-    actualizarPosicionFlotante();
-
-
-    const antesEnMovimiento =
-      Math.abs(
-        progresoAntesActual -
-        progresoAntesObjetivo
-      ) > 0.001;
-
-
-    const despuesEnMovimiento =
-      Math.abs(
-        progresoDespuesActual -
-        progresoDespuesObjetivo
-      ) > 0.001;
-
-
-    if (
-      antesEnMovimiento ||
-      despuesEnMovimiento
-    ) {
-      requestAnimationFrame(frame);
-    } else {
       scrollFramePendiente = false;
-    }
+
+    });
   }
-
-
-  requestAnimationFrame(frame);
-}
 
 
   function actualizarCuentaAtras() {
@@ -1077,10 +996,6 @@ function solicitarActualizacionScroll() {
 
     /*
        EVENTO TERMINADO
-
-       El checkpoint cambia a agradecimiento
-       y desaparece definitivamente cualquier
-       versión flotante o morph.
     */
 
     if (diferencia <= 0) {
@@ -1187,7 +1102,7 @@ function solicitarActualizacionScroll() {
 
 
     /*
-       CAPA TEMPORAL DE TRANSMUTACIÓN
+       CAPA MORPH
     */
 
     actualizarValoresMorph(
@@ -1210,7 +1125,7 @@ function solicitarActualizacionScroll() {
 
 
   /*
-     ACTUALIZACIÓN DEL TIEMPO
+     ACTUALIZACIÓN DEL CONTADOR
   */
 
   setInterval(
@@ -1221,9 +1136,6 @@ function solicitarActualizacionScroll() {
 
   /*
      SCROLL
-
-     La transmutación avanza y retrocede
-     directamente según la posición del scroll.
   */
 
   window.addEventListener(
@@ -1236,10 +1148,7 @@ function solicitarActualizacionScroll() {
 
 
   /*
-     CAMBIOS DE VIEWPORT
-
-     Importante en móvil por las barras
-     superior e inferior del navegador.
+     CAMBIOS DE VIEWPORT EN MÓVIL
   */
 
   window.addEventListener(
