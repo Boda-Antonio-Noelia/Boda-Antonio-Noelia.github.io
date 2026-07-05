@@ -893,3 +893,81 @@ body.intro-lock {
   touch-action: none;
 }
 
+
+
+/* =========================
+   CONEXIÓN VISUAL DE CUENTA ATRÁS
+   ========================= */
+
+.countdown-link-layer {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 19;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.countdown-link-path {
+  fill: none;
+  stroke: rgba(111, 16, 38, 0.52);
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+
+  filter:
+    drop-shadow(
+      0 0 4px rgba(111, 16, 38, 0.12)
+    );
+}
+
+/*
+  Durante la conexión ligada al scroll,
+  desactivamos solo las transiciones automáticas.
+  El JavaScript controla directamente el progreso.
+*/
+
+.floating-countdown.is-scroll-linking {
+  transition: none;
+}
+
+/*
+  Refuerzo del borde de la flotante mientras
+  está conectada visualmente con la tarjeta.
+*/
+
+.floating-countdown.is-scroll-linking {
+  border-color: rgba(111, 16, 38, 0.42);
+}
+
+/*
+  La tarjeta recibe un eco muy sutil de la línea.
+  La intensidad la controla JavaScript.
+*/
+
+.countdown-card {
+  --countdown-link-glow: 0;
+}
+
+.countdown-card.is-scroll-linking {
+  border-color:
+    rgba(
+      111,
+      16,
+      38,
+      calc(0.12 + var(--countdown-link-glow) * 0.30)
+    );
+
+  box-shadow:
+    var(--shadow),
+    0 0
+      calc(12px * var(--countdown-link-glow))
+      rgba(
+        111,
+        16,
+        38,
+        calc(var(--countdown-link-glow) * 0.13)
+      );
+}
