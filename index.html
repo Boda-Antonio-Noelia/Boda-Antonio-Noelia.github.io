@@ -242,7 +242,6 @@
      Referencias estables del checkpoint.
 
      Las tarjetas se crean una sola vez.
-     Después únicamente cambia el texto.
   */
 
   let checkpointInicializado = false;
@@ -298,8 +297,7 @@
 
 
   /*
-     Margen mínimo del morph respecto
-     al viewport móvil.
+     Margen mínimo respecto al viewport.
   */
 
   const MARGEN_MORPH_VIEWPORT = 16;
@@ -307,9 +305,6 @@
 
   /*
      Corredor seguro dentro de la tarjeta.
-
-     El morph no puede rozar el título
-     ni el borde inferior.
   */
 
   const MARGEN_MORPH_TARJETA_SUPERIOR = 28;
@@ -380,7 +375,7 @@
 
   /*
      Convierte coordenadas de pantalla
-     a coordenadas estables del documento.
+     a coordenadas del documento.
   */
 
   function rectDocumento(elemento) {
@@ -407,6 +402,72 @@
       bottom:
         rect.bottom + window.scrollY
     };
+  }
+
+
+  /*
+     Comprueba si el morph ya ha llegado
+     al margen superior reservado
+     para la flotante superior.
+  */
+
+  function morphHaLlegadoAlMargenSuperior() {
+    if (!countdownMorphShell) return false;
+
+
+    const rect =
+      countdownMorphShell.getBoundingClientRect();
+
+
+    const viewport =
+      window.visualViewport;
+
+
+    const limiteSuperior =
+      viewport
+        ? viewport.offsetTop +
+          MARGEN_MORPH_VIEWPORT
+        : MARGEN_MORPH_VIEWPORT;
+
+
+    return (
+      rect.top <=
+      limiteSuperior + 1
+    );
+  }
+
+
+  /*
+     Comprueba si el morph ya ha llegado
+     al margen inferior reservado
+     para la flotante inferior.
+  */
+
+  function morphHaLlegadoAlMargenInferior() {
+    if (!countdownMorphShell) return false;
+
+
+    const rect =
+      countdownMorphShell.getBoundingClientRect();
+
+
+    const viewport =
+      window.visualViewport;
+
+
+    const limiteInferior =
+      viewport
+        ? viewport.offsetTop +
+          viewport.height -
+          MARGEN_MORPH_VIEWPORT
+        : window.innerHeight -
+          MARGEN_MORPH_VIEWPORT;
+
+
+    return (
+      rect.bottom >=
+      limiteInferior - 1
+    );
   }
 
 
@@ -476,20 +537,10 @@
       rectDocumento(countdownTitle);
 
 
-    /*
-       El espacio válido empieza después
-       del título grande.
-    */
-
     const limiteSuperior =
       titleRect.bottom +
       MARGEN_MORPH_TARJETA_SUPERIOR;
 
-
-    /*
-       Y termina antes del borde inferior
-       de la tarjeta.
-    */
 
     const limiteInferior =
       cardRect.bottom -
@@ -504,12 +555,6 @@
       rectShell.top +
       rectShell.height;
 
-
-    /*
-       Solo aplicamos esta restricción
-       cuando el morph entra físicamente
-       en la tarjeta.
-    */
 
     const estaDentroDeLaTarjeta =
       bordeInferior > cardRect.top &&
@@ -606,6 +651,7 @@
   function ocultarMorph() {
     if (!countdownMorph) return;
 
+
     countdownMorph.classList.remove(
       "is-active"
     );
@@ -681,6 +727,7 @@
 
 
     floatingCountdown.style.opacity = "1";
+
     floatingCountdown.style.filter = "none";
 
 
@@ -691,8 +738,8 @@
 
 
     /*
-       Fuerza el estado final antes de devolver
-       las transiciones CSS normales.
+       Fuerza el estado final antes
+       de devolver las transiciones normales.
     */
 
     void floatingCountdown.offsetWidth;
@@ -893,7 +940,6 @@
 
   /*
      0 = flotante compacta
-
      1 = cuatro tarjetas del checkpoint
   */
 
@@ -1006,8 +1052,7 @@
 
 
     /*
-       Los cuatro valores reciben exactamente
-       el mismo desplazamiento vertical.
+       Corrección total del cuerpo completo.
     */
 
     const correccionTotal =
@@ -1073,11 +1118,6 @@
           );
 
 
-        /*
-           Mantiene al morph como un cuerpo
-           geométrico único.
-        */
-
         rect =
           desplazarRectanguloY(
             rect,
@@ -1142,11 +1182,11 @@
            Relevo de texto sin solapamiento.
 
            Compacto:
-           100 % hasta 42 %
+           visible hasta 42 %
            desaparece 42-50 %
 
            Tarjeta:
-           0 % hasta 50 %
+           invisible hasta 50 %
            aparece 50-58 %
         */
 
@@ -1189,9 +1229,6 @@
 
   /*
      El checkpoint se crea una sola vez.
-
-     Esto evita destruir y recrear sus cuatro
-     tarjetas cada segundo.
   */
 
   function inicializarCheckpoint() {
@@ -1384,6 +1421,27 @@
       );
 
 
+      /*
+         El margen inferior actúa ahora
+         como punto físico final
+         del antes inverso.
+
+         No esperamos a progreso = 0.
+      */
+
+      if (
+        morphHaLlegadoAlMargenInferior() &&
+        progresoAntes < 0.35
+      ) {
+
+        ocultarMorph();
+
+        mostrarGridReal();
+
+        mostrarFlotanteAbajo();
+      }
+
+
       return;
     }
 
@@ -1446,6 +1504,28 @@
       );
 
 
+      /*
+         El margen superior es ahora
+         el punto físico final del después.
+
+         Cuando el morph llega al margen
+         y ya está suficientemente compacto,
+         se sustituye por la flotante real.
+      */
+
+      if (
+        morphHaLlegadoAlMargenSuperior() &&
+        progresoDespues > 0.65
+      ) {
+
+        ocultarMorph();
+
+        mostrarGridReal();
+
+        mostrarFlotanteArriba();
+      }
+
+
       return;
     }
 
@@ -1500,11 +1580,6 @@
     */
 
     if (diferencia <= 0) {
-
-      /*
-         Al terminar el evento ya no necesitamos
-         el checkpoint numérico.
-      */
 
       checkpointInicializado = false;
 
