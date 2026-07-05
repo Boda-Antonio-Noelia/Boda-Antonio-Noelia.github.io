@@ -304,11 +304,11 @@ const SUAVIZADO_MORPH = 0.18;
   }
 
 
-  function suavizar(progreso) {
-    progreso = limitar(progreso, 0, 1);
+function suavizar(progreso) {
+  progreso = limitar(progreso, 0, 1);
 
-    return progreso * progreso * (3 - 2 * progreso);
-  }
+  return progreso;
+}
 
 
   function formatearNumero(numero, digitos = 2) {
@@ -1027,21 +1027,43 @@ function actualizarPosicionFlotante() {
 }
 
 
-  function solicitarActualizacionScroll() {
-    if (scrollFramePendiente) return;
+function solicitarActualizacionScroll() {
+  if (scrollFramePendiente) return;
+
+  scrollFramePendiente = true;
 
 
-    scrollFramePendiente = true;
+  function frame() {
+    actualizarPosicionFlotante();
 
 
-    requestAnimationFrame(() => {
+    const antesEnMovimiento =
+      Math.abs(
+        progresoAntesActual -
+        progresoAntesObjetivo
+      ) > 0.001;
 
-      actualizarPosicionFlotante();
 
+    const despuesEnMovimiento =
+      Math.abs(
+        progresoDespuesActual -
+        progresoDespuesObjetivo
+      ) > 0.001;
+
+
+    if (
+      antesEnMovimiento ||
+      despuesEnMovimiento
+    ) {
+      requestAnimationFrame(frame);
+    } else {
       scrollFramePendiente = false;
-
-    });
+    }
   }
+
+
+  requestAnimationFrame(frame);
+}
 
 
   function actualizarCuentaAtras() {
