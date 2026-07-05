@@ -224,14 +224,13 @@
     "2026-12-07T12:00:00+01:00"
   ).getTime();
 
+
   const countdownSection =
     document.getElementById("cuenta-atras");
 
-  const countdownCard =
-    countdownSection?.querySelector(".countdown-card");
-
   const contador =
     document.getElementById("contador");
+
 
   const floatingCountdown =
     document.getElementById("floatingCountdown");
@@ -248,16 +247,28 @@
   const floatingSegundos =
     document.getElementById("floatingSegundos");
 
-  const countdownLinkPath =
-    document.getElementById("countdownLinkPath");
+
+  const countdownMorph =
+    document.getElementById("countdownMorph");
+
+  const countdownMorphShell =
+    document.getElementById("countdownMorphShell");
+
+  const morphItems =
+    Array.from(
+      document.querySelectorAll(".countdown-morph-item")
+    );
 
 
   /*
-     Espacio de scroll durante el que ocurre
-     la transferencia visual.
+     Distancia de scroll durante la que ocurre
+     la transmutación.
+
+     Cuanto mayor, más lenta y visible.
   */
 
-  const DISTANCIA_CONEXION = 260;
+  const DISTANCIA_MORPH_ENTRADA = 420;
+  const DISTANCIA_MORPH_SALIDA = 360;
 
 
   let scrollFramePendiente = false;
@@ -271,40 +282,66 @@
   }
 
 
+  function interpolar(inicio, final, progreso) {
+    return inicio + (final - inicio) * progreso;
+  }
+
+
+  function suavizar(progreso) {
+    progreso = limitar(progreso, 0, 1);
+
+    return progreso * progreso * (3 - 2 * progreso);
+  }
+
+
   function formatearNumero(numero, digitos = 2) {
     return String(numero).padStart(digitos, "0");
   }
 
 
-  function ocultarLineaConexion() {
-    if (!countdownLinkPath) return;
+  function actualizarValoresMorph(
+    dias,
+    horas,
+    minutos,
+    segundos
+  ) {
+    const valores = {
+      dias: formatearNumero(dias, 3),
+      horas: formatearNumero(horas),
+      minutos: formatearNumero(minutos),
+      segundos: formatearNumero(segundos)
+    };
 
-    countdownLinkPath.style.opacity = "0";
-    countdownLinkPath.setAttribute("d", "");
+
+    Object.entries(valores).forEach(
+      ([nombre, valor]) => {
+
+        document
+          .querySelectorAll(
+            `[data-morph-value="${nombre}"]`
+          )
+          .forEach((elemento) => {
+            elemento.textContent = valor;
+          });
+
+
+        document
+          .querySelectorAll(
+            `[data-morph-card-value="${nombre}"]`
+          )
+          .forEach((elemento) => {
+            elemento.textContent = valor;
+          });
+
+      }
+    );
   }
 
 
-  function limpiarConexionScroll() {
-    if (floatingCountdown) {
-      floatingCountdown.classList.remove(
-        "is-scroll-linking"
-      );
+  function ocultarMorph() {
+    if (!countdownMorph) return;
 
-      floatingCountdown.style.removeProperty("opacity");
-      floatingCountdown.style.removeProperty("filter");
-    }
-
-    if (countdownCard) {
-      countdownCard.classList.remove(
-        "is-scroll-linking"
-      );
-
-      countdownCard.style.removeProperty(
-        "--countdown-link-glow"
-      );
-    }
-
-    ocultarLineaConexion();
+    countdownMorph.classList.remove("is-active");
   }
 
 
@@ -312,15 +349,355 @@
     if (!floatingCountdown) return;
 
     floatingCountdown.classList.remove("is-visible");
+
+    floatingCountdown.style.removeProperty("opacity");
+    floatingCountdown.style.removeProperty("filter");
+
+    floatingCountdown.classList.remove("is-morphing");
+  }
+
+
+  function mostrarFlotanteAbajo() {
+    if (!floatingCountdown) return;
+
+    floatingCountdown.classList.remove(
+      "is-top",
+      "is-morphing"
+    );
+
+    floatingCountdown.classList.add(
+      "is-bottom",
+      "is-visible"
+    );
+
+    floatingCountdown.style.removeProperty("opacity");
+    floatingCountdown.style.removeProperty("filter");
+
+    floatingCountdown.setAttribute(
+      "aria-hidden",
+      "false"
+    );
+  }
+
+
+  function mostrarFlotanteArriba() {
+    if (!floatingCountdown) return;
+
+    floatingCountdown.classList.remove(
+      "is-bottom",
+      "is-morphing"
+    );
+
+    floatingCountdown.classList.add(
+      "is-top",
+      "is-visible"
+    );
+
+    floatingCountdown.style.removeProperty("opacity");
+    floatingCountdown.style.removeProperty("filter");
+
+    floatingCountdown.setAttribute(
+      "aria-hidden",
+      "false"
+    );
+  }
+
+
+  function ocultarGridReal() {
+    contador.classList.add("is-morphing");
+    contador.style.opacity = "0";
+  }
+
+
+  function mostrarGridReal() {
+    contador.classList.remove("is-morphing");
+    contador.style.removeProperty("opacity");
+  }
+
+
+  function prepararFlotanteParaMedir(posicion) {
+    floatingCountdown.classList.add(
+      "is-visible",
+      "is-morphing"
+    );
+
+    if (posicion === "bottom") {
+      floatingCountdown.classList.add("is-bottom");
+      floatingCountdown.classList.remove("is-top");
+    } else {
+      floatingCountdown.classList.add("is-top");
+      floatingCountdown.classList.remove("is-bottom");
+    }
+
+    /*
+       Sigue ocupando su posición real,
+       pero no se ve.
+    */
+
+    floatingCountdown.style.opacity = "0";
+    floatingCountdown.style.filter = "none";
+  }
+
+
+  function obtenerRectangulosFlotante() {
+    return Array.from(
+      floatingCountdown.children
+    ).map(
+      elemento =>
+        elemento.getBoundingClientRect()
+    );
+  }
+
+
+  function obtenerRectangulosTarjetas() {
+    return Array.from(
+      contador.querySelectorAll(".countdown-item")
+    ).map(
+      elemento =>
+        elemento.getBoundingClientRect()
+    );
+  }
+
+
+  function colocarElemento(elemento, rect) {
+    elemento.style.left = `${rect.left}px`;
+    elemento.style.top = `${rect.top}px`;
+    elemento.style.width = `${rect.width}px`;
+    elemento.style.height = `${rect.height}px`;
+  }
+
+
+  function interpolarRectangulo(
+    inicio,
+    final,
+    progreso
+  ) {
+    return {
+      left: interpolar(
+        inicio.left,
+        final.left,
+        progreso
+      ),
+
+      top: interpolar(
+        inicio.top,
+        final.top,
+        progreso
+      ),
+
+      width: interpolar(
+        inicio.width,
+        final.width,
+        progreso
+      ),
+
+      height: interpolar(
+        inicio.height,
+        final.height,
+        progreso
+      )
+    };
+  }
+
+
+  function representarMorph(
+    progreso,
+    posicionFlotante
+  ) {
+    progreso = limitar(progreso, 0, 1);
+
+    const progresoSuave = suavizar(progreso);
+
+
+    prepararFlotanteParaMedir(posicionFlotante);
+
+
+    const rectFlotante =
+      floatingCountdown.getBoundingClientRect();
+
+    const rectGrid =
+      contador.getBoundingClientRect();
+
+
+    const origenes =
+      obtenerRectangulosFlotante();
+
+    const destinos =
+      obtenerRectangulosTarjetas();
+
+
+    if (
+      origenes.length !== 4 ||
+      destinos.length !== 4
+    ) {
+      ocultarMorph();
+      return;
+    }
+
+
+    countdownMorph.classList.add("is-active");
+
+
+    /*
+       Cápsula general.
+
+       Empieza siendo la cuenta flotante
+       y se expande hasta cubrir el grid.
+
+       Su fondo desaparece progresivamente.
+    */
+
+    const rectShell =
+      interpolarRectangulo(
+        rectFlotante,
+        rectGrid,
+        progresoSuave
+      );
+
+
+    colocarElemento(
+      countdownMorphShell,
+      rectShell
+    );
+
+
+    countdownMorphShell.style.borderRadius =
+      `${interpolar(
+        999,
+        20,
+        progresoSuave
+      )}px`;
+
+
+    countdownMorphShell.style.background =
+      `rgba(
+        255,
+        250,
+        245,
+        ${0.58 * (1 - progresoSuave)}
+      )`;
+
+
+    countdownMorphShell.style.borderColor =
+      `rgba(
+        111,
+        16,
+        38,
+        ${0.10 * (1 - progresoSuave)}
+      )`;
+
+
+    countdownMorphShell.style.boxShadow =
+      `0 10px 26px rgba(
+        70,
+        20,
+        30,
+        ${0.08 * (1 - progresoSuave)}
+      )`;
+
+
+    /*
+       Los cuatro valores viajan desde
+       sus posiciones en la cápsula hasta
+       las cuatro tarjetas.
+    */
+
+    morphItems.forEach(
+      (item, indice) => {
+
+        const rect =
+          interpolarRectangulo(
+            origenes[indice],
+            destinos[indice],
+            progresoSuave
+          );
+
+
+        colocarElemento(item, rect);
+
+
+        item.style.borderRadius =
+          `${interpolar(
+            8,
+            20,
+            progresoSuave
+          )}px`;
+
+
+        item.style.background =
+          `rgba(
+            255,
+            252,
+            248,
+            ${0.58 * progresoSuave}
+          )`;
+
+
+        item.style.border =
+          `1px solid rgba(
+            111,
+            16,
+            38,
+            ${0.10 * progresoSuave}
+          )`;
+
+
+        item.style.boxShadow =
+          `0 14px 30px rgba(
+            70,
+            20,
+            30,
+            ${0.08 * progresoSuave}
+          )`;
+
+
+        const compacto =
+          item.querySelector(
+            ".countdown-morph-compact"
+          );
+
+        const tarjeta =
+          item.querySelector(
+            ".countdown-morph-card"
+          );
+
+
+        /*
+           Primero desaparece la disposición
+           compacta.
+
+           Después nace la disposición vertical.
+        */
+
+        compacto.style.opacity =
+          `${
+            1 -
+            limitar(
+              (progresoSuave - 0.20) / 0.45,
+              0,
+              1
+            )
+          }`;
+
+
+        tarjeta.style.opacity =
+          `${
+            limitar(
+              (progresoSuave - 0.38) / 0.45,
+              0,
+              1
+            )
+          }`;
+
+      }
+    );
   }
 
 
   function desactivarCuentaFlotante() {
-    if (!floatingCountdown) return;
+    ocultarMorph();
+    ocultarCuentaFlotante();
 
-    limpiarConexionScroll();
-
-    floatingCountdown.classList.remove("is-visible");
     floatingCountdown.classList.add("is-disabled");
 
     floatingCountdown.setAttribute(
@@ -328,343 +705,15 @@
       "true"
     );
 
-    setTimeout(() => {
-      floatingCountdown.classList.remove(
-        "is-bottom",
-        "is-top"
-      );
-    }, 550);
-  }
-
-
-  /*
-     Dibuja una línea vertical entre dos Y.
-
-     Nunca dibuja fuera del espacio comprendido
-     entre los dos puntos recibidos.
-  */
-
-  function dibujarLineaVertical(x, y1, y2, opacidad = 1) {
-    if (!countdownLinkPath) return;
-
-    const inicioY = Math.min(y1, y2);
-    const finalY = Math.max(y1, y2);
-
-    if (finalY <= inicioY) {
-      ocultarLineaConexion();
-      return;
-    }
-
-    countdownLinkPath.setAttribute(
-      "d",
-      `M ${x} ${inicioY} L ${x} ${finalY}`
-    );
-
-    countdownLinkPath.style.strokeDasharray = "none";
-    countdownLinkPath.style.strokeDashoffset = "0";
-
-    countdownLinkPath.style.opacity =
-      `${limitar(opacidad, 0, 1)}`;
-  }
-
-
-  /*
-     Antes de alcanzar la sección.
-
-     La línea une exclusivamente:
-
-     borde superior de la flotante inferior
-               ↓
-     borde superior de la sección
-  */
-
-  function conectarDesdeAbajo(sectionRect) {
-    if (
-      !floatingCountdown ||
-      !countdownSection
-    ) {
-      return;
-    }
-
-
-    floatingCountdown.classList.add(
-      "is-bottom",
-      "is-visible",
-      "is-scroll-linking"
-    );
-
-    floatingCountdown.classList.remove("is-top");
-
-
-    /*
-       Primero colocamos la flotante para poder
-       conocer su posición real.
-    */
-
-    const floatingRect =
-      floatingCountdown.getBoundingClientRect();
-
-
-    /*
-       PUNTO FIJO DE ANCLAJE.
-
-       La línea nace en el centro del borde
-       superior de la flotante.
-    */
-
-    const anclaFlotanteY =
-      floatingRect.top;
-
-    const anclaX =
-      floatingRect.left +
-      floatingRect.width / 2;
-
-
-    /*
-       La línea muere exclusivamente en el
-       borde superior de la sección.
-    */
-
-    const bordeSeccionY =
-      sectionRect.top;
-
-
-    /*
-       Distancia real entre la sección y
-       la flotante.
-
-       Cuando vale 0, ambas ya se han encontrado.
-    */
-
-    const distancia =
-      anclaFlotanteY - bordeSeccionY;
-
-
-    /*
-       El progreso depende únicamente de esa
-       distancia física.
-
-       Lejos  -> 0
-       Contacto -> 1
-    */
-
-    const progreso = limitar(
-      1 - distancia / DISTANCIA_CONEXION,
-      0,
-      1
-    );
-
-
-    /*
-       IMPORTANTE.
-
-       Si la sección ya ha alcanzado o superado
-       el ancla de la flotante, la línea deja
-       inmediatamente de existir.
-
-       Nunca atraviesa la sección.
-    */
-
-    if (bordeSeccionY >= anclaFlotanteY) {
-      dibujarLineaVertical(
-        anclaX,
-        anclaFlotanteY,
-        bordeSeccionY,
-        limitar(progreso * 1.5, 0, 1)
-      );
-    } else {
-      ocultarLineaConexion();
-    }
-
-
-    /*
-       La flotante desaparece estrictamente
-       ligada al progreso del scroll.
-    */
-
-    const opacidadFlotante =
-      1 - limitar(
-        (progreso - 0.35) / 0.65,
-        0,
-        1
-      );
-
-    const blurFlotante =
-      limitar(
-        (progreso - 0.45) / 0.55,
-        0,
-        1
-      ) * 7;
-
-
-    floatingCountdown.style.opacity =
-      `${opacidadFlotante}`;
-
-    floatingCountdown.style.filter =
-      `blur(${blurFlotante}px)`;
-
-
-    floatingCountdown.setAttribute(
-      "aria-hidden",
-      progreso >= 1 ? "true" : "false"
-    );
-
-
-    if (countdownCard) {
-      countdownCard.classList.add(
-        "is-scroll-linking"
-      );
-
-      countdownCard.style.setProperty(
-        "--countdown-link-glow",
-        limitar(
-          (progreso - 0.72) / 0.28,
-          0,
-          1
-        )
-      );
-    }
-  }
-
-
-  /*
-     Después de abandonar la sección.
-
-     La línea une exclusivamente:
-
-     borde inferior de la sección
-               ↓
-     borde inferior de la flotante superior
-  */
-
-  function conectarHaciaArriba(sectionRect) {
-    if (
-      !floatingCountdown ||
-      !countdownSection
-    ) {
-      return;
-    }
-
-
-    floatingCountdown.classList.add(
-      "is-top",
-      "is-visible",
-      "is-scroll-linking"
-    );
-
-    floatingCountdown.classList.remove("is-bottom");
-
-
-    const floatingRect =
-      floatingCountdown.getBoundingClientRect();
-
-
-    /*
-       Punto fijo superior.
-    */
-
-    const anclaFlotanteY =
-      floatingRect.bottom;
-
-    const anclaX =
-      floatingRect.left +
-      floatingRect.width / 2;
-
-
-    /*
-       La línea nace del borde inferior
-       de la sección completa.
-    */
-
-    const bordeSeccionY =
-      sectionRect.bottom;
-
-
-    const distancia =
-      bordeSeccionY - anclaFlotanteY;
-
-
-    /*
-       Lejos de la flotante -> 0
-       Contacto -> 1
-    */
-
-    const progreso = limitar(
-      1 - distancia / DISTANCIA_CONEXION,
-      0,
-      1
-    );
-
-
-    /*
-       La línea solo vive mientras existe
-       espacio real entre sección y flotante.
-    */
-
-    if (bordeSeccionY <= anclaFlotanteY) {
-      dibujarLineaVertical(
-        anclaX,
-        bordeSeccionY,
-        anclaFlotanteY,
-        limitar(progreso * 1.5, 0, 1)
-      );
-    } else {
-      ocultarLineaConexion();
-    }
-
-
-    /*
-       Nacimiento progresivo de la flotante.
-    */
-
-    const opacidadFlotante =
-      limitar(
-        (progreso - 0.35) / 0.65,
-        0,
-        1
-      );
-
-    const blurFlotante =
-      (
-        1 -
-        limitar(
-          (progreso - 0.35) / 0.65,
-          0,
-          1
-        )
-      ) * 7;
-
-
-    floatingCountdown.style.opacity =
-      `${opacidadFlotante}`;
-
-    floatingCountdown.style.filter =
-      `blur(${blurFlotante}px)`;
-
-
-    floatingCountdown.setAttribute(
-      "aria-hidden",
-      progreso <= 0 ? "true" : "false"
-    );
-
-
-    if (countdownCard) {
-      countdownCard.classList.add(
-        "is-scroll-linking"
-      );
-
-      countdownCard.style.setProperty(
-        "--countdown-link-glow",
-        1 - progreso
-      );
-    }
+    mostrarGridReal();
   }
 
 
   function actualizarPosicionFlotante() {
     if (
       !countdownSection ||
-      !floatingCountdown
+      !floatingCountdown ||
+      !contador
     ) {
       return;
     }
@@ -673,8 +722,9 @@
     if (
       document.body.classList.contains("intro-lock")
     ) {
-      limpiarConexionScroll();
+      ocultarMorph();
       ocultarCuentaFlotante();
+      mostrarGridReal();
 
       return;
     }
@@ -685,37 +735,56 @@
         "is-disabled"
       )
     ) {
-      limpiarConexionScroll();
+      ocultarMorph();
       ocultarCuentaFlotante();
+      mostrarGridReal();
 
       return;
     }
 
 
-    const sectionRect =
-      countdownSection.getBoundingClientRect();
+    const gridRect =
+      contador.getBoundingClientRect();
 
     const viewportHeight =
       window.innerHeight;
 
 
     /*
-       Antes de la sección.
+       ==========================
+       ANTES DE LA CUENTA ATRÁS
+       ==========================
     */
 
-    if (sectionRect.top >= viewportHeight) {
-      limpiarConexionScroll();
+    const progresoEntrada = limitar(
+      (
+        viewportHeight + 20 -
+        gridRect.top
+      ) /
+      DISTANCIA_MORPH_ENTRADA,
+      0,
+      1
+    );
 
-      floatingCountdown.classList.add(
-        "is-visible",
-        "is-bottom"
-      );
 
-      floatingCountdown.classList.remove("is-top");
+    if (progresoEntrada <= 0) {
+      ocultarMorph();
+      mostrarGridReal();
+      mostrarFlotanteAbajo();
 
-      floatingCountdown.setAttribute(
-        "aria-hidden",
-        "false"
+      return;
+    }
+
+
+    if (
+      progresoEntrada > 0 &&
+      progresoEntrada < 1
+    ) {
+      ocultarGridReal();
+
+      representarMorph(
+        progresoEntrada,
+        "bottom"
       );
 
       return;
@@ -723,39 +792,19 @@
 
 
     /*
-       La sección está entrando por abajo.
-
-       Toda la transferencia depende de la
-       posición real del borde superior.
+       ==========================
+       CUENTA ATRÁS EN PANTALLA
+       ==========================
     */
 
-    const floatingBottomAnchor =
-      viewportHeight - 50;
 
     if (
-      sectionRect.top > floatingBottomAnchor -
-      DISTANCIA_CONEXION &&
-      sectionRect.top > 0
+      gridRect.bottom >=
+      DISTANCIA_MORPH_SALIDA
     ) {
-      conectarDesdeAbajo(sectionRect);
-
-      return;
-    }
-
-
-    /*
-       Sección visible.
-
-       La flotante no existe.
-    */
-
-    if (
-      sectionRect.top <=
-        floatingBottomAnchor - DISTANCIA_CONEXION &&
-      sectionRect.bottom >= DISTANCIA_CONEXION
-    ) {
-      limpiarConexionScroll();
+      ocultarMorph();
       ocultarCuentaFlotante();
+      mostrarGridReal();
 
       floatingCountdown.setAttribute(
         "aria-hidden",
@@ -767,41 +816,46 @@
 
 
     /*
-       La sección abandona la pantalla
-       por arriba.
+       ==========================
+       SALIDA HACIA ARRIBA
+       ==========================
     */
 
+    const progresoSalida = limitar(
+      (
+        DISTANCIA_MORPH_SALIDA -
+        gridRect.bottom
+      ) /
+      DISTANCIA_MORPH_SALIDA,
+      0,
+      1
+    );
+
+
     if (
-      sectionRect.bottom < DISTANCIA_CONEXION &&
-      sectionRect.bottom > 0
+      progresoSalida > 0 &&
+      progresoSalida < 1
     ) {
-      conectarHaciaArriba(sectionRect);
+      ocultarGridReal();
+
+      representarMorph(
+        progresoSalida,
+        "top"
+      );
 
       return;
     }
 
 
     /*
-       Sección completamente superada.
+       ==========================
+       CUENTA YA SUPERADA
+       ==========================
     */
 
-    if (sectionRect.bottom <= 0) {
-      limpiarConexionScroll();
-
-      floatingCountdown.classList.add(
-        "is-visible",
-        "is-top"
-      );
-
-      floatingCountdown.classList.remove(
-        "is-bottom"
-      );
-
-      floatingCountdown.setAttribute(
-        "aria-hidden",
-        "false"
-      );
-    }
+    ocultarMorph();
+    mostrarGridReal();
+    mostrarFlotanteArriba();
   }
 
 
@@ -810,22 +864,28 @@
 
     scrollFramePendiente = true;
 
+
     requestAnimationFrame(() => {
+
       actualizarPosicionFlotante();
 
       scrollFramePendiente = false;
+
     });
   }
 
 
   function actualizarCuentaAtras() {
-    const ahora = new Date().getTime();
+    const ahora =
+      new Date().getTime();
+
 
     const diferencia =
       fechaEvento - ahora;
 
 
     if (diferencia <= 0) {
+
       contador.innerHTML = `
         <div class="countdown-ended">
           <h3>Gracias por venir</h3>
@@ -835,6 +895,7 @@
           </p>
         </div>
       `;
+
 
       desactivarCuentaFlotante();
 
@@ -847,6 +908,7 @@
       (1000 * 60 * 60 * 24)
     );
 
+
     const horas = Math.floor(
       (
         diferencia /
@@ -854,12 +916,14 @@
       ) % 24
     );
 
+
     const minutos = Math.floor(
       (
         diferencia /
         (1000 * 60)
       ) % 60
     );
+
 
     const segundos = Math.floor(
       (
@@ -896,20 +960,31 @@
         formatearNumero(dias, 3);
     }
 
+
     if (floatingHoras) {
       floatingHoras.textContent =
         formatearNumero(horas);
     }
+
 
     if (floatingMinutos) {
       floatingMinutos.textContent =
         formatearNumero(minutos);
     }
 
+
     if (floatingSegundos) {
       floatingSegundos.textContent =
         formatearNumero(segundos);
     }
+
+
+    actualizarValoresMorph(
+      dias,
+      horas,
+      minutos,
+      segundos
+    );
 
 
     solicitarActualizacionScroll();
