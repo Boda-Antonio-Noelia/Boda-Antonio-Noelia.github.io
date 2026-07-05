@@ -277,6 +277,17 @@
   const DISTANCIA_MORPH_SALIDA = 360;
 
 
+  /*
+     Margen mínimo que el morph debe respetar
+     respecto al viewport.
+
+     Coincide aproximadamente con el 1rem
+     de la cuenta flotante real.
+  */
+
+  const MARGEN_MORPH_VIEWPORT = 16;
+
+
   let scrollFramePendiente = false;
 
 
@@ -304,30 +315,129 @@
 
 
   /*
-     Convierte un rectángulo del viewport
-     en coordenadas absolutas del documento.
+     Información del viewport visual real.
 
-     Este es el cambio clave.
+     Es especialmente útil en móviles porque
+     las barras del navegador aparecen y
+     desaparecen.
+  */
 
-     El morph deja de perseguir visualmente
-     al checkpoint según se mueve la pantalla.
+  function obtenerViewportVisual() {
+    const visualViewport = window.visualViewport;
+
+
+    if (visualViewport) {
+      return {
+        top:
+          window.scrollY +
+          visualViewport.offsetTop,
+
+        height:
+          visualViewport.height
+      };
+    }
+
+
+    return {
+      top: window.scrollY,
+      height: window.innerHeight
+    };
+  }
+
+
+  /*
+     Rectángulo de un elemento convertido
+     a coordenadas del documento.
   */
 
   function rectDocumento(elemento) {
     const rect =
       elemento.getBoundingClientRect();
 
+
     return {
-      left: rect.left + window.scrollX,
-      top: rect.top + window.scrollY,
-      width: rect.width,
-      height: rect.height,
+      left:
+        rect.left + window.scrollX,
+
+      top:
+        rect.top + window.scrollY,
+
+      width:
+        rect.width,
+
+      height:
+        rect.height,
 
       right:
         rect.right + window.scrollX,
 
       bottom:
         rect.bottom + window.scrollY
+    };
+  }
+
+
+  /*
+     Mantiene TODO el morph dentro del margen
+     visual superior e inferior.
+
+     No deforma la transformación.
+
+     Solo desplaza verticalmente el conjunto.
+  */
+
+  function obtenerCorreccionViewport(rectShell) {
+    const viewport =
+      obtenerViewportVisual();
+
+
+    const limiteSuperior =
+      viewport.top +
+      MARGEN_MORPH_VIEWPORT;
+
+
+    const limiteInferior =
+      viewport.top +
+      viewport.height -
+      MARGEN_MORPH_VIEWPORT;
+
+
+    const bordeSuperior =
+      rectShell.top;
+
+
+    const bordeInferior =
+      rectShell.top +
+      rectShell.height;
+
+
+    if (bordeSuperior < limiteSuperior) {
+      return limiteSuperior - bordeSuperior;
+    }
+
+
+    if (bordeInferior > limiteInferior) {
+      return limiteInferior - bordeInferior;
+    }
+
+
+    return 0;
+  }
+
+
+  function desplazarRectanguloY(rect, desplazamientoY) {
+    return {
+      ...rect,
+
+      top:
+        rect.top + desplazamientoY,
+
+      bottom:
+        rect.bottom !== undefined
+          ? rect.bottom + desplazamientoY
+          : rect.top +
+            desplazamientoY +
+            rect.height
     };
   }
 
@@ -381,10 +491,21 @@
   function ocultarCuentaFlotante() {
     if (!floatingCountdown) return;
 
-    floatingCountdown.classList.remove("is-visible");
 
-    floatingCountdown.style.removeProperty("opacity");
-    floatingCountdown.style.removeProperty("filter");
+    floatingCountdown.classList.remove(
+      "is-visible"
+    );
+
+
+    floatingCountdown.style.removeProperty(
+      "opacity"
+    );
+
+
+    floatingCountdown.style.removeProperty(
+      "filter"
+    );
+
 
     floatingCountdown.classList.remove(
       "is-morphing",
@@ -394,12 +515,8 @@
 
 
   /*
-     Hace el relevo morph -> flotante real
-     sin volver a ejecutar el fade CSS.
-
-     El morph ya está visualmente convertido
-     en la flotante, así que simplemente
-     intercambiamos actores.
+     Relevo morph -> flotante real
+     sin ejecutar de nuevo el fade.
   */
 
   function mostrarFlotanteInstantanea(posicion) {
@@ -418,6 +535,7 @@
         "is-morphing"
       );
 
+
       floatingCountdown.classList.add(
         "is-bottom",
         "is-visible"
@@ -430,6 +548,7 @@
         "is-morphing"
       );
 
+
       floatingCountdown.classList.add(
         "is-top",
         "is-visible"
@@ -441,17 +560,12 @@
     floatingCountdown.style.opacity = "1";
     floatingCountdown.style.filter = "none";
 
+
     floatingCountdown.setAttribute(
       "aria-hidden",
       "false"
     );
 
-
-    /*
-       Forzamos al navegador a representar
-       el estado final antes de devolverle
-       las transiciones normales.
-    */
 
     void floatingCountdown.offsetWidth;
 
@@ -462,9 +576,11 @@
         "is-morph-handoff"
       );
 
+
       floatingCountdown.style.removeProperty(
         "opacity"
       );
+
 
       floatingCountdown.style.removeProperty(
         "filter"
@@ -496,16 +612,13 @@
     if (!contador) return;
 
     contador.classList.remove("is-morphing");
-
     contador.style.removeProperty("opacity");
   }
 
 
   /*
-     Colocamos la flotante real en su posición
-     para poder medirla.
-
-     Sigue invisible.
+     Preparamos la cuenta flotante invisible
+     exclusivamente para medir su geometría.
   */
 
   function prepararFlotanteParaMedir(posicion) {
@@ -521,13 +634,25 @@
 
     if (posicion === "bottom") {
 
-      floatingCountdown.classList.add("is-bottom");
-      floatingCountdown.classList.remove("is-top");
+      floatingCountdown.classList.add(
+        "is-bottom"
+      );
+
+
+      floatingCountdown.classList.remove(
+        "is-top"
+      );
 
     } else {
 
-      floatingCountdown.classList.add("is-top");
-      floatingCountdown.classList.remove("is-bottom");
+      floatingCountdown.classList.add(
+        "is-top"
+      );
+
+
+      floatingCountdown.classList.remove(
+        "is-bottom"
+      );
 
     }
 
@@ -537,37 +662,28 @@
   }
 
 
-  /*
-     Coordenadas de los cuatro valores flotantes
-     convertidas a espacio documental.
-  */
-
   function obtenerRectangulosFlotante() {
     if (!floatingCountdown) return [];
+
 
     return Array.from(
       floatingCountdown.children
     ).map(
-      elemento => rectDocumento(elemento)
+      elemento =>
+        rectDocumento(elemento)
     );
   }
 
 
-  /*
-     Coordenadas de las cuatro tarjetas.
-
-     Como trabajamos en coordenadas del documento,
-     estas posiciones permanecen estables aunque
-     el usuario haga un scroll rápido.
-  */
-
   function obtenerRectangulosTarjetas() {
     if (!contador) return [];
+
 
     return Array.from(
       contador.querySelectorAll(".countdown-item")
     ).map(
-      elemento => rectDocumento(elemento)
+      elemento =>
+        rectDocumento(elemento)
     );
   }
 
@@ -575,10 +691,21 @@
   function colocarElemento(elemento, rect) {
     if (!elemento) return;
 
-    elemento.style.left = `${rect.left}px`;
-    elemento.style.top = `${rect.top}px`;
-    elemento.style.width = `${rect.width}px`;
-    elemento.style.height = `${rect.height}px`;
+
+    elemento.style.left =
+      `${rect.left}px`;
+
+
+    elemento.style.top =
+      `${rect.top}px`;
+
+
+    elemento.style.width =
+      `${rect.width}px`;
+
+
+    elemento.style.height =
+      `${rect.height}px`;
   }
 
 
@@ -620,9 +747,6 @@
   /*
      0 = compacto / flotante
      1 = cuatro tarjetas
-
-     La dirección indica en qué sentido
-     recorremos la misma geometría.
   */
 
   function representarMorph(
@@ -648,16 +772,9 @@
     );
 
 
-    /*
-       IMPORTANTE:
-
-       Tanto la flotante como el checkpoint
-       se miden ahora en coordenadas absolutas
-       del documento.
-    */
-
     const rectFlotante =
       rectDocumento(floatingCountdown);
+
 
     const rectGrid =
       rectDocumento(contador);
@@ -665,6 +782,7 @@
 
     const origenes =
       obtenerRectangulosFlotante();
+
 
     const destinos =
       obtenerRectangulosTarjetas();
@@ -685,15 +803,35 @@
 
     /*
        ==========================
-       FONDO COMÚN / CÁPSULA
+       CÁPSULA GENERAL
        ==========================
     */
 
-    const rectShell =
+    let rectShell =
       interpolarRectangulo(
         rectFlotante,
         rectGrid,
         progresoSuave
+      );
+
+
+    /*
+       Calculamos una única corrección vertical.
+
+       Esa misma corrección se aplica a la cápsula
+       y a sus cuatro valores.
+
+       Así el morph entero respeta el margen.
+    */
+
+    const correccionViewport =
+      obtenerCorreccionViewport(rectShell);
+
+
+    rectShell =
+      desplazarRectanguloY(
+        rectShell,
+        correccionViewport
       );
 
 
@@ -747,11 +885,23 @@
     morphItems.forEach(
       (item, indice) => {
 
-        const rect =
+        let rect =
           interpolarRectangulo(
             origenes[indice],
             destinos[indice],
             progresoSuave
+          );
+
+
+        /*
+           Exactamente la misma corrección que
+           hemos aplicado al shell.
+        */
+
+        rect =
+          desplazarRectanguloY(
+            rect,
+            correccionViewport
           );
 
 
@@ -805,25 +955,54 @@
           );
 
 
+        /*
+           ==============================
+           RELEVO DE TEXTO SIN SOLAPAMIENTO
+           ==============================
+
+           Compacto:
+           visible hasta 42 %
+           desaparece entre 42 % y 50 %
+
+           Tarjeta:
+           permanece invisible hasta 50 %
+           aparece entre 50 % y 58 %
+
+           Nunca se ven ambos a la vez.
+        */
+
+
+        const opacidadCompacto =
+          1 -
+          limitar(
+            (
+              progresoSuave -
+              0.42
+            ) /
+            0.08,
+            0,
+            1
+          );
+
+
+        const opacidadTarjeta =
+          limitar(
+            (
+              progresoSuave -
+              0.50
+            ) /
+            0.08,
+            0,
+            1
+          );
+
+
         compacto.style.opacity =
-          `${
-            1 -
-            limitar(
-              (progresoSuave - 0.20) / 0.45,
-              0,
-              1
-            )
-          }`;
+          `${opacidadCompacto}`;
 
 
         tarjeta.style.opacity =
-          `${
-            limitar(
-              (progresoSuave - 0.38) / 0.45,
-              0,
-              1
-            )
-          }`;
+          `${opacidadTarjeta}`;
 
       }
     );
@@ -865,7 +1044,9 @@
     */
 
     if (
-      document.body.classList.contains("intro-lock")
+      document.body.classList.contains(
+        "intro-lock"
+      )
     ) {
       ocultarMorph();
       ocultarCuentaFlotante();
@@ -896,8 +1077,8 @@
       contador.getBoundingClientRect();
 
 
-    const viewportHeight =
-      window.innerHeight;
+    const viewport =
+      obtenerViewportVisual();
 
 
     /*
@@ -909,7 +1090,7 @@
     const progresoAntes =
       limitar(
         (
-          viewportHeight + 20 -
+          viewport.height + 20 -
           gridRect.top
         ) /
         DISTANCIA_MORPH_ENTRADA,
@@ -920,17 +1101,12 @@
 
     /*
        INICIO / FINAL DEL ANTES INVERSO
-
-       El morph ya coincide con la flotante.
-
-       Intercambio instantáneo.
     */
 
     if (progresoAntes <= 0) {
 
       ocultarMorph();
       mostrarGridReal();
-
       mostrarFlotanteAbajo();
 
       return;
@@ -1024,17 +1200,9 @@
 
     ocultarMorph();
     mostrarGridReal();
-
     mostrarFlotanteArriba();
   }
 
-
-  /*
-     El scroll manda directamente.
-
-     Un frame de navegador procesa siempre
-     la posición más reciente disponible.
-  */
 
   function solicitarActualizacionScroll() {
     if (scrollFramePendiente) return;
@@ -1046,7 +1214,6 @@
     requestAnimationFrame(() => {
 
       actualizarPosicionFlotante();
-
 
       scrollFramePendiente = false;
 
@@ -1198,7 +1365,7 @@
 
 
   /*
-     ACTUALIZACIÓN DEL TIEMPO
+     RELOJ
   */
 
   setInterval(
@@ -1221,13 +1388,35 @@
 
 
   /*
-     VIEWPORT MÓVIL
+     CAMBIO DE VIEWPORT
   */
 
   window.addEventListener(
     "resize",
     solicitarActualizacionScroll
   );
+
+
+  /*
+     CAMBIOS DEL VIEWPORT VISUAL EN MÓVIL
+
+     Barra superior/inferior del navegador.
+  */
+
+  if (window.visualViewport) {
+
+    window.visualViewport.addEventListener(
+      "resize",
+      solicitarActualizacionScroll
+    );
+
+
+    window.visualViewport.addEventListener(
+      "scroll",
+      solicitarActualizacionScroll
+    );
+
+  }
 </script>
   
   
