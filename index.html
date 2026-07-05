@@ -229,8 +229,29 @@
   const countdownSection =
     document.getElementById("cuenta-atras");
 
+  const countdownCard =
+    countdownSection?.querySelector(".countdown-card");
+
+  const countdownTitle =
+    countdownSection?.querySelector(".countdown-title");
+
   const contador =
     document.getElementById("contador");
+
+
+  /*
+     Referencias estables del checkpoint.
+
+     Las tarjetas se crean una sola vez.
+     Después únicamente cambia el texto.
+  */
+
+  let checkpointInicializado = false;
+
+  let checkpointDias = null;
+  let checkpointHoras = null;
+  let checkpointMinutos = null;
+  let checkpointSegundos = null;
 
 
   const floatingCountdown =
@@ -278,14 +299,23 @@
 
 
   /*
-     Margen mínimo que el morph debe respetar
-     respecto al viewport.
-
-     Coincide aproximadamente con el 1rem
-     de la cuenta flotante real.
+     Margen mínimo del morph respecto
+     al viewport móvil.
   */
 
   const MARGEN_MORPH_VIEWPORT = 16;
+
+
+  /*
+     Corredor seguro dentro de la tarjeta.
+
+     El morph no puede rozar el título
+     ni el borde inferior.
+  */
+
+  const MARGEN_MORPH_TARJETA_SUPERIOR = 28;
+
+  const MARGEN_MORPH_TARJETA_INFERIOR = 24;
 
 
   let scrollFramePendiente = false;
@@ -304,6 +334,10 @@
   }
 
 
+  /*
+     El scroll manda directamente.
+  */
+
   function suavizar(progreso) {
     return limitar(progreso, 0, 1);
   }
@@ -315,15 +349,15 @@
 
 
   /*
-     Información del viewport visual real.
+     Viewport visual real.
 
-     Es especialmente útil en móviles porque
-     las barras del navegador aparecen y
-     desaparecen.
+     Importante en móvil por las barras
+     superior e inferior del navegador.
   */
 
   function obtenerViewportVisual() {
-    const visualViewport = window.visualViewport;
+    const visualViewport =
+      window.visualViewport;
 
 
     if (visualViewport) {
@@ -346,8 +380,8 @@
 
 
   /*
-     Rectángulo de un elemento convertido
-     a coordenadas del documento.
+     Convierte coordenadas de pantalla
+     a coordenadas estables del documento.
   */
 
   function rectDocumento(elemento) {
@@ -378,12 +412,8 @@
 
 
   /*
-     Mantiene TODO el morph dentro del margen
-     visual superior e inferior.
-
-     No deforma la transformación.
-
-     Solo desplaza verticalmente el conjunto.
+     Mantiene el morph dentro de los márgenes
+     superior e inferior del viewport.
   */
 
   function obtenerCorreccionViewport(rectShell) {
@@ -425,16 +455,102 @@
   }
 
 
-  function desplazarRectanguloY(rect, desplazamientoY) {
+  /*
+     Corredor vertical seguro dentro
+     de la tarjeta de cuenta atrás.
+  */
+
+  function obtenerCorreccionTarjeta(rectShell) {
+    if (
+      !countdownCard ||
+      !countdownTitle
+    ) {
+      return 0;
+    }
+
+
+    const cardRect =
+      rectDocumento(countdownCard);
+
+
+    const titleRect =
+      rectDocumento(countdownTitle);
+
+
+    /*
+       El espacio válido empieza después
+       del título grande.
+    */
+
+    const limiteSuperior =
+      titleRect.bottom +
+      MARGEN_MORPH_TARJETA_SUPERIOR;
+
+
+    /*
+       Y termina antes del borde inferior
+       de la tarjeta.
+    */
+
+    const limiteInferior =
+      cardRect.bottom -
+      MARGEN_MORPH_TARJETA_INFERIOR;
+
+
+    const bordeSuperior =
+      rectShell.top;
+
+
+    const bordeInferior =
+      rectShell.top +
+      rectShell.height;
+
+
+    /*
+       Solo aplicamos esta restricción
+       cuando el morph entra físicamente
+       en la tarjeta.
+    */
+
+    const estaDentroDeLaTarjeta =
+      bordeInferior > cardRect.top &&
+      bordeSuperior < cardRect.bottom;
+
+
+    if (!estaDentroDeLaTarjeta) {
+      return 0;
+    }
+
+
+    if (bordeSuperior < limiteSuperior) {
+      return limiteSuperior - bordeSuperior;
+    }
+
+
+    if (bordeInferior > limiteInferior) {
+      return limiteInferior - bordeInferior;
+    }
+
+
+    return 0;
+  }
+
+
+  function desplazarRectanguloY(
+    rect,
+    desplazamientoY
+  ) {
     return {
       ...rect,
 
       top:
-        rect.top + desplazamientoY,
+        rect.top +
+        desplazamientoY,
 
       bottom:
         rect.bottom !== undefined
-          ? rect.bottom + desplazamientoY
+          ? rect.bottom +
+            desplazamientoY
           : rect.top +
             desplazamientoY +
             rect.height
@@ -449,10 +565,17 @@
     segundos
   ) {
     const valores = {
-      dias: formatearNumero(dias, 3),
-      horas: formatearNumero(horas),
-      minutos: formatearNumero(minutos),
-      segundos: formatearNumero(segundos)
+      dias:
+        formatearNumero(dias, 3),
+
+      horas:
+        formatearNumero(horas),
+
+      minutos:
+        formatearNumero(minutos),
+
+      segundos:
+        formatearNumero(segundos)
     };
 
 
@@ -484,7 +607,9 @@
   function ocultarMorph() {
     if (!countdownMorph) return;
 
-    countdownMorph.classList.remove("is-active");
+    countdownMorph.classList.remove(
+      "is-active"
+    );
   }
 
 
@@ -515,8 +640,7 @@
 
 
   /*
-     Relevo morph -> flotante real
-     sin ejecutar de nuevo el fade.
+     Relevo inmediato morph -> flotante real.
   */
 
   function mostrarFlotanteInstantanea(posicion) {
@@ -567,6 +691,11 @@
     );
 
 
+    /*
+       Fuerza el estado final antes de devolver
+       las transiciones CSS normales.
+    */
+
     void floatingCountdown.offsetWidth;
 
 
@@ -603,7 +732,12 @@
   function ocultarGridReal() {
     if (!contador) return;
 
-    contador.classList.add("is-morphing");
+
+    contador.classList.add(
+      "is-morphing"
+    );
+
+
     contador.style.opacity = "0";
   }
 
@@ -611,14 +745,21 @@
   function mostrarGridReal() {
     if (!contador) return;
 
-    contador.classList.remove("is-morphing");
-    contador.style.removeProperty("opacity");
+
+    contador.classList.remove(
+      "is-morphing"
+    );
+
+
+    contador.style.removeProperty(
+      "opacity"
+    );
   }
 
 
   /*
-     Preparamos la cuenta flotante invisible
-     exclusivamente para medir su geometría.
+     La flotante real queda invisible
+     pero conserva su geometría.
   */
 
   function prepararFlotanteParaMedir(posicion) {
@@ -658,6 +799,7 @@
 
 
     floatingCountdown.style.opacity = "0";
+
     floatingCountdown.style.filter = "none";
   }
 
@@ -680,7 +822,9 @@
 
 
     return Array.from(
-      contador.querySelectorAll(".countdown-item")
+      contador.querySelectorAll(
+        ".countdown-item"
+      )
     ).map(
       elemento =>
         rectDocumento(elemento)
@@ -716,37 +860,42 @@
   ) {
     return {
 
-      left: interpolar(
-        inicio.left,
-        final.left,
-        progreso
-      ),
+      left:
+        interpolar(
+          inicio.left,
+          final.left,
+          progreso
+        ),
 
-      top: interpolar(
-        inicio.top,
-        final.top,
-        progreso
-      ),
+      top:
+        interpolar(
+          inicio.top,
+          final.top,
+          progreso
+        ),
 
-      width: interpolar(
-        inicio.width,
-        final.width,
-        progreso
-      ),
+      width:
+        interpolar(
+          inicio.width,
+          final.width,
+          progreso
+        ),
 
-      height: interpolar(
-        inicio.height,
-        final.height,
-        progreso
-      )
+      height:
+        interpolar(
+          inicio.height,
+          final.height,
+          progreso
+        )
 
     };
   }
 
 
   /*
-     0 = compacto / flotante
-     1 = cuatro tarjetas
+     0 = flotante compacta
+
+     1 = cuatro tarjetas del checkpoint
   */
 
   function representarMorph(
@@ -754,7 +903,8 @@
     posicionFlotante,
     direccion = "compacto-a-grid"
   ) {
-    progreso = limitar(progreso, 0, 1);
+    progreso =
+      limitar(progreso, 0, 1);
 
 
     const progresoVisual =
@@ -773,11 +923,15 @@
 
 
     const rectFlotante =
-      rectDocumento(floatingCountdown);
+      rectDocumento(
+        floatingCountdown
+      );
 
 
     const rectGrid =
-      rectDocumento(contador);
+      rectDocumento(
+        contador
+      );
 
 
     const origenes =
@@ -798,7 +952,9 @@
     }
 
 
-    countdownMorph.classList.add("is-active");
+    countdownMorph.classList.add(
+      "is-active"
+    );
 
 
     /*
@@ -816,16 +972,13 @@
 
 
     /*
-       Calculamos una única corrección vertical.
-
-       Esa misma corrección se aplica a la cápsula
-       y a sus cuatro valores.
-
-       Así el morph entero respeta el margen.
+       Primero respeta el viewport.
     */
 
     const correccionViewport =
-      obtenerCorreccionViewport(rectShell);
+      obtenerCorreccionViewport(
+        rectShell
+      );
 
 
     rectShell =
@@ -833,6 +986,34 @@
         rectShell,
         correccionViewport
       );
+
+
+    /*
+       Después respeta el corredor seguro
+       dentro de la tarjeta.
+    */
+
+    const correccionTarjeta =
+      obtenerCorreccionTarjeta(
+        rectShell
+      );
+
+
+    rectShell =
+      desplazarRectanguloY(
+        rectShell,
+        correccionTarjeta
+      );
+
+
+    /*
+       Los cuatro valores reciben exactamente
+       el mismo desplazamiento vertical.
+    */
+
+    const correccionTotal =
+      correccionViewport +
+      correccionTarjeta;
 
 
     colocarElemento(
@@ -894,18 +1075,21 @@
 
 
         /*
-           Exactamente la misma corrección que
-           hemos aplicado al shell.
+           Mantiene al morph como un cuerpo
+           geométrico único.
         */
 
         rect =
           desplazarRectanguloY(
             rect,
-            correccionViewport
+            correccionTotal
           );
 
 
-        colocarElemento(item, rect);
+        colocarElemento(
+          item,
+          rect
+        );
 
 
         item.style.borderRadius =
@@ -956,21 +1140,16 @@
 
 
         /*
-           ==============================
-           RELEVO DE TEXTO SIN SOLAPAMIENTO
-           ==============================
+           Relevo de texto sin solapamiento.
 
            Compacto:
-           visible hasta 42 %
-           desaparece entre 42 % y 50 %
+           100 % hasta 42 %
+           desaparece 42-50 %
 
            Tarjeta:
-           permanece invisible hasta 50 %
-           aparece entre 50 % y 58 %
-
-           Nunca se ven ambos a la vez.
+           0 % hasta 50 %
+           aparece 50-58 %
         */
-
 
         const opacidadCompacto =
           1 -
@@ -1009,8 +1188,76 @@
   }
 
 
+  /*
+     El checkpoint se crea una sola vez.
+
+     Esto evita destruir y recrear sus cuatro
+     tarjetas cada segundo.
+  */
+
+  function inicializarCheckpoint() {
+    if (
+      checkpointInicializado ||
+      !contador
+    ) {
+      return;
+    }
+
+
+    contador.innerHTML = `
+      <div class="countdown-item">
+        <span id="checkpointDias">000</span>
+        <small>Días</small>
+      </div>
+
+      <div class="countdown-item">
+        <span id="checkpointHoras">00</span>
+        <small>Horas</small>
+      </div>
+
+      <div class="countdown-item">
+        <span id="checkpointMinutos">00</span>
+        <small>Minutos</small>
+      </div>
+
+      <div class="countdown-item">
+        <span id="checkpointSegundos">00</span>
+        <small>Segundos</small>
+      </div>
+    `;
+
+
+    checkpointDias =
+      document.getElementById(
+        "checkpointDias"
+      );
+
+
+    checkpointHoras =
+      document.getElementById(
+        "checkpointHoras"
+      );
+
+
+    checkpointMinutos =
+      document.getElementById(
+        "checkpointMinutos"
+      );
+
+
+    checkpointSegundos =
+      document.getElementById(
+        "checkpointSegundos"
+      );
+
+
+    checkpointInicializado = true;
+  }
+
+
   function desactivarCuentaFlotante() {
     ocultarMorph();
+
     ocultarCuentaFlotante();
 
 
@@ -1040,7 +1287,7 @@
 
 
     /*
-       PORTADA
+       PORTADA INICIAL
     */
 
     if (
@@ -1049,7 +1296,9 @@
       )
     ) {
       ocultarMorph();
+
       ocultarCuentaFlotante();
+
       mostrarGridReal();
 
       return;
@@ -1066,7 +1315,9 @@
       )
     ) {
       ocultarMorph();
+
       ocultarCuentaFlotante();
+
       mostrarGridReal();
 
       return;
@@ -1090,7 +1341,8 @@
     const progresoAntes =
       limitar(
         (
-          viewport.height + 20 -
+          viewport.height +
+          20 -
           gridRect.top
         ) /
         DISTANCIA_MORPH_ENTRADA,
@@ -1100,13 +1352,16 @@
 
 
     /*
-       INICIO / FINAL DEL ANTES INVERSO
+       INICIO
+       FINAL DEL ANTES INVERSO
     */
 
     if (progresoAntes <= 0) {
 
       ocultarMorph();
+
       mostrarGridReal();
+
       mostrarFlotanteAbajo();
 
       return;
@@ -1159,7 +1414,9 @@
     if (progresoDespues <= 0) {
 
       ocultarMorph();
+
       ocultarCuentaFlotante();
+
       mostrarGridReal();
 
 
@@ -1199,10 +1456,17 @@
     */
 
     ocultarMorph();
+
     mostrarGridReal();
+
     mostrarFlotanteArriba();
   }
 
+
+  /*
+     La posición actual del scroll manda
+     directamente sobre la transmutación.
+  */
 
   function solicitarActualizacionScroll() {
     if (scrollFramePendiente) return;
@@ -1214,6 +1478,7 @@
     requestAnimationFrame(() => {
 
       actualizarPosicionFlotante();
+
 
       scrollFramePendiente = false;
 
@@ -1227,7 +1492,8 @@
 
 
     const diferencia =
-      fechaEvento - ahora;
+      fechaEvento -
+      ahora;
 
 
     /*
@@ -1235,6 +1501,14 @@
     */
 
     if (diferencia <= 0) {
+
+      /*
+         Al terminar el evento ya no necesitamos
+         el checkpoint numérico.
+      */
+
+      checkpointInicializado = false;
+
 
       contador.innerHTML = `
         <div class="countdown-ended">
@@ -1248,6 +1522,7 @@
 
 
       desactivarCuentaFlotante();
+
 
       return;
     }
@@ -1281,36 +1556,50 @@
     const segundos =
       Math.floor(
         (
-          diferencia / 1000
+          diferencia /
+          1000
         ) % 60
       );
 
 
     /*
-       CHECKPOINT REAL
+       CHECKPOINT ESTABLE
     */
 
-    contador.innerHTML = `
-      <div class="countdown-item">
-        <span>${dias}</span>
-        <small>Días</small>
-      </div>
+    inicializarCheckpoint();
 
-      <div class="countdown-item">
-        <span>${formatearNumero(horas)}</span>
-        <small>Horas</small>
-      </div>
 
-      <div class="countdown-item">
-        <span>${formatearNumero(minutos)}</span>
-        <small>Minutos</small>
-      </div>
+    if (checkpointDias) {
+      checkpointDias.textContent =
+        formatearNumero(
+          dias,
+          3
+        );
+    }
 
-      <div class="countdown-item">
-        <span>${formatearNumero(segundos)}</span>
-        <small>Segundos</small>
-      </div>
-    `;
+
+    if (checkpointHoras) {
+      checkpointHoras.textContent =
+        formatearNumero(
+          horas
+        );
+    }
+
+
+    if (checkpointMinutos) {
+      checkpointMinutos.textContent =
+        formatearNumero(
+          minutos
+        );
+    }
+
+
+    if (checkpointSegundos) {
+      checkpointSegundos.textContent =
+        formatearNumero(
+          segundos
+        );
+    }
 
 
     /*
@@ -1319,30 +1608,39 @@
 
     if (floatingDias) {
       floatingDias.textContent =
-        formatearNumero(dias, 3);
+        formatearNumero(
+          dias,
+          3
+        );
     }
 
 
     if (floatingHoras) {
       floatingHoras.textContent =
-        formatearNumero(horas);
+        formatearNumero(
+          horas
+        );
     }
 
 
     if (floatingMinutos) {
       floatingMinutos.textContent =
-        formatearNumero(minutos);
+        formatearNumero(
+          minutos
+        );
     }
 
 
     if (floatingSegundos) {
       floatingSegundos.textContent =
-        formatearNumero(segundos);
+        formatearNumero(
+          segundos
+        );
     }
 
 
     /*
-       MORPH
+       CAPA MORPH
     */
 
     actualizarValoresMorph(
@@ -1388,7 +1686,7 @@
 
 
   /*
-     CAMBIO DE VIEWPORT
+     CAMBIOS DE VIEWPORT
   */
 
   window.addEventListener(
@@ -1398,9 +1696,7 @@
 
 
   /*
-     CAMBIOS DEL VIEWPORT VISUAL EN MÓVIL
-
-     Barra superior/inferior del navegador.
+     BARRAS DEL NAVEGADOR MÓVIL
   */
 
   if (window.visualViewport) {
