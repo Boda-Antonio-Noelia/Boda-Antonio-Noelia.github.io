@@ -321,27 +321,6 @@
 </script>
 
 
-<script>
-  window.addEventListener("load", () => {
-    const elementos = document.querySelectorAll("*");
-
-    elementos.forEach((el) => {
-      const rect = el.getBoundingClientRect();
-
-      if (rect.right > window.innerWidth || rect.left < 0) {
-        console.log("Elemento que sobresale:", el, {
-          left: rect.left,
-          right: rect.right,
-          anchoViewport: window.innerWidth,
-          excesoDerecha: rect.right - window.innerWidth,
-          excesoIzquierda: rect.left
-        });
-
-        el.style.outline = "2px solid red";
-      }
-    });
-  });
-</script>
 
 
   
