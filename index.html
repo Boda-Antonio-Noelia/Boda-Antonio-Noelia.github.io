@@ -287,7 +287,7 @@
 
 
   /*
-     RECORRIDO DE SCROLL
+     RECORRIDOS DE SCROLL
   */
 
   const DISTANCIA_MORPH_ENTRADA = 280;
@@ -309,14 +309,13 @@
   /*
      TOLERANCIA DEL RELEVO.
 
-     El morph se considera ya convertido
-     en la flotante cuando prácticamente
-     coincide con su geometría.
+     La aumentamos ligeramente para evitar
+     persecuciones subpíxel en Android.
   */
 
-  const TOLERANCIA_RELEVO_POSICION = 3;
+  const TOLERANCIA_RELEVO_POSICION = 8;
 
-  const TOLERANCIA_RELEVO_TAMANO = 3;
+  const TOLERANCIA_RELEVO_TAMANO = 8;
 
 
   let scrollFramePendiente = false;
@@ -335,6 +334,11 @@
   }
 
 
+  /*
+     El scroll controla directamente
+     el progreso visual.
+  */
+
   function suavizar(progreso) {
     return limitar(progreso, 0, 1);
   }
@@ -346,26 +350,15 @@
 
 
   /*
-     VIEWPORT VISUAL MÓVIL
+     VIEWPORT ÚNICO Y ESTABLE.
+
+     Ya no usamos visualViewport.
+
+     Esto evita tener varias referencias
+     geométricas compitiendo durante el scroll.
   */
 
   function obtenerViewportVisual() {
-    const visualViewport =
-      window.visualViewport;
-
-
-    if (visualViewport) {
-      return {
-        top:
-          window.scrollY +
-          visualViewport.offsetTop,
-
-        height:
-          visualViewport.height
-      };
-    }
-
-
     return {
       top: window.scrollY,
       height: window.innerHeight
@@ -652,8 +645,8 @@
 
 
   /*
-     COLOCA LA FLOTANTE EN SU POSICIÓN REAL
-     PERO INVISIBLE PARA PODER MEDIRLA
+     COLOCA LA FLOTANTE REAL EN SU POSICIÓN
+     PERO INVISIBLE PARA MEDIR SU GEOMETRÍA
   */
 
   function prepararFlotanteParaMedir(posicion) {
@@ -699,12 +692,10 @@
 
 
   /*
-     INTERCAMBIO ATÓMICO MORPH -> FLOTANTE
+     INTERCAMBIO MORPH -> FLOTANTE
 
-     El navegador solo pinta el resultado final
-     de este bloque.
-
-     Nunca ve ambas simultáneamente.
+     No dejamos visible el checkpoint
+     durante el relevo.
   */
 
   function entregarMorphAFlotante(posicion) {
@@ -750,10 +741,6 @@
     }
 
 
-    /*
-       Flotante final totalmente visible.
-    */
-
     floatingCountdown.style.opacity = "1";
 
     floatingCountdown.style.filter = "none";
@@ -766,7 +753,7 @@
 
 
     /*
-       MORPH desaparece en el mismo frame.
+       Morph fuera.
     */
 
     countdownMorph.classList.remove(
@@ -775,20 +762,17 @@
 
 
     /*
-       Muy importante:
+       Checkpoint real fuera.
 
-       el checkpoint sigue oculto.
-
-       En inicio/final no debe aparecer detrás
-       de la flotante.
+       En inicio/final no debe verse.
     */
 
     ocultarGridReal();
 
 
     /*
-       Restauramos CSS normal después
-       de haberse pintado el relevo.
+       Tras el relevo devolvemos
+       las transiciones CSS normales.
     */
 
     requestAnimationFrame(() => {
@@ -812,7 +796,7 @@
 
 
   /*
-     ESTADOS ESTABLES DE FLOTANTE
+     ESTADOS ESTABLES
   */
 
   function mostrarFlotanteAbajo() {
@@ -918,8 +902,7 @@
 
 
   /*
-     ¿EL MORPH YA ES GEOMÉTRICAMENTE
-     LA FLOTANTE REAL?
+     COMPARACIÓN MORPH / FLOTANTE
   */
 
   function morphCoincideConFlotante(posicion) {
@@ -930,11 +913,6 @@
       return false;
     }
 
-
-    /*
-       Garantizamos que la flotante esté
-       exactamente en la posición a comparar.
-    */
 
     prepararFlotanteParaMedir(posicion);
 
@@ -1260,7 +1238,7 @@
 
 
   /*
-     INICIALIZACIÓN DEL CHECKPOINT
+     CHECKPOINT CREADO UNA SOLA VEZ
   */
 
   function inicializarCheckpoint() {
@@ -1349,7 +1327,7 @@
 
 
   /*
-     MÁQUINA DE ESTADOS DE SCROLL
+     MÁQUINA DE ESTADOS
   */
 
   function actualizarPosicionFlotante() {
@@ -1382,7 +1360,7 @@
 
 
     /*
-       EVENTO TERMINADO
+       EVENTO FINALIZADO
     */
 
     if (
@@ -1459,12 +1437,6 @@
       );
 
 
-      /*
-         El relevo solo se produce cuando
-         el morph ya coincide físicamente
-         con la flotante inferior.
-      */
-
       if (
         progresoAntes < 0.50 &&
         morphCoincideConFlotante("bottom")
@@ -1536,12 +1508,6 @@
         "grid-a-compacto"
       );
 
-
-      /*
-         El morph solo entrega el relevo
-         cuando ya tiene la geometría
-         de la flotante superior.
-      */
 
       if (
         progresoDespues > 0.50 &&
@@ -1787,33 +1753,13 @@
 
 
   /*
-     VIEWPORT
+     RESIZE GENERAL
   */
 
   window.addEventListener(
     "resize",
     solicitarActualizacionScroll
   );
-
-
-  /*
-     BARRAS DEL NAVEGADOR MÓVIL
-  */
-
-  if (window.visualViewport) {
-
-    window.visualViewport.addEventListener(
-      "resize",
-      solicitarActualizacionScroll
-    );
-
-
-    window.visualViewport.addEventListener(
-      "scroll",
-      solicitarActualizacionScroll
-    );
-
-  }
 </script>
   
   
