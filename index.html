@@ -1661,27 +1661,46 @@
       );
 
 
-    /*
-       INICIO
+/*
+   INICIO
 
-       También es el final estable
-       del ANTES INVERSO.
-    */
+   También es el final del
+   ANTES INVERSO.
 
-    if (progresoAntes <= 0) {
+   Si llegamos aquí subiendo,
+   el scroll puede haberse saltado
+   los últimos frames del morph.
 
-      ocultarMorph();
+   En ese caso hacemos un handoff
+   inmediato para cerrar la cadena
+   de acción sin dejar un frame vacío.
+*/
 
-      ocultarGridReal();
+if (progresoAntes <= 0) {
+
+  ocultarGridReal();
 
 
-      mostrarFlotanteEstable(
-        "bottom"
-      );
+  if (direccionScroll < 0) {
+
+    entregarMorphAFlotante(
+      "bottom"
+    );
+
+  } else {
+
+    ocultarMorph();
 
 
-      return;
-    }
+    mostrarFlotanteEstable(
+      "bottom"
+    );
+
+  }
+
+
+  return;
+}
 
 
     /*
