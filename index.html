@@ -291,9 +291,9 @@
      RECORRIDOS DE SCROLL
   */
 
-  const DISTANCIA_MORPH_ENTRADA = 280;
+  const DISTANCIA_MORPH_ENTRADA = 180;
 
-  const DISTANCIA_MORPH_SALIDA = 240;
+  const DISTANCIA_MORPH_SALIDA = 150;
 
 
   /*
@@ -314,9 +314,9 @@
      persecuciones subpíxel en Android.
   */
 
-  const TOLERANCIA_RELEVO_POSICION = 8;
+  const TOLERANCIA_RELEVO_POSICION = 18;
 
-  const TOLERANCIA_RELEVO_TAMANO = 8;
+  const TOLERANCIA_RELEVO_TAMANO = 18;
 
 
   let scrollFramePendiente = false;
@@ -1439,7 +1439,7 @@
 
 
       if (
-        progresoAntes < 0.50 &&
+        progresoAntes < 0.28 &&
         morphCoincideConFlotante("bottom")
       ) {
 
@@ -1511,7 +1511,7 @@
 
 
       if (
-        progresoDespues > 0.50 &&
+        progresoDespues > 0.72 &&
         morphCoincideConFlotante("top")
       ) {
 
