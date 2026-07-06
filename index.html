@@ -239,7 +239,9 @@
 
 
   /*
+     ==============================
      CHECKPOINT ESTABLE
+     ==============================
   */
 
   let checkpointInicializado = false;
@@ -251,7 +253,9 @@
 
 
   /*
+     ==============================
      FLOTANTE REAL
+     ==============================
   */
 
   const floatingCountdown =
@@ -271,7 +275,9 @@
 
 
   /*
+     ==============================
      CAPA MORPH
+     ==============================
   */
 
   const countdownMorph =
@@ -287,39 +293,135 @@
 
 
   /*
-     ==============================
-     VENTANAS DE TRANSMUTACIÓN
-     ==============================
+     ==================================================
+     REFERENCIAS DE LA CINTA MÉTRICA
+     ==================================================
+
+     EL ANTES:
+
+     La referencia es la distancia de gridRect.top
+     respecto al borde INFERIOR del viewport.
+
+     Positivo:
+     el checkpoint todavía está debajo de la pantalla.
+
+     0:
+     toca el borde inferior.
+
+     Negativo:
+     el checkpoint ya ha entrado en pantalla.
+
+
+     EL DESPUÉS:
+
+     La referencia es gridRect.bottom medida desde
+     el borde SUPERIOR del viewport.
   */
 
 
   /*
+     ==============================
      EL ANTES
+     ==============================
 
-     De momento lo dejamos con el comportamiento
-     que ya estaba funcionando bien.
+     +2,5 % del viewport:
+     comienza EL ANTES.
+
+     -32,5 % del viewport:
+     termina EL ANTES / checkpoint.
+
+     Al subir se recorre exactamente al revés:
+     EL ANTES INVERSO.
   */
 
-  const DISTANCIA_MORPH_ENTRADA = 280;
+  const ANTES_INICIO_RATIO = 0.025;
+
+  const ANTES_FINAL_RATIO = 0.325;
 
 
   /*
+     ==============================
      EL DESPUÉS
+     ==============================
 
-     Cinta métrica desde el borde superior
-     de la pantalla hasta gridRect.bottom.
+     47,5 % del viewport:
+     comienza EL DESPUÉS.
 
-     460 px -> empieza el morph
-     20 px  -> termina el morph
+     3,75 % del viewport:
+     termina EL DESPUÉS / flotante superior.
+
+     Al subir:
+     EL DESPUÉS INVERSO.
   */
 
-  const DESPUES_INICIO = 380;
+  const DESPUES_INICIO_RATIO = 0.475;
 
-  const DESPUES_FINAL = 30;
+  const DESPUES_FINAL_RATIO = 0.0375;
 
 
   /*
-     MÁRGENES
+     ==============================
+     LÍMITES DE LAS REFERENCIAS
+     ==============================
+
+     Evitan comportamientos extremos
+     en móviles muy pequeños, muy largos
+     o tablets verticales.
+  */
+
+
+  /*
+     ANTES_INICIO
+
+     Aproximadamente 20 px en un móvil normal.
+  */
+
+  const ANTES_INICIO_MIN = 16;
+
+  const ANTES_INICIO_MAX = 28;
+
+
+  /*
+     ANTES_FINAL
+
+     Distancia que el checkpoint entra
+     dentro de la pantalla antes de quedar
+     completamente formado.
+  */
+
+  const ANTES_FINAL_MIN = 220;
+
+  const ANTES_FINAL_MAX = 320;
+
+
+  /*
+     DESPUES_INICIO
+
+     Tu referencia actual aproximada:
+     380 px en un viewport de 800 px.
+  */
+
+  const DESPUES_INICIO_MIN = 320;
+
+  const DESPUES_INICIO_MAX = 460;
+
+
+  /*
+     DESPUES_FINAL
+
+     Tu referencia actual aproximada:
+     30 px en un viewport de 800 px.
+  */
+
+  const DESPUES_FINAL_MIN = 24;
+
+  const DESPUES_FINAL_MAX = 40;
+
+
+  /*
+     ==============================
+     MÁRGENES DEL MORPH
+     ==============================
   */
 
   const MARGEN_MORPH_VIEWPORT = 16;
@@ -330,7 +432,9 @@
 
 
   /*
-     TOLERANCIAS DE RELEVO
+     ==============================
+     TOLERANCIAS DEL RELEVO
+     ==============================
   */
 
   const TOLERANCIA_RELEVO_POSICION = 8;
@@ -340,6 +444,12 @@
 
   let scrollFramePendiente = false;
 
+
+  /*
+     ==================================================
+     UTILIDADES
+     ==================================================
+  */
 
   function limitar(valor, minimo, maximo) {
     return Math.min(
@@ -365,7 +475,79 @@
 
 
   /*
-     VIEWPORT
+     Equivalente conceptual a clamp() de CSS,
+     pero usando una proporción de innerHeight.
+  */
+
+  function valorViewport(
+    ratio,
+    minimo,
+    maximo
+  ) {
+    return limitar(
+      window.innerHeight * ratio,
+      minimo,
+      maximo
+    );
+  }
+
+
+  /*
+     Calcula las cuatro marcas reales de
+     nuestra cinta métrica para el dispositivo.
+  */
+
+  function obtenerReferenciasMorph() {
+    const antesInicio =
+      valorViewport(
+        ANTES_INICIO_RATIO,
+        ANTES_INICIO_MIN,
+        ANTES_INICIO_MAX
+      );
+
+
+    /*
+       El signo negativo significa:
+       ya ha entrado dentro del viewport.
+    */
+
+    const antesFinal =
+      -valorViewport(
+        ANTES_FINAL_RATIO,
+        ANTES_FINAL_MIN,
+        ANTES_FINAL_MAX
+      );
+
+
+    const despuesInicio =
+      valorViewport(
+        DESPUES_INICIO_RATIO,
+        DESPUES_INICIO_MIN,
+        DESPUES_INICIO_MAX
+      );
+
+
+    const despuesFinal =
+      valorViewport(
+        DESPUES_FINAL_RATIO,
+        DESPUES_FINAL_MIN,
+        DESPUES_FINAL_MAX
+      );
+
+
+    return {
+      antesInicio,
+      antesFinal,
+      despuesInicio,
+      despuesFinal
+    };
+  }
+
+
+  /*
+     Viewport único.
+
+     No usamos visualViewport.
   */
 
   function obtenerViewportVisual() {
@@ -377,7 +559,8 @@
 
 
   /*
-     COORDENADAS DEL DOCUMENTO
+     Convierte coordenadas del viewport
+     a coordenadas del documento.
   */
 
   function rectDocumento(elemento) {
@@ -408,7 +591,9 @@
 
 
   /*
-     MARGEN DEL VIEWPORT
+     ==================================================
+     CORRECCIÓN DE MÁRGENES
+     ==================================================
   */
 
   function obtenerCorreccionViewport(rectShell) {
@@ -449,10 +634,6 @@
     return 0;
   }
 
-
-  /*
-     CORREDOR SEGURO DENTRO DEL CHECKPOINT
-  */
 
   function obtenerCorreccionTarjeta(rectShell) {
     if (
@@ -537,7 +718,9 @@
 
 
   /*
+     ==================================================
      VALORES DEL MORPH
+     ==================================================
   */
 
   function actualizarValoresMorph(
@@ -587,7 +770,9 @@
 
 
   /*
+     ==================================================
      VISIBILIDAD
+     ==================================================
   */
 
   function ocultarMorph() {
@@ -655,7 +840,9 @@
 
 
   /*
-     FLOTANTE INVISIBLE PARA MEDIRLA
+     ==================================================
+     FLOTANTE
+     ==================================================
   */
 
   function prepararFlotanteParaMedir(posicion) {
@@ -699,10 +886,6 @@
     floatingCountdown.style.filter = "none";
   }
 
-
-  /*
-     RELEVO MORPH -> FLOTANTE
-  */
 
   function entregarMorphAFlotante(posicion) {
     if (
@@ -758,18 +941,14 @@
     );
 
 
-    /*
-       Morph desaparece en el mismo ciclo.
-    */
-
     countdownMorph.classList.remove(
       "is-active"
     );
 
 
     /*
-       Fuera del checkpoint los bloques reales
-       permanecen invisibles.
+       Fuera del checkpoint el grid real
+       permanece oculto.
     */
 
     ocultarGridReal();
@@ -806,7 +985,9 @@
 
 
   /*
+     ==================================================
      GEOMETRÍA
+     ==================================================
   */
 
   function obtenerRectangulosFlotante() {
@@ -864,7 +1045,6 @@
     progreso
   ) {
     return {
-
       left:
         interpolar(
           inicio.left,
@@ -892,13 +1072,14 @@
           final.height,
           progreso
         )
-
     };
   }
 
 
   /*
-     COINCIDENCIA MORPH / FLOTANTE
+     ==================================================
+     COMPARACIÓN MORPH / FLOTANTE
+     ==================================================
   */
 
   function morphCoincideConFlotante(posicion) {
@@ -966,8 +1147,15 @@
 
 
   /*
-     0 = FLOTANTE COMPACTA
-     1 = CHECKPOINT
+     ==================================================
+     REPRESENTACIÓN DEL MORPH
+     ==================================================
+
+     progresoVisual = 0
+     flotante compacta
+
+     progresoVisual = 1
+     cuatro tarjetas
   */
 
   function representarMorph(
@@ -1030,7 +1218,9 @@
 
 
     /*
+       ==========================
        CÁPSULA GENERAL
+       ==========================
     */
 
     let rectShell =
@@ -1114,7 +1304,9 @@
 
 
     /*
+       ==========================
        CUATRO VALORES
+       ==========================
     */
 
     morphItems.forEach(
@@ -1188,6 +1380,17 @@
           );
 
 
+        /*
+           Texto compacto:
+           visible hasta 42 %
+           desaparece 42-50 %
+
+           Texto tarjeta:
+           aparece 50-58 %
+
+           Nunca coinciden.
+        */
+
         const opacidadCompacto =
           1 -
           limitar(
@@ -1226,7 +1429,9 @@
 
 
   /*
+     ==================================================
      CHECKPOINT ESTABLE
+     ==================================================
   */
 
   function inicializarCheckpoint() {
@@ -1290,7 +1495,9 @@
 
 
   /*
+     ==================================================
      EVENTO TERMINADO
+     ==================================================
   */
 
   function desactivarCuentaFlotante() {
@@ -1315,7 +1522,9 @@
 
 
   /*
+     ==================================================
      MÁQUINA DE ESTADOS
+     ==================================================
   */
 
   function actualizarPosicionFlotante() {
@@ -1374,20 +1583,46 @@
       obtenerViewportVisual();
 
 
+    const referencias =
+      obtenerReferenciasMorph();
+
+
     /*
        =========================================
        EL ANTES
        =========================================
     */
 
+
+    /*
+       Distancia del borde superior del grid
+       respecto al borde inferior de pantalla.
+
+       +20:
+       está 20 px por debajo.
+
+       0:
+       está tocando el borde inferior.
+
+       -200:
+       ya ha entrado 200 px.
+    */
+
+    const distanciaDesdeBordeInferior =
+      gridRect.top -
+      viewport.height;
+
+
     const progresoAntes =
       limitar(
         (
-          viewport.height +
-          20 -
-          gridRect.top
+          referencias.antesInicio -
+          distanciaDesdeBordeInferior
         ) /
-        DISTANCIA_MORPH_ENTRADA,
+        (
+          referencias.antesInicio -
+          referencias.antesFinal
+        ),
         0,
         1
       );
@@ -1449,12 +1684,12 @@
     const progresoDespues =
       limitar(
         (
-          DESPUES_INICIO -
+          referencias.despuesInicio -
           gridRect.bottom
         ) /
         (
-          DESPUES_INICIO -
-          DESPUES_FINAL
+          referencias.despuesInicio -
+          referencias.despuesFinal
         ),
         0,
         1
@@ -1500,12 +1735,6 @@
       );
 
 
-      /*
-         Seguimos permitiendo el relevo anticipado
-         si ya coincide perfectamente con la
-         flotante superior.
-      */
-
       if (
         progresoDespues > 0.50 &&
         morphCoincideConFlotante("top")
@@ -1522,10 +1751,7 @@
 
 
     /*
-       FINAL FIJO DEL DESPUÉS
-
-       Cuando gridRect.bottom llega a 20 px,
-       el morph se considera terminado sí o sí.
+       FINAL
     */
 
     ocultarGridReal();
@@ -1538,7 +1764,9 @@
 
 
   /*
+     ==================================================
      FRAME DE SCROLL
+     ==================================================
   */
 
   function solicitarActualizacionScroll() {
@@ -1560,7 +1788,9 @@
 
 
   /*
+     ==================================================
      RELOJ
+     ==================================================
   */
 
   function actualizarCuentaAtras() {
@@ -1724,14 +1954,16 @@
 
 
   /*
+     ==================================================
      INICIO
+     ==================================================
   */
 
   actualizarCuentaAtras();
 
 
   /*
-     CONTADOR
+     RELOJ
   */
 
   setInterval(
