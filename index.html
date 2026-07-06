@@ -287,12 +287,35 @@
 
 
   /*
-     RECORRIDOS DE SCROLL
+     ==============================
+     VENTANAS DE TRANSMUTACIÓN
+     ==============================
   */
 
-  const DISTANCIA_MORPH_ENTRADA = 180;
 
-  const DISTANCIA_MORPH_SALIDA = 150;
+  /*
+     EL ANTES
+
+     De momento lo dejamos con el comportamiento
+     que ya estaba funcionando bien.
+  */
+
+  const DISTANCIA_MORPH_ENTRADA = 280;
+
+
+  /*
+     EL DESPUÉS
+
+     Cinta métrica desde el borde superior
+     de la pantalla hasta gridRect.bottom.
+
+     460 px -> empieza el morph
+     20 px  -> termina el morph
+  */
+
+  const DESPUES_INICIO = 460;
+
+  const DESPUES_FINAL = 20;
 
 
   /*
@@ -307,15 +330,12 @@
 
 
   /*
-     TOLERANCIA DEL RELEVO.
-
-     La aumentamos ligeramente para evitar
-     persecuciones subpíxel en Android.
+     TOLERANCIAS DE RELEVO
   */
 
-  const TOLERANCIA_RELEVO_POSICION = 18;
+  const TOLERANCIA_RELEVO_POSICION = 8;
 
-  const TOLERANCIA_RELEVO_TAMANO = 18;
+  const TOLERANCIA_RELEVO_TAMANO = 8;
 
 
   let scrollFramePendiente = false;
@@ -334,11 +354,6 @@
   }
 
 
-  /*
-     El scroll controla directamente
-     el progreso visual.
-  */
-
   function suavizar(progreso) {
     return limitar(progreso, 0, 1);
   }
@@ -350,12 +365,7 @@
 
 
   /*
-     VIEWPORT ÚNICO Y ESTABLE.
-
-     Ya no usamos visualViewport.
-
-     Esto evita tener varias referencias
-     geométricas compitiendo durante el scroll.
+     VIEWPORT
   */
 
   function obtenerViewportVisual() {
@@ -398,7 +408,7 @@
 
 
   /*
-     CORRECCIÓN DEL VIEWPORT
+     MARGEN DEL VIEWPORT
   */
 
   function obtenerCorreccionViewport(rectShell) {
@@ -645,8 +655,7 @@
 
 
   /*
-     COLOCA LA FLOTANTE REAL EN SU POSICIÓN
-     PERO INVISIBLE PARA MEDIR SU GEOMETRÍA
+     FLOTANTE INVISIBLE PARA MEDIRLA
   */
 
   function prepararFlotanteParaMedir(posicion) {
@@ -692,10 +701,7 @@
 
 
   /*
-     INTERCAMBIO MORPH -> FLOTANTE
-
-     No dejamos visible el checkpoint
-     durante el relevo.
+     RELEVO MORPH -> FLOTANTE
   */
 
   function entregarMorphAFlotante(posicion) {
@@ -753,7 +759,7 @@
 
 
     /*
-       Morph fuera.
+       Morph desaparece en el mismo ciclo.
     */
 
     countdownMorph.classList.remove(
@@ -762,18 +768,12 @@
 
 
     /*
-       Checkpoint real fuera.
-
-       En inicio/final no debe verse.
+       Fuera del checkpoint los bloques reales
+       permanecen invisibles.
     */
 
     ocultarGridReal();
 
-
-    /*
-       Tras el relevo devolvemos
-       las transiciones CSS normales.
-    */
 
     requestAnimationFrame(() => {
 
@@ -794,10 +794,6 @@
     });
   }
 
-
-  /*
-     ESTADOS ESTABLES
-  */
 
   function mostrarFlotanteAbajo() {
     entregarMorphAFlotante("bottom");
@@ -902,7 +898,7 @@
 
 
   /*
-     COMPARACIÓN MORPH / FLOTANTE
+     COINCIDENCIA MORPH / FLOTANTE
   */
 
   function morphCoincideConFlotante(posicion) {
@@ -1034,9 +1030,7 @@
 
 
     /*
-       ==========================
        CÁPSULA GENERAL
-       ==========================
     */
 
     let rectShell =
@@ -1120,9 +1114,7 @@
 
 
     /*
-       ==========================
        CUATRO VALORES
-       ==========================
     */
 
     morphItems.forEach(
@@ -1196,10 +1188,6 @@
           );
 
 
-        /*
-           RELEVO DE TEXTO SIN SOLAPAMIENTO
-        */
-
         const opacidadCompacto =
           1 -
           limitar(
@@ -1238,7 +1226,7 @@
 
 
   /*
-     CHECKPOINT CREADO UNA SOLA VEZ
+     CHECKPOINT ESTABLE
   */
 
   function inicializarCheckpoint() {
@@ -1360,7 +1348,7 @@
 
 
     /*
-       EVENTO FINALIZADO
+       EVENTO TERMINADO
     */
 
     if (
@@ -1438,7 +1426,7 @@
 
 
       if (
-        progresoAntes < 0.28 &&
+        progresoAntes < 0.50 &&
         morphCoincideConFlotante("bottom")
       ) {
 
@@ -1454,17 +1442,20 @@
 
     /*
        =========================================
-       CHECKPOINT / DESPUÉS
+       EL DESPUÉS
        =========================================
     */
 
     const progresoDespues =
       limitar(
         (
-          DISTANCIA_MORPH_SALIDA -
+          DESPUES_INICIO -
           gridRect.bottom
         ) /
-        DISTANCIA_MORPH_SALIDA,
+        (
+          DESPUES_INICIO -
+          DESPUES_FINAL
+        ),
         0,
         1
       );
@@ -1509,8 +1500,14 @@
       );
 
 
+      /*
+         Seguimos permitiendo el relevo anticipado
+         si ya coincide perfectamente con la
+         flotante superior.
+      */
+
       if (
-        progresoDespues > 0.72 &&
+        progresoDespues > 0.50 &&
         morphCoincideConFlotante("top")
       ) {
 
@@ -1525,10 +1522,14 @@
 
 
     /*
-       FINAL
+       FINAL FIJO DEL DESPUÉS
+
+       Cuando gridRect.bottom llega a 20 px,
+       el morph se considera terminado sí o sí.
     */
 
     ocultarGridReal();
+
 
     entregarMorphAFlotante(
       "top"
@@ -1753,7 +1754,7 @@
 
 
   /*
-     RESIZE GENERAL
+     RESIZE
   */
 
   window.addEventListener(
