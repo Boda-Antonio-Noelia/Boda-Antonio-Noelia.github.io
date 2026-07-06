@@ -635,64 +635,81 @@
   }
 
 
-  function obtenerCorreccionTarjeta(rectShell) {
-    if (
-      !countdownCard ||
-      !countdownTitle
-    ) {
-      return 0;
-    }
+  function obtenerCorreccionTarjeta(
+  rectShell,
+  posicionFlotante
+) {
+  if (
+    !countdownCard ||
+    !countdownTitle
+  ) {
+    return 0;
+  }
 
+  const cardRect =
+    rectDocumento(countdownCard);
 
-    const cardRect =
-      rectDocumento(countdownCard);
+  const titleRect =
+    rectDocumento(countdownTitle);
 
+  const limiteSuperior =
+    titleRect.bottom +
+    MARGEN_MORPH_TARJETA_SUPERIOR;
 
-    const titleRect =
-      rectDocumento(countdownTitle);
+  const limiteInferior =
+    cardRect.bottom -
+    MARGEN_MORPH_TARJETA_INFERIOR;
 
+  const bordeSuperior =
+    rectShell.top;
 
-    const limiteSuperior =
-      titleRect.bottom +
-      MARGEN_MORPH_TARJETA_SUPERIOR;
+  const bordeInferior =
+    rectShell.top +
+    rectShell.height;
 
+  const estaDentroDeLaTarjeta =
+    bordeInferior > cardRect.top &&
+    bordeSuperior < cardRect.bottom;
 
-    const limiteInferior =
-      cardRect.bottom -
-      MARGEN_MORPH_TARJETA_INFERIOR;
+  if (!estaDentroDeLaTarjeta) {
+    return 0;
+  }
 
+  /*
+     ANTES / ANTES INVERSO
 
-    const bordeSuperior =
-      rectShell.top;
+     Permitimos que la transmutación
+     pase por encima del texto superior
+     para mantener continuidad visual
+     con la flotante inferior.
 
-
-    const bordeInferior =
-      rectShell.top +
-      rectShell.height;
-
-
-    const estaDentroDeLaTarjeta =
-      bordeInferior > cardRect.top &&
-      bordeSuperior < cardRect.bottom;
-
-
-    if (!estaDentroDeLaTarjeta) {
-      return 0;
-    }
-
-
-    if (bordeSuperior < limiteSuperior) {
-      return limiteSuperior - bordeSuperior;
-    }
-
-
+     Solo seguimos protegiendo
+     el margen inferior de la tarjeta.
+  */
+  if (posicionFlotante === "bottom") {
     if (bordeInferior > limiteInferior) {
       return limiteInferior - bordeInferior;
     }
 
-
     return 0;
   }
+
+  /*
+     DESPUÉS / DESPUÉS INVERSO
+
+     Aquí sí mantenemos el corredor
+     completo: arriba y abajo.
+  */
+  if (bordeSuperior < limiteSuperior) {
+    return limiteSuperior - bordeSuperior;
+  }
+
+  if (bordeInferior > limiteInferior) {
+    return limiteInferior - bordeInferior;
+  }
+
+  return 0;
+}
 
 
   function desplazarRectanguloY(
@@ -1246,7 +1263,8 @@
 
     const correccionTarjeta =
       obtenerCorreccionTarjeta(
-        rectShell
+        rectShell,
+        posicionFlotante
       );
 
 
