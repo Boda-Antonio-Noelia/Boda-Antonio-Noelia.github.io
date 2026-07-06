@@ -296,26 +296,6 @@
      ==================================================
      REFERENCIAS DE LA CINTA MÉTRICA
      ==================================================
-
-     EL ANTES:
-
-     La referencia es la distancia de gridRect.top
-     respecto al borde INFERIOR del viewport.
-
-     Positivo:
-     el checkpoint todavía está debajo de la pantalla.
-
-     0:
-     toca el borde inferior.
-
-     Negativo:
-     el checkpoint ya ha entrado en pantalla.
-
-
-     EL DESPUÉS:
-
-     La referencia es gridRect.bottom medida desde
-     el borde SUPERIOR del viewport.
   */
 
 
@@ -323,15 +303,6 @@
      ==============================
      EL ANTES
      ==============================
-
-     +2,5 % del viewport:
-     comienza EL ANTES.
-
-     -32,5 % del viewport:
-     termina EL ANTES / checkpoint.
-
-     Al subir se recorre exactamente al revés:
-     EL ANTES INVERSO.
   */
 
   const ANTES_INICIO_RATIO = 0.04;
@@ -343,15 +314,6 @@
      ==============================
      EL DESPUÉS
      ==============================
-
-     47,5 % del viewport:
-     comienza EL DESPUÉS.
-
-     3,75 % del viewport:
-     termina EL DESPUÉS / flotante superior.
-
-     Al subir:
-     EL DESPUÉS INVERSO.
   */
 
   const DESPUES_INICIO_RATIO = 0.475;
@@ -363,17 +325,6 @@
      ==============================
      LÍMITES DE LAS REFERENCIAS
      ==============================
-
-     Evitan comportamientos extremos
-     en móviles muy pequeños, muy largos
-     o tablets verticales.
-  */
-
-
-  /*
-     ANTES_INICIO
-
-     Aproximadamente 20 px en un móvil normal.
   */
 
   const ANTES_INICIO_MIN = 16;
@@ -381,37 +332,15 @@
   const ANTES_INICIO_MAX = 48;
 
 
-  /*
-     ANTES_FINAL
-
-     Distancia que el checkpoint entra
-     dentro de la pantalla antes de quedar
-     completamente formado.
-  */
-
   const ANTES_FINAL_MIN = 190;
 
   const ANTES_FINAL_MAX = 280;
 
 
-  /*
-     DESPUES_INICIO
-
-     Tu referencia actual aproximada:
-     380 px en un viewport de 800 px.
-  */
-
   const DESPUES_INICIO_MIN = 320;
 
   const DESPUES_INICIO_MAX = 460;
 
-
-  /*
-     DESPUES_FINAL
-
-     Tu referencia actual aproximada:
-     30 px en un viewport de 800 px.
-  */
 
   const DESPUES_FINAL_MIN = 32;
 
@@ -442,7 +371,26 @@
   const TOLERANCIA_RELEVO_TAMANO = 8;
 
 
+  /*
+     ==============================
+     ESTADO DEL SCROLL
+     ==============================
+  */
+
   let scrollFramePendiente = false;
+
+
+  let ultimoScrollY =
+    window.scrollY;
+
+
+  /*
+     1  = bajando
+     -1 = subiendo
+     0  = todavía sin dirección
+  */
+
+  let direccionScroll = 0;
 
 
   /*
@@ -474,11 +422,6 @@
   }
 
 
-  /*
-     Equivalente conceptual a clamp() de CSS,
-     pero usando una proporción de innerHeight.
-  */
-
   function valorViewport(
     ratio,
     minimo,
@@ -493,8 +436,31 @@
 
 
   /*
-     Calcula las cuatro marcas reales de
-     nuestra cinta métrica para el dispositivo.
+     DIRECCIÓN REAL DEL SCROLL
+  */
+
+  function actualizarDireccionScroll() {
+    const scrollActual =
+      window.scrollY;
+
+
+    if (scrollActual > ultimoScrollY) {
+      direccionScroll = 1;
+    }
+
+
+    if (scrollActual < ultimoScrollY) {
+      direccionScroll = -1;
+    }
+
+
+    ultimoScrollY =
+      scrollActual;
+  }
+
+
+  /*
+     REFERENCIAS REALES DEL DISPOSITIVO
   */
 
   function obtenerReferenciasMorph() {
@@ -505,11 +471,6 @@
         ANTES_INICIO_MAX
       );
 
-
-    /*
-       El signo negativo significa:
-       ya ha entrado dentro del viewport.
-    */
 
     const antesFinal =
       -valorViewport(
@@ -545,9 +506,7 @@
 
 
   /*
-     Viewport único.
-
-     No usamos visualViewport.
+     VIEWPORT ÚNICO
   */
 
   function obtenerViewportVisual() {
@@ -559,8 +518,7 @@
 
 
   /*
-     Convierte coordenadas del viewport
-     a coordenadas del documento.
+     COORDENADAS DEL DOCUMENTO
   */
 
   function rectDocumento(elemento) {
@@ -635,81 +593,98 @@
   }
 
 
-  function obtenerCorreccionTarjeta(
-  rectShell,
-  posicionFlotante
-) {
-  if (
-    !countdownCard ||
-    !countdownTitle
-  ) {
-    return 0;
-  }
-
-  const cardRect =
-    rectDocumento(countdownCard);
-
-  const titleRect =
-    rectDocumento(countdownTitle);
-
-  const limiteSuperior =
-    titleRect.bottom +
-    MARGEN_MORPH_TARJETA_SUPERIOR;
-
-  const limiteInferior =
-    cardRect.bottom -
-    MARGEN_MORPH_TARJETA_INFERIOR;
-
-  const bordeSuperior =
-    rectShell.top;
-
-  const bordeInferior =
-    rectShell.top +
-    rectShell.height;
-
-  const estaDentroDeLaTarjeta =
-    bordeInferior > cardRect.top &&
-    bordeSuperior < cardRect.bottom;
-
-  if (!estaDentroDeLaTarjeta) {
-    return 0;
-  }
-
   /*
-     ANTES / ANTES INVERSO
+     CORRECCIÓN DE TARJETA
 
-     Permitimos que la transmutación
-     pase por encima del texto superior
-     para mantener continuidad visual
-     con la flotante inferior.
+     IMPORTANTE:
 
-     Solo seguimos protegiendo
-     el margen inferior de la tarjeta.
+     EL ANTES / ANTES INVERSO:
+     no usa corredor de tarjeta.
+
+     El morph puede atravesar visualmente
+     el texto y recorrer libremente la sección.
+
+     EL DESPUÉS / DESPUÉS INVERSO:
+     mantiene exactamente el corredor que
+     ya estaba funcionando bien.
   */
-  if (posicionFlotante === "bottom") {
+
+  function obtenerCorreccionTarjeta(
+    rectShell,
+    posicionFlotante
+  ) {
+    /*
+       ANTES / ANTES INVERSO
+
+       Sin corrección de tarjeta.
+    */
+
+    if (posicionFlotante === "bottom") {
+      return 0;
+    }
+
+
+    /*
+       DESPUÉS / DESPUÉS INVERSO
+    */
+
+    if (
+      !countdownCard ||
+      !countdownTitle
+    ) {
+      return 0;
+    }
+
+
+    const cardRect =
+      rectDocumento(countdownCard);
+
+
+    const titleRect =
+      rectDocumento(countdownTitle);
+
+
+    const limiteSuperior =
+      titleRect.bottom +
+      MARGEN_MORPH_TARJETA_SUPERIOR;
+
+
+    const limiteInferior =
+      cardRect.bottom -
+      MARGEN_MORPH_TARJETA_INFERIOR;
+
+
+    const bordeSuperior =
+      rectShell.top;
+
+
+    const bordeInferior =
+      rectShell.top +
+      rectShell.height;
+
+
+    const estaDentroDeLaTarjeta =
+      bordeInferior > cardRect.top &&
+      bordeSuperior < cardRect.bottom;
+
+
+    if (!estaDentroDeLaTarjeta) {
+      return 0;
+    }
+
+
+    if (bordeSuperior < limiteSuperior) {
+      return limiteSuperior - bordeSuperior;
+    }
+
+
     if (bordeInferior > limiteInferior) {
       return limiteInferior - bordeInferior;
     }
 
+
     return 0;
   }
-
-  /*
-     DESPUÉS / DESPUÉS INVERSO
-
-     Aquí sí mantenemos el corredor
-     completo: arriba y abajo.
-  */
-  if (bordeSuperior < limiteSuperior) {
-    return limiteSuperior - bordeSuperior;
-  }
-
-  if (bordeInferior > limiteInferior) {
-    return limiteInferior - bordeInferior;
-  }
-
-  return 0;
-}
 
 
   function desplazarRectanguloY(
@@ -862,6 +837,11 @@
      ==================================================
   */
 
+
+  /*
+     POSICIÓN INVISIBLE PARA MEDICIÓN
+  */
+
   function prepararFlotanteParaMedir(posicion) {
     if (!floatingCountdown) return;
 
@@ -903,6 +883,75 @@
     floatingCountdown.style.filter = "none";
   }
 
+
+  /*
+     FLOTANTE ESTABLE
+
+     No es un handoff.
+
+     Solo establece el estado final visible.
+  */
+
+  function mostrarFlotanteEstable(posicion) {
+    if (!floatingCountdown) return;
+
+
+    floatingCountdown.classList.remove(
+      "is-morphing",
+      "is-morph-handoff"
+    );
+
+
+    if (posicion === "bottom") {
+
+      floatingCountdown.classList.add(
+        "is-bottom",
+        "is-visible"
+      );
+
+
+      floatingCountdown.classList.remove(
+        "is-top"
+      );
+
+    } else {
+
+      floatingCountdown.classList.add(
+        "is-top",
+        "is-visible"
+      );
+
+
+      floatingCountdown.classList.remove(
+        "is-bottom"
+      );
+
+    }
+
+
+    floatingCountdown.style.removeProperty(
+      "opacity"
+    );
+
+
+    floatingCountdown.style.removeProperty(
+      "filter"
+    );
+
+
+    floatingCountdown.setAttribute(
+      "aria-hidden",
+      "false"
+    );
+  }
+
+
+  /*
+     HANDOFF REAL MORPH -> FLOTANTE
+
+     Solo se usa cuando realmente existe
+     una transición entre ambos actores.
+  */
 
   function entregarMorphAFlotante(posicion) {
     if (
@@ -963,11 +1012,6 @@
     );
 
 
-    /*
-       Fuera del checkpoint el grid real
-       permanece oculto.
-    */
-
     ocultarGridReal();
 
 
@@ -988,16 +1032,6 @@
       );
 
     });
-  }
-
-
-  function mostrarFlotanteAbajo() {
-    entregarMorphAFlotante("bottom");
-  }
-
-
-  function mostrarFlotanteArriba() {
-    entregarMorphAFlotante("top");
   }
 
 
@@ -1398,17 +1432,6 @@
           );
 
 
-        /*
-           Texto compacto:
-           visible hasta 42 %
-           desaparece 42-50 %
-
-           Texto tarjeta:
-           aparece 50-58 %
-
-           Nunca coinciden.
-        */
-
         const opacidadCompacto =
           1 -
           limitar(
@@ -1556,6 +1579,13 @@
 
 
     /*
+       ACTUALIZAMOS PRIMERO LA DIRECCIÓN
+    */
+
+    actualizarDireccionScroll();
+
+
+    /*
        INTRO
     */
 
@@ -1611,21 +1641,6 @@
        =========================================
     */
 
-
-    /*
-       Distancia del borde superior del grid
-       respecto al borde inferior de pantalla.
-
-       +20:
-       está 20 px por debajo.
-
-       0:
-       está tocando el borde inferior.
-
-       -200:
-       ya ha entrado 200 px.
-    */
-
     const distanciaDesdeBordeInferior =
       gridRect.top -
       viewport.height;
@@ -1647,7 +1662,10 @@
 
 
     /*
-       INICIO / FINAL DEL ANTES INVERSO
+       INICIO
+
+       También es el final estable
+       del ANTES INVERSO.
     */
 
     if (progresoAntes <= 0) {
@@ -1656,14 +1674,18 @@
 
       ocultarGridReal();
 
-      mostrarFlotanteAbajo();
+
+      mostrarFlotanteEstable(
+        "bottom"
+      );
+
 
       return;
     }
 
 
     /*
-       EL ANTES / ANTES INVERSO
+       EL ANTES / EL ANTES INVERSO
     */
 
     if (progresoAntes < 1) {
@@ -1678,7 +1700,15 @@
       );
 
 
+      /*
+         SOLO EL ANTES INVERSO
+         PUEDE ENTREGAR A LA FLOTANTE INFERIOR.
+
+         Bajando jamás ejecutamos este relevo.
+      */
+
       if (
+        direccionScroll < 0 &&
         progresoAntes < 0.50 &&
         morphCoincideConFlotante("bottom")
       ) {
@@ -1738,7 +1768,7 @@
 
 
     /*
-       EL DESPUÉS / DESPUÉS INVERSO
+       EL DESPUÉS / EL DESPUÉS INVERSO
     */
 
     if (progresoDespues < 1) {
@@ -1753,7 +1783,16 @@
       );
 
 
+      /*
+         SOLO EL DESPUÉS NORMAL
+         ENTREGA A LA FLOTANTE SUPERIOR.
+
+         Subiendo jamás ejecutamos
+         este relevo.
+      */
+
       if (
+        direccionScroll > 0 &&
         progresoDespues > 0.50 &&
         morphCoincideConFlotante("top")
       ) {
@@ -1772,10 +1811,12 @@
        FINAL
     */
 
+    ocultarMorph();
+
     ocultarGridReal();
 
 
-    entregarMorphAFlotante(
+    mostrarFlotanteEstable(
       "top"
     );
   }
