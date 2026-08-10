@@ -16,12 +16,16 @@
   <main class="attendance-page">
     <section class="attendance-shell">
 
-      <a href="index.html#asistencia" class="attendance-back">← Volver a la invitación</a>
+      <div class="attendance-topbar">
+        <a href="index.html#asistencia" class="attendance-back">
+          <span aria-hidden="true">←</span>
+          Volver a la invitación
+        </a>
+      </div>
 
-      <header class="attendance-hero">
-        <p class="attendance-kicker">Antonio & Noelia</p>
+      <header class="attendance-heading">
+        <p class="attendance-signature">Antonio & Noelia</p>
         <h1>Formulario de asistencia</h1>
-        <p class="attendance-intro">Cuéntanos si podremos contar contigo el gran día. 💌</p>
       </header>
 
       <form class="attendance-form" id="attendanceForm">
@@ -58,6 +62,16 @@
 
         <div id="attendanceYesFields" class="conditional-fields">
 
+          <div class="form-group">
+            <label for="alimentacion">¿Tienes alguna alergia o intolerancia?</label>
+            <textarea
+              id="alimentacion"
+              name="alimentacion"
+              rows="3"
+              placeholder="Cuéntanos si debemos tener algo en cuenta"
+            ></textarea>
+          </div>
+
           <fieldset class="form-group attendance-choice">
             <legend>¿Vendrás acompañado?</legend>
 
@@ -88,7 +102,7 @@
             </div>
 
             <div class="form-group">
-              <label for="alimentacionAcompanante">Alergias o intolerancias del acompañante</label>
+              <label for="alimentacionAcompanante">¿Tiene alguna alergia o intolerancia?</label>
               <textarea
                 id="alimentacionAcompanante"
                 name="alimentacionAcompanante"
@@ -96,16 +110,6 @@
                 placeholder="Cuéntanos si debemos tener algo en cuenta"
               ></textarea>
             </div>
-          </div>
-
-          <div class="form-group">
-            <label for="alimentacion">Tus alergias o intolerancias</label>
-            <textarea
-              id="alimentacion"
-              name="alimentacion"
-              rows="3"
-              placeholder="Cuéntanos si debemos tener algo en cuenta"
-            ></textarea>
           </div>
 
           <div class="form-group">
