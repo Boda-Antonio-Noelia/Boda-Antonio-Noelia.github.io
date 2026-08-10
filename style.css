@@ -1105,8 +1105,8 @@ body.intro-lock {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at 15% 10%, rgba(111,16,38,0.035), transparent 24%),
-    radial-gradient(circle at 85% 12%, rgba(111,16,38,0.03), transparent 23%);
+    radial-gradient(circle at 16% 9%, rgba(111,16,38,0.035), transparent 24%),
+    radial-gradient(circle at 84% 12%, rgba(111,16,38,0.03), transparent 23%);
 }
 
 .dresscode-card > * {
@@ -1116,13 +1116,14 @@ body.intro-lock {
 
 .dresscode-heading {
   text-align: center;
-  margin-bottom: 1.8rem;
+  max-width: 680px;
+  margin: 0 auto 1.75rem;
 }
 
 .dresscode-kicker {
   font-family: "Cormorant Garamond", serif;
   text-transform: uppercase;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.19em;
   font-size: 0.88rem;
   color: rgba(63, 32, 40, 0.66);
   margin-bottom: 0.35rem;
@@ -1132,31 +1133,32 @@ body.intro-lock {
   font-family: "Parisienne", cursive;
   font-weight: 400;
   color: var(--burgundy);
-  font-size: clamp(2.8rem, 8vw, 4.8rem);
+  font-size: clamp(2.7rem, 8vw, 4.8rem);
   line-height: 1;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.65rem;
 }
 
 .dresscode-subtitle {
   font-family: "Cormorant Garamond", serif;
-  font-size: clamp(1.1rem, 3.6vw, 1.35rem);
+  font-size: clamp(1.12rem, 3.8vw, 1.4rem);
+  line-height: 1.38;
   font-weight: 600;
-  letter-spacing: 0.04em;
   color: var(--ink);
 }
 
 .dresscode-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
+  gap: 0.9rem;
 }
 
 .dresscode-option {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100%;
-  padding: 1.5rem 1.2rem 1.35rem;
+  justify-content: flex-start;
+  padding: 1.35rem 0.65rem 1.15rem;
   text-align: center;
   background: rgba(255, 250, 245, 0.72);
   border: 1px solid rgba(111, 16, 38, 0.10);
@@ -1165,11 +1167,11 @@ body.intro-lock {
 }
 
 .dresscode-icon-wrap {
-  width: 110px;
+  width: min(118px, 82%);
   height: 138px;
   display: grid;
   place-items: center;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.65rem;
   color: var(--burgundy);
 }
 
@@ -1183,129 +1185,151 @@ body.intro-lock {
   font-family: "Cormorant Garamond", serif;
   text-transform: uppercase;
   letter-spacing: 0.16em;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 700;
-  color: rgba(63, 32, 40, 0.58);
-  margin-bottom: 0.25rem;
+  color: rgba(63, 32, 40, 0.56);
+  margin-bottom: 0.22rem;
 }
 
 .dresscode-option h3 {
   font-family: "Cormorant Garamond", serif;
-  font-size: clamp(1.55rem, 4vw, 2rem);
-  line-height: 1.1;
+  font-size: clamp(1.25rem, 4vw, 1.8rem);
+  line-height: 1.08;
   font-weight: 700;
   color: var(--burgundy);
-  margin-bottom: 0.55rem;
 }
 
-.dresscode-option > p:last-child {
-  max-width: 330px;
-  font-family: "Cormorant Garamond", serif;
-  font-size: 1.12rem;
-  line-height: 1.45;
-  color: rgba(63, 32, 40, 0.82);
-}
-
-.dresscode-palette {
-  margin-top: 1.35rem;
-  padding: 1.25rem 1rem;
+.dresscode-message {
+  max-width: 690px;
+  margin: 1.35rem auto 0;
+  padding: 1.15rem 1.15rem 1.1rem;
   text-align: center;
   border-top: 1px solid rgba(111, 16, 38, 0.10);
   border-bottom: 1px solid rgba(111, 16, 38, 0.10);
 }
 
-.dresscode-palette-title {
+.dresscode-message p {
   font-family: "Cormorant Garamond", serif;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: var(--ink);
-  margin-bottom: 0.8rem;
+  font-size: clamp(1.08rem, 3.8vw, 1.28rem);
+  line-height: 1.48;
+  color: rgba(63, 32, 40, 0.84);
 }
 
-.dresscode-swatches {
+.dresscode-grass-note {
+  max-width: 650px;
+  margin: 1.2rem auto 0;
+  padding: 1rem 1.1rem;
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 0.65rem;
-  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.85rem;
+  background: rgba(111, 16, 38, 0.045);
+  border: 1px solid rgba(111, 16, 38, 0.10);
+  border-radius: 18px;
 }
 
-.dresscode-swatch {
-  width: 34px;
-  height: 34px;
-  display: inline-block;
+.dresscode-grass-icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 252, 248, 0.96);
-  box-shadow:
-    0 0 0 1px rgba(111, 16, 38, 0.10),
-    0 6px 14px rgba(70, 20, 30, 0.10);
+  font-size: 1.35rem;
+  color: var(--burgundy);
+  background: rgba(255, 250, 245, 0.78);
+  border: 1px solid rgba(111, 16, 38, 0.10);
 }
 
-.swatch-burgundy { background: #6f1026; }
-.swatch-green    { background: #334b3f; }
-.swatch-navy     { background: #26354b; }
-.swatch-beige    { background: #c9ad8c; }
-.swatch-rose     { background: #b9878d; }
+.dresscode-grass-note strong {
+  display: block;
+  margin-bottom: 0.12rem;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.08rem;
+  color: var(--burgundy);
+}
 
-.dresscode-palette-note {
-  margin-top: 0.7rem;
+.dresscode-grass-note p {
   font-family: "Cormorant Garamond", serif;
   font-size: 1rem;
-  font-style: italic;
-  color: rgba(63, 32, 40, 0.66);
+  line-height: 1.35;
+  color: rgba(63, 32, 40, 0.78);
 }
 
 .dresscode-note {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 0.65rem;
-  margin-top: 1.4rem;
+  gap: 0.6rem;
+  margin-top: 1.35rem;
   text-align: center;
 }
 
 .dresscode-note p {
   font-family: "Parisienne", cursive;
-  font-size: clamp(1.8rem, 5.5vw, 2.7rem);
+  font-size: clamp(1.9rem, 5.5vw, 2.8rem);
   line-height: 1.05;
   color: var(--burgundy);
 }
 
 .dresscode-note-mark {
   color: rgba(111, 16, 38, 0.42);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
 }
 
 @media (max-width: 620px) {
   .dresscode-card {
-    padding: 1.9rem 0.85rem 1.4rem;
+    padding: 1.8rem 0.75rem 1.35rem;
+  }
+
+  .dresscode-heading {
+    margin-bottom: 1.35rem;
   }
 
   .dresscode-grid {
-    grid-template-columns: 1fr;
-    gap: 0.85rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
   }
 
   .dresscode-option {
-    padding: 1.25rem 1rem;
+    padding: 1rem 0.35rem 0.9rem;
+    border-radius: 18px;
   }
 
   .dresscode-icon-wrap {
-    width: 94px;
-    height: 118px;
+    width: min(92px, 86%);
+    height: 112px;
+    margin-bottom: 0.45rem;
   }
 
-  .dresscode-palette {
+  .dresscode-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+  }
+
+  .dresscode-option h3 {
+    font-size: clamp(1.02rem, 4.3vw, 1.28rem);
+  }
+
+  .dresscode-message {
     margin-top: 1rem;
+    padding: 1rem 0.55rem;
   }
 
-  .dresscode-swatch {
-    width: 31px;
-    height: 31px;
+  .dresscode-grass-note {
+    align-items: flex-start;
+    text-align: left;
+    padding: 0.9rem;
+    gap: 0.7rem;
+  }
+
+  .dresscode-grass-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 1.15rem;
   }
 
   .dresscode-note {
     gap: 0.45rem;
-    padding-inline: 0.2rem;
   }
 }
