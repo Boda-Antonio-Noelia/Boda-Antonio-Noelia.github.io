@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Formulario de asistencia · Antonio & Noelia</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Parisienne&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="asistencia.css" />
+</head>
+
+<body>
+  <main class="attendance-page">
+    <section class="attendance-shell">
+
+      <a href="index.html#asistencia" class="attendance-back">
+        ← Volver a la invitación
+      </a>
+
+      <div class="attendance-heading">
+        <p class="attendance-kicker">Antonio & Noelia</p>
+        <h1>Formulario de asistencia</h1>
+        <p>
+          Solo necesitamos unos pocos datos para saber si podremos contar contigo.
+        </p>
+      </div>
+
+      <form class="attendance-form" id="attendanceForm">
+
+        <div class="form-group">
+          <label for="nombre">Nombre y apellidos</label>
+          <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            autocomplete="name"
+            required
+            placeholder="Escribe tu nombre"
+          />
+        </div>
+
+        <fieldset class="form-group attendance-choice">
+          <legend>¿Podrás acompañarnos?</legend>
+
+          <div class="choice-grid">
+            <label class="choice-card">
+              <input type="radio" name="asiste" value="si" required />
+              <span class="choice-emoji">🥂</span>
+              <strong>¡Sí, allí estaré!</strong>
+            </label>
+
+            <label class="choice-card">
+              <input type="radio" name="asiste" value="no" required />
+              <span class="choice-emoji">💌</span>
+              <strong>Esta vez no podré</strong>
+            </label>
+          </div>
+        </fieldset>
+
+        <div id="attendanceYesFields" class="conditional-fields" hidden>
+
+          <fieldset class="form-group attendance-choice">
+            <legend>¿Vendrás acompañado?</legend>
+
+            <div class="choice-grid compact-choice-grid">
+              <label class="choice-card compact-choice">
+                <input type="radio" name="acompanado" value="si" />
+                <strong>Sí</strong>
+              </label>
+
+              <label class="choice-card compact-choice">
+                <input type="radio" name="acompanado" value="no" />
+                <strong>No</strong>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="form-group" id="companionField" hidden>
+            <label for="acompanante">Nombre del acompañante</label>
+            <input
+              type="text"
+              id="acompanante"
+              name="acompanante"
+              placeholder="Nombre y apellidos"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="alimentacion">Alergias, intolerancias o necesidades alimentarias</label>
+            <textarea
+              id="alimentacion"
+              name="alimentacion"
+              rows="4"
+              placeholder="Cuéntanos lo que necesitemos saber"
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="observaciones">¿Hay algo más que debamos saber?</label>
+            <textarea
+              id="observaciones"
+              name="observaciones"
+              rows="4"
+              placeholder="Opcional"
+            ></textarea>
+          </div>
+
+        </div>
+
+        <div class="form-group">
+          <label for="mensaje">¿Quieres dejarnos algún mensaje?</label>
+          <textarea
+            id="mensaje"
+            name="mensaje"
+            rows="4"
+            placeholder="Opcional, pero nos encantará leerlo ❤️"
+          ></textarea>
+        </div>
+
+        <button type="submit" class="attendance-submit">
+          Enviar respuesta
+        </button>
+
+        <p class="attendance-demo-note">
+          De momento esta versión es de prueba: el envío todavía no está conectado a Google Sheets.
+        </p>
+      </form>
+
+      <div class="attendance-success" id="attendanceSuccess" hidden>
+        <span class="success-icon">✓</span>
+        <h2>¡Gracias por responder!</h2>
+        <p>Ya tenemos tu respuesta. ❤️</p>
+        <a href="index.html" class="attendance-submit attendance-return">
+          Volver a la invitación
+        </a>
+      </div>
+
+    </section>
+  </main>
+
+  <script src="asistencia.js"></script>
+</body>
+</html>
