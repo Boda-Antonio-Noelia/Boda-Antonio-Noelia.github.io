@@ -1333,3 +1333,155 @@ body.intro-lock {
     gap: 0.45rem;
   }
 }
+
+/* =========================
+   FORMULARIO DE ASISTENCIA
+   ========================= */
+
+.rsvp-section {
+  background:
+    radial-gradient(circle at top center, rgba(255,255,255,0.44), transparent 36%),
+    linear-gradient(180deg, #fbf6f1 0%, #f5ece3 100%);
+}
+
+.rsvp-card {
+  position: relative;
+  overflow: hidden;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 2.2rem 1.2rem 1.8rem;
+  text-align: center;
+
+  background: rgba(255, 252, 248, 0.92);
+  border: 1px solid rgba(111, 16, 38, 0.12);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+
+.rsvp-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 20% 8%, rgba(111,16,38,0.03), transparent 22%),
+    radial-gradient(circle at 80% 10%, rgba(111,16,38,0.03), transparent 22%);
+}
+
+.rsvp-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.rsvp-icon {
+  width: 68px;
+  height: 68px;
+  margin: 0 auto 0.75rem;
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+  background: rgba(111, 16, 38, 0.055);
+  border: 1px solid rgba(111, 16, 38, 0.10);
+}
+
+.rsvp-icon span {
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+.rsvp-kicker {
+  font-family: "Cormorant Garamond", serif;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.86rem;
+  color: rgba(63, 32, 40, 0.64);
+  margin-bottom: 0.35rem;
+}
+
+.rsvp-title {
+  font-family: "Parisienne", cursive;
+  font-weight: 400;
+  color: var(--burgundy);
+  font-size: clamp(2.8rem, 8vw, 4.8rem);
+  line-height: 1;
+  margin-bottom: 0.9rem;
+}
+
+.rsvp-lead {
+  max-width: 560px;
+  margin: 0 auto 1.35rem;
+
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(1.15rem, 4vw, 1.45rem);
+  line-height: 1.42;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.rsvp-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 48px;
+  padding: 0.85rem 1.4rem;
+
+  border-radius: 999px;
+  text-decoration: none;
+
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+
+  color: #fffaf5;
+  background: var(--burgundy);
+  border: 1px solid rgba(111, 16, 38, 0.24);
+  box-shadow: 0 12px 24px rgba(70, 20, 30, 0.14);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+.rsvp-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 30px rgba(70, 20, 30, 0.18);
+}
+
+.rsvp-note {
+  max-width: 640px;
+  margin: 1.25rem auto 0;
+  padding-top: 1.1rem;
+
+  border-top: 1px solid rgba(111, 16, 38, 0.10);
+
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: rgba(63, 32, 40, 0.72);
+}
+
+@media (max-width: 620px) {
+  .rsvp-card {
+    padding: 1.8rem 0.9rem 1.45rem;
+  }
+
+  .rsvp-icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .rsvp-button {
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .rsvp-note {
+    font-size: 0.98rem;
+  }
+}
