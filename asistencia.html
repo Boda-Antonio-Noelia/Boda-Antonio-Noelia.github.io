@@ -26,122 +26,117 @@
 
       <form class="attendance-form" id="attendanceForm">
 
-        <section class="form-section">
-          <div class="form-section-heading">
-            <span class="form-step">01</span>
-            <div>
-              <p class="form-eyebrow">Empezamos por ti</p>
-              <h2>Tus datos</h2>
-            </div>
+        <div class="form-group">
+          <label for="nombre">Nombre y apellidos</label>
+          <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            autocomplete="name"
+            required
+            placeholder="Escribe tu nombre"
+          />
+        </div>
+
+        <fieldset class="form-group attendance-choice">
+          <legend>¿Podrás acompañarnos?</legend>
+
+          <div class="choice-grid">
+            <label class="choice-card">
+              <input type="radio" name="asiste" value="si" required />
+              <span class="choice-check" aria-hidden="true">✓</span>
+              <strong>Sí, allí estaré</strong>
+            </label>
+
+            <label class="choice-card">
+              <input type="radio" name="asiste" value="no" required />
+              <span class="choice-check" aria-hidden="true">✓</span>
+              <strong>No podré acompañaros</strong>
+            </label>
           </div>
+        </fieldset>
 
-          <div class="form-group">
-            <label for="nombre">Nombre y apellidos</label>
-            <input type="text" id="nombre" name="nombre" autocomplete="name" required placeholder="Escribe tu nombre" />
-          </div>
-        </section>
+        <div id="attendanceYesFields" class="conditional-fields">
 
-        <section class="form-section">
-          <div class="form-section-heading">
-            <span class="form-step">02</span>
-            <div>
-              <p class="form-eyebrow">La pregunta importante</p>
-              <h2>¿Podrás acompañarnos?</h2>
-            </div>
-          </div>
-
-          <fieldset class="attendance-choice">
-            <legend class="sr-only">Indica si asistirás a la boda</legend>
-            <div class="choice-grid">
-              <label class="choice-card choice-yes">
-                <input type="radio" name="asiste" value="si" required />
-                <span class="choice-emoji">🥂</span>
-                <strong>¡Sí, allí estaré!</strong>
-                <small>Nos vemos el 7 de diciembre</small>
-              </label>
-
-              <label class="choice-card choice-no">
-                <input type="radio" name="asiste" value="no" required />
-                <span class="choice-emoji">💌</span>
-                <strong>No podré acompañaros</strong>
-                <small>Os lo cuento igualmente</small>
-              </label>
-            </div>
-          </fieldset>
-        </section>
-
-        <section id="attendanceYesFields" class="form-section conditional-fields" hidden>
-          <div class="form-section-heading">
-            <span class="form-step">03</span>
-            <div>
-              <p class="form-eyebrow">Si vienes con nosotros</p>
-              <h2>Un par de detalles más</h2>
-            </div>
-          </div>
-
-          <fieldset class="attendance-choice sub-choice">
+          <fieldset class="form-group attendance-choice">
             <legend>¿Vendrás acompañado?</legend>
+
             <div class="choice-grid compact-choice-grid">
               <label class="choice-card compact-choice">
                 <input type="radio" name="acompanado" value="si" />
-                <span class="choice-mini-emoji">🫶</span>
+                <span class="choice-check" aria-hidden="true">✓</span>
                 <strong>Sí</strong>
               </label>
 
               <label class="choice-card compact-choice">
                 <input type="radio" name="acompanado" value="no" />
-                <span class="choice-mini-emoji">✨</span>
+                <span class="choice-check" aria-hidden="true">✓</span>
                 <strong>No</strong>
               </label>
             </div>
           </fieldset>
 
-          <div class="form-group conditional-subfield" id="companionField" hidden>
-            <label for="acompanante">Nombre del acompañante</label>
-            <input type="text" id="acompanante" name="acompanante" placeholder="Nombre y apellidos" />
-          </div>
+          <div id="companionFields" class="conditional-fields">
+            <div class="form-group">
+              <label for="acompanante">Nombre del acompañante</label>
+              <input
+                type="text"
+                id="acompanante"
+                name="acompanante"
+                placeholder="Nombre y apellidos"
+              />
+            </div>
 
-          <div class="food-card">
-            <div class="food-card-icon" aria-hidden="true">🍽️</div>
-            <div class="food-card-text">
-              <p class="form-eyebrow">Importante para el menú</p>
-              <h3>Alergias, intolerancias o necesidades alimentarias</h3>
-              <p>Cuéntanos cualquier detalle que debamos tener en cuenta para que puedas disfrutar tranquilo.</p>
+            <div class="form-group">
+              <label for="alimentacionAcompanante">Alergias o intolerancias del acompañante</label>
+              <textarea
+                id="alimentacionAcompanante"
+                name="alimentacionAcompanante"
+                rows="3"
+                placeholder="Déjalo en blanco si no hay ninguna"
+              ></textarea>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="alimentacion">¿Debemos tener algo en cuenta?</label>
-            <textarea id="alimentacion" name="alimentacion" rows="4" placeholder="Por ejemplo: celiaquía, alergias, intolerancias, menú vegetariano…"></textarea>
+            <label for="alimentacion">Tus alergias o intolerancias</label>
+            <textarea
+              id="alimentacion"
+              name="alimentacion"
+              rows="3"
+              placeholder="Déjalo en blanco si no hay ninguna"
+            ></textarea>
           </div>
 
           <div class="form-group">
-            <label for="observaciones">¿Hay algo más que debamos saber?</label>
-            <textarea id="observaciones" name="observaciones" rows="3" placeholder="Opcional"></textarea>
-          </div>
-        </section>
-
-        <section class="form-section form-section-last">
-          <div class="form-section-heading">
-            <span class="form-step">♡</span>
-            <div>
-              <p class="form-eyebrow">Y si te apetece...</p>
-              <h2>Déjanos unas palabras</h2>
-            </div>
+            <label for="observaciones">¿Algo más que debamos saber?</label>
+            <textarea
+              id="observaciones"
+              name="observaciones"
+              rows="3"
+              placeholder="Opcional"
+            ></textarea>
           </div>
 
-          <div class="form-group form-group-last">
-            <label for="mensaje">Mensaje para los novios</label>
-            <textarea id="mensaje" name="mensaje" rows="4" placeholder="Opcional, pero nos encantará leerlo ❤️"></textarea>
-          </div>
-        </section>
+        </div>
+
+        <div class="form-group message-group">
+          <label for="mensaje">¿Quieres dejarnos unas palabras?</label>
+          <textarea
+            id="mensaje"
+            name="mensaje"
+            rows="4"
+            placeholder="Opcional ❤️"
+          ></textarea>
+        </div>
 
         <button type="submit" class="attendance-submit">
-          <span>Enviar respuesta</span>
-          <span aria-hidden="true">→</span>
+          Enviar respuesta
         </button>
 
-        <p class="attendance-demo-note">Esta versión todavía es de prueba: el envío no está conectado a Google Sheets.</p>
+        <p class="attendance-demo-note">
+          De momento esta versión es de prueba: el envío todavía no está conectado.
+        </p>
       </form>
 
       <div class="attendance-success" id="attendanceSuccess" hidden>
@@ -157,8 +152,16 @@
   <script>
 const attendanceForm = document.getElementById("attendanceForm");
 const yesFields = document.getElementById("attendanceYesFields");
-const companionField = document.getElementById("companionField");
+const companionFields = document.getElementById("companionFields");
 const success = document.getElementById("attendanceSuccess");
+
+function openPanel(panel) {
+  panel.classList.add("is-open");
+}
+
+function closePanel(panel) {
+  panel.classList.remove("is-open");
+}
 
 document
   .querySelectorAll('input[name="asiste"]')
@@ -166,10 +169,11 @@ document
     input.addEventListener("change", () => {
       const attending = input.value === "si" && input.checked;
 
-      yesFields.hidden = !attending;
-
-      if (!attending) {
-        companionField.hidden = true;
+      if (attending) {
+        openPanel(yesFields);
+      } else {
+        closePanel(yesFields);
+        closePanel(companionFields);
 
         document
           .querySelectorAll('input[name="acompanado"]')
@@ -177,12 +181,11 @@ document
             radio.checked = false;
           });
 
-        const companionInput =
-          document.getElementById("acompanante");
+        const companionInput = document.getElementById("acompanante");
+        const companionFood = document.getElementById("alimentacionAcompanante");
 
-        if (companionInput) {
-          companionInput.value = "";
-        }
+        if (companionInput) companionInput.value = "";
+        if (companionFood) companionFood.value = "";
       }
     });
   });
@@ -191,8 +194,19 @@ document
   .querySelectorAll('input[name="acompanado"]')
   .forEach((input) => {
     input.addEventListener("change", () => {
-      companionField.hidden =
-        !(input.value === "si" && input.checked);
+      const hasCompanion = input.value === "si" && input.checked;
+
+      if (hasCompanion) {
+        openPanel(companionFields);
+      } else {
+        closePanel(companionFields);
+
+        const companionInput = document.getElementById("acompanante");
+        const companionFood = document.getElementById("alimentacionAcompanante");
+
+        if (companionInput) companionInput.value = "";
+        if (companionFood) companionFood.value = "";
+      }
     });
   });
 
@@ -207,6 +221,7 @@ attendanceForm.addEventListener("submit", (event) => {
     behavior: "smooth"
   });
 });
-  </script>
+</script>
 </body>
 </html>
+
