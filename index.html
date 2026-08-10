@@ -123,15 +123,80 @@
   </div>
 </section>
 
- <section class="content-section">
-        <div class="content-inner">
-          <div class="info-card">
-            <p>
-              Planning.
-            </p>
-          </div>
+ <section class="planning-section" id="planning">
+    <div class="content-inner">
+      <div class="planning-header planning-reveal">
+        <p class="planning-kicker">Nuestro gran día</p>
+        <h2 class="planning-title">Planning</h2>
+        <p class="planning-intro">Para que no os perdáis nada, aquí tenéis una pequeña guía de todo lo que nos espera.</p>
+      </div>
+
+      <div class="planning-timeline" id="planningTimeline">
+        <div class="planning-line" aria-hidden="true">
+          <div class="planning-line-progress" id="planningLineProgress"></div>
         </div>
-      </section>
+
+        <article class="planning-event planning-event-left planning-reveal">
+          <div class="planning-dot" aria-hidden="true"><span>1</span></div>
+          <div class="planning-card">
+            <time class="planning-time" datetime="2026-12-07T12:30:00+01:00">12:30 h</time>
+            <h3>Bienvenida</h3>
+            <p>Llegada a La Natividad, primeros abrazos y ese momento en el que empieza a sentirse que hoy pasa algo grande.</p>
+          </div>
+        </article>
+
+        <article class="planning-event planning-event-right planning-reveal">
+          <div class="planning-dot" aria-hidden="true"><span>2</span></div>
+          <div class="planning-card">
+            <time class="planning-time" datetime="2026-12-07T13:00:00+01:00">13:00 h</time>
+            <h3>La ceremonia</h3>
+            <p>El momento de decir sí, emocionarnos un poquito y hacer oficial el motivo por el que estamos todos aquí.</p>
+          </div>
+        </article>
+
+        <article class="planning-event planning-event-left planning-reveal">
+          <div class="planning-dot" aria-hidden="true"><span>3</span></div>
+          <div class="planning-card">
+            <time class="planning-time" datetime="2026-12-07T14:00:00+01:00">14:00 h</time>
+            <h3>Cóctel</h3>
+            <p>Brindis, aperitivos y tiempo para reencontrarnos, charlar y empezar a celebrar como se merece.</p>
+          </div>
+        </article>
+
+        <article class="planning-event planning-event-right planning-reveal">
+          <div class="planning-dot" aria-hidden="true"><span>4</span></div>
+          <div class="planning-card">
+            <time class="planning-time" datetime="2026-12-07T15:30:00+01:00">15:30 h</time>
+            <h3>Banquete</h3>
+            <p>Nos sentamos a la mesa. Buena comida, alguna sorpresa y muchas ganas de compartir este día con vosotros.</p>
+          </div>
+        </article>
+
+        <article class="planning-event planning-event-left planning-reveal">
+          <div class="planning-dot" aria-hidden="true"><span>5</span></div>
+          <div class="planning-card">
+            <time class="planning-time" datetime="2026-12-07T18:00:00+01:00">18:00 h</time>
+            <h3>Que empiece la fiesta</h3>
+            <p>Se acabaron las formalidades: música, barra libre y pista abierta para quien venga dispuesto a darlo todo.</p>
+          </div>
+        </article>
+
+        <article class="planning-event planning-event-right planning-reveal">
+          <div class="planning-dot" aria-hidden="true"><span>6</span></div>
+          <div class="planning-card">
+            <time class="planning-time" datetime="2026-12-07T21:30:00+01:00">21:30 h</time>
+            <h3>Recena</h3>
+            <p>Porque bailar da hambre, recuperamos fuerzas antes de seguir exprimiendo la noche.</p>
+          </div>
+        </article>
+
+        <div class="planning-finale planning-reveal">
+          <span class="planning-finale-heart" aria-hidden="true">♥</span>
+          <p>Y hasta que el cuerpo aguante...</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
 
  <section class="content-section">
@@ -2106,6 +2171,63 @@ if (progresoAntes <= 0) {
     }
   });
 </script>
+
+
+  
+<script>
+  /* PLANNING · REVEAL + LÍNEA */
+  (() => {
+    const timeline = document.getElementById("planningTimeline");
+    const progress = document.getElementById("planningLineProgress");
+    const reveals = document.querySelectorAll(".planning-reveal");
+    if (!timeline || !progress) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reducedMotion) {
+      reveals.forEach((element) => element.classList.add("is-visible"));
+      progress.style.transform = "scaleY(1)";
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.18, rootMargin: "0px 0px -8% 0px" });
+
+    reveals.forEach((element) => observer.observe(element));
+    let planningFramePending = false;
+
+    function updatePlanningProgress() {
+      planningFramePending = false;
+      const rect = timeline.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const start = viewportHeight * 0.68;
+      const end = viewportHeight * 0.28;
+      const travel = rect.height + start - end;
+      const value = (start - rect.top) / travel;
+      const clamped = Math.min(Math.max(value, 0), 1);
+      progress.style.transform = `scaleY(${clamped})`;
+    }
+
+    function requestPlanningUpdate() {
+      if (planningFramePending) return;
+      planningFramePending = true;
+      requestAnimationFrame(updatePlanningProgress);
+    }
+
+    updatePlanningProgress();
+    window.addEventListener("scroll", requestPlanningUpdate, { passive: true });
+    window.addEventListener("resize", requestPlanningUpdate);
+  })();
+</script>
+
+</body>
+</html>
+
 
 
   
