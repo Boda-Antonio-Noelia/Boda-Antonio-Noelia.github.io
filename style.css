@@ -1485,3 +1485,100 @@ body.intro-lock {
     font-size: 0.98rem;
   }
 }
+
+/* =========================
+   GUARDAR EN CALENDARIO
+   ========================= */
+
+.calendar-save {
+  padding: 1.35rem 0.55rem 0.35rem;
+  text-align: center;
+}
+
+.calendar-save-title {
+  font-family: "Parisienne", cursive;
+  font-size: clamp(2rem, 6vw, 3rem);
+  line-height: 1;
+  color: var(--burgundy);
+  margin-bottom: 0.45rem;
+}
+
+.calendar-save-text {
+  max-width: 520px;
+  margin: 0 auto 1rem;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.08rem;
+  line-height: 1.35;
+  color: rgba(63, 32, 40, 0.76);
+}
+
+.calendar-save-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.calendar-save-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 46px;
+  padding: 0.75rem 1.1rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fffaf5;
+  background: var(--burgundy);
+  border: 1px solid rgba(111, 16, 38, 0.22);
+  box-shadow: 0 10px 22px rgba(70, 20, 30, 0.12);
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    background 0.22s ease;
+}
+
+.calendar-save-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(70, 20, 30, 0.16);
+}
+
+.calendar-save-button-secondary {
+  color: var(--burgundy);
+  background: rgba(255, 250, 245, 0.78);
+  border: 1px solid rgba(111, 16, 38, 0.22);
+}
+
+.calendar-save-icon {
+  width: 24px;
+  height: 24px;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  font-size: 0.88rem;
+  line-height: 1;
+  background: rgba(255,255,255,0.13);
+}
+
+.calendar-save-button-secondary .calendar-save-icon {
+  background: rgba(111, 16, 38, 0.07);
+}
+
+@media (max-width: 620px) {
+  .calendar-save {
+    padding-top: 1.15rem;
+  }
+
+  .calendar-save-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .calendar-save-button {
+    width: 100%;
+  }
+}
