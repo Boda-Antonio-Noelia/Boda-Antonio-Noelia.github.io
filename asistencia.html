@@ -1,230 +1,199 @@
 <!DOCTYPE html>
-
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Formulario de asistencia · Antonio & Noelia</title>
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Parisienne&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="asistencia.css" />
+  <link rel="stylesheet" href="asistencia.css">
 </head>
-
 <body>
-  <main class="attendance-page">
-    <section class="attendance-shell">
+<main class="attendance-page">
+  <section class="attendance-shell">
+    <div class="attendance-topbar">
+      <a href="index.html#asistencia" class="attendance-back"><span aria-hidden="true">←</span> Volver a la invitación</a>
+    </div>
 
-      <div class="attendance-topbar">
-        <a href="index.html#asistencia" class="attendance-back">
-          <span aria-hidden="true">←</span>
-          Volver a la invitación
-        </a>
-      </div>
+    <header class="attendance-heading">
+      <p class="attendance-signature">Antonio & Noelia</p>
+      <h1>Formulario de asistencia</h1>
+    </header>
 
-      <header class="attendance-heading">
-        <p class="attendance-signature">Antonio & Noelia</p>
-        <h1>Formulario de asistencia</h1>
-      </header>
+    <form class="attendance-form" id="attendanceForm">
+      <div id="peopleList" class="people-list">
 
-      <form class="attendance-form" id="attendanceForm">
-
-        <div class="form-group">
-          <label for="nombre">Nombre y apellidos</label>
-          <input
-            type="text"
-            id="nombre"
-            name="nombre"
-            autocomplete="name"
-            required
-            
-          />
-        </div>
-
-        <fieldset class="form-group attendance-choice">
-          <legend>¿Podrás acompañarnos?</legend>
-
-          <div class="choice-grid">
-            <label class="choice-card">
-              <input type="radio" name="asiste" value="si" required />
-              <span class="choice-check" aria-hidden="true">✓</span>
-              <strong>Sí, allí estaré</strong>
-            </label>
-
-            <label class="choice-card">
-              <input type="radio" name="asiste" value="no" required />
-              <span class="choice-check" aria-hidden="true">✓</span>
-              <strong>No podré acompañaros</strong>
-            </label>
+        <section class="person-card person-card-primary" data-person-index="0">
+          <div class="person-card-heading">
+            <span class="person-number">Tu respuesta</span>
           </div>
-        </fieldset>
-
-        <div id="attendanceYesFields" class="conditional-fields">
 
           <div class="form-group">
-            <label for="alimentacion">¿Tienes alguna alergia o intolerancia?</label>
-            <textarea
-              id="alimentacion"
-              name="alimentacion"
-              rows="3"
-              placeholder="Cuéntanos si debemos tener algo en cuenta"
-            ></textarea>
+            <label for="nombre-0">Nombre y apellidos</label>
+            <input type="text" id="nombre-0" name="personas[0][nombre]" autocomplete="name" required placeholder="Por ejemplo: María García">
           </div>
 
           <fieldset class="form-group attendance-choice">
-            <legend>¿Vendrás acompañado?</legend>
-
-            <div class="choice-grid compact-choice-grid">
-              <label class="choice-card compact-choice">
-                <input type="radio" name="acompanado" value="si" />
+            <legend>¿Podrás acompañarnos?</legend>
+            <div class="choice-grid">
+              <label class="choice-card">
+                <input type="radio" name="personas[0][asiste]" value="si" required>
                 <span class="choice-check" aria-hidden="true">✓</span>
-                <strong>Sí</strong>
+                <strong>Sí, allí estaré</strong>
               </label>
-
-              <label class="choice-card compact-choice">
-                <input type="radio" name="acompanado" value="no" />
+              <label class="choice-card">
+                <input type="radio" name="personas[0][asiste]" value="no" required>
                 <span class="choice-check" aria-hidden="true">✓</span>
-                <strong>No</strong>
+                <strong>No podré acompañaros</strong>
               </label>
             </div>
           </fieldset>
 
-          <div id="companionFields" class="conditional-fields">
-            <div class="form-group">
-              <label for="acompanante">Nombre del acompañante</label>
-              <input
-                type="text"
-                id="acompanante"
-                name="acompanante"
-                placeholder="Por ejemplo: Juan Pérez"
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="alimentacionAcompanante">¿Tiene alguna alergia o intolerancia?</label>
-              <textarea
-                id="alimentacionAcompanante"
-                name="alimentacionAcompanante"
-                rows="3"
-                placeholder="Cuéntanos si debemos tener algo en cuenta"
-              ></textarea>
+          <div class="person-attending-fields conditional-fields">
+            <div class="conditional-inner">
+              <div class="form-group">
+                <label for="alergias-0">¿Tienes alguna alergia o intolerancia?</label>
+                <textarea id="alergias-0" name="personas[0][alergias]" rows="3" placeholder="Cuéntanos si debemos tener algo en cuenta"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="observaciones-0">¿Algo más que debamos saber?</label>
+                <textarea id="observaciones-0" name="personas[0][observaciones]" rows="3" placeholder="Cualquier detalle que quieras contarnos"></textarea>
+              </div>
             </div>
           </div>
+        </section>
 
-          <div class="form-group">
-            <label for="observaciones">¿Algo más que debamos saber?</label>
-            <textarea
-              id="observaciones"
-              name="observaciones"
-              rows="3"
-              placeholder="Cualquier detalle que quieras contarnos"
-            ></textarea>
-          </div>
-
-        </div>
-
-        <div class="form-group message-group">
-          <label for="mensaje">¿Quieres dejarnos unas palabras?</label>
-          <textarea
-            id="mensaje"
-            name="mensaje"
-            rows="4"
-            placeholder="Es opcional, pero nos encantará leerte ❤️"
-          ></textarea>
-        </div>
-
-        <button type="submit" class="attendance-submit">
-          Enviar respuesta
-        </button>
-
-        <p class="attendance-demo-note">
-          De momento esta versión es de prueba: el envío todavía no está conectado.
-        </p>
-      </form>
-
-      <div class="attendance-success" id="attendanceSuccess" hidden>
-        <span class="success-icon">✓</span>
-        <p class="attendance-kicker">Respuesta recibida</p>
-        <h2>¡Gracias por contárnoslo!</h2>
-        <p>Ya tenemos tu respuesta. ❤️</p>
-        <a href="index.html" class="attendance-submit attendance-return">Volver a la invitación</a>
       </div>
 
-    </section>
-  </main>
-  <script>
+      <button type="button" class="add-person-button" id="addPersonButton">
+        <span aria-hidden="true">＋</span> Añadir acompañante
+      </button>
+
+      <div class="form-group message-group">
+        <label for="mensaje">¿Quieres dejarnos unas palabras?</label>
+        <textarea id="mensaje" name="mensaje" rows="4" placeholder="Nos encantará leerte ❤️"></textarea>
+      </div>
+
+      <button type="submit" class="attendance-submit">Enviar respuesta</button>
+      <p class="attendance-demo-note">De momento esta versión es de prueba: el envío todavía no está conectado.</p>
+    </form>
+
+    <div class="attendance-success" id="attendanceSuccess" hidden>
+      <span class="success-icon">✓</span>
+      <h2>¡Gracias por responder!</h2>
+      <p>Ya tenemos vuestra respuesta. ❤️</p>
+      <a href="index.html" class="attendance-submit attendance-return">Volver a la invitación</a>
+    </div>
+  </section>
+</main>
+
+<script>
 const attendanceForm = document.getElementById("attendanceForm");
-const yesFields = document.getElementById("attendanceYesFields");
-const companionFields = document.getElementById("companionFields");
+const peopleList = document.getElementById("peopleList");
+const addPersonButton = document.getElementById("addPersonButton");
 const success = document.getElementById("attendanceSuccess");
+let personCounter = 1;
 
-function openPanel(panel) {
-  panel.classList.add("is-open");
-}
+function bindAttendanceRadios(personCard) {
+  const radios = personCard.querySelectorAll('input[type="radio"][name$="[asiste]"]');
+  const conditionalFields = personCard.querySelector(".person-attending-fields");
 
-function closePanel(panel) {
-  panel.classList.remove("is-open");
-}
+  radios.forEach((radio) => {
+    radio.addEventListener("change", () => {
+      const attends = radio.checked && radio.value === "si";
+      conditionalFields.classList.toggle("is-open", attends);
 
-document
-  .querySelectorAll('input[name="asiste"]')
-  .forEach((input) => {
-    input.addEventListener("change", () => {
-      const attending = input.value === "si" && input.checked;
-
-      if (attending) {
-        openPanel(yesFields);
-      } else {
-        closePanel(yesFields);
-        closePanel(companionFields);
-
-        document
-          .querySelectorAll('input[name="acompanado"]')
-          .forEach((radio) => {
-            radio.checked = false;
-          });
-
-        const companionInput = document.getElementById("acompanante");
-        const companionFood = document.getElementById("alimentacionAcompanante");
-
-        if (companionInput) companionInput.value = "";
-        if (companionFood) companionFood.value = "";
+      if (!attends) {
+        conditionalFields.querySelectorAll("textarea, input").forEach((field) => {
+          field.value = "";
+        });
       }
     });
   });
+}
 
-document
-  .querySelectorAll('input[name="acompanado"]')
-  .forEach((input) => {
-    input.addEventListener("change", () => {
-      const hasCompanion = input.value === "si" && input.checked;
-
-      if (hasCompanion) {
-        openPanel(companionFields);
-      } else {
-        closePanel(companionFields);
-
-        const companionInput = document.getElementById("acompanante");
-        const companionFood = document.getElementById("alimentacionAcompanante");
-
-        if (companionInput) companionInput.value = "";
-        if (companionFood) companionFood.value = "";
-      }
-    });
+function renumberCompanions() {
+  peopleList.querySelectorAll(".person-card-companion").forEach((card, index) => {
+    card.querySelector(".person-number").textContent = `Acompañante ${index + 1}`;
   });
+}
+
+function createCompanionCard(index) {
+  const section = document.createElement("section");
+  section.className = "person-card person-card-companion";
+  section.dataset.personIndex = index;
+
+  section.innerHTML = `
+    <div class="person-card-heading">
+      <span class="person-number">Acompañante</span>
+      <button type="button" class="remove-person-button">Eliminar</button>
+    </div>
+
+    <div class="form-group">
+      <label for="nombre-${index}">Nombre y apellidos</label>
+      <input type="text" id="nombre-${index}" name="personas[${index}][nombre]" required placeholder="Por ejemplo: Juan Pérez">
+    </div>
+
+    <fieldset class="form-group attendance-choice">
+      <legend>¿Podrá acompañarnos?</legend>
+      <div class="choice-grid">
+        <label class="choice-card">
+          <input type="radio" name="personas[${index}][asiste]" value="si" required>
+          <span class="choice-check" aria-hidden="true">✓</span>
+          <strong>Sí, asistirá</strong>
+        </label>
+        <label class="choice-card">
+          <input type="radio" name="personas[${index}][asiste]" value="no" required>
+          <span class="choice-check" aria-hidden="true">✓</span>
+          <strong>No asistirá</strong>
+        </label>
+      </div>
+    </fieldset>
+
+    <div class="person-attending-fields conditional-fields">
+      <div class="conditional-inner">
+        <div class="form-group">
+          <label for="alergias-${index}">¿Tiene alguna alergia o intolerancia?</label>
+          <textarea id="alergias-${index}" name="personas[${index}][alergias]" rows="3" placeholder="Cuéntanos si debemos tener algo en cuenta"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="observaciones-${index}">¿Algo más que debamos saber?</label>
+          <textarea id="observaciones-${index}" name="personas[${index}][observaciones]" rows="3" placeholder="Cualquier detalle que quieras contarnos"></textarea>
+        </div>
+      </div>
+    </div>`;
+
+  section.querySelector(".remove-person-button").addEventListener("click", () => {
+    section.classList.add("is-removing");
+    setTimeout(() => {
+      section.remove();
+      renumberCompanions();
+    }, 280);
+  });
+
+  bindAttendanceRadios(section);
+  return section;
+}
+
+bindAttendanceRadios(document.querySelector(".person-card-primary"));
+
+addPersonButton.addEventListener("click", () => {
+  const card = createCompanionCard(personCounter++);
+  peopleList.appendChild(card);
+  requestAnimationFrame(() => card.classList.add("is-visible"));
+  renumberCompanions();
+
+  setTimeout(() => {
+    card.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, 180);
+});
 
 attendanceForm.addEventListener("submit", (event) => {
   event.preventDefault();
-
   attendanceForm.hidden = true;
   success.hidden = false;
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 });
 </script>
 </body>
