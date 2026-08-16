@@ -1,93 +1,74 @@
 :root {
   --cream: #f6efe8;
   --burgundy: #6f1026;
-  --burgundy-soft: #8e2942;
   --ink: #3f2028;
-  --line: rgba(111, 16, 38, 0.12);
-  --paper: rgba(255, 252, 248, 0.95);
-  --shadow: 0 20px 48px rgba(70, 20, 30, 0.12);
-  --shadow-soft: 0 10px 24px rgba(70, 20, 30, 0.08);
+  --line: rgba(111,16,38,.12);
+  --paper: rgba(255,252,248,.95);
+  --shadow: 0 20px 48px rgba(70,20,30,.12);
+  --shadow-soft: 0 10px 24px rgba(70,20,30,.08);
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   min-height: 100vh;
   background:
-    radial-gradient(circle at top center, rgba(255,255,255,0.62), transparent 32%),
+    radial-gradient(circle at top center, rgba(255,255,255,.62), transparent 32%),
     linear-gradient(180deg, #f8f3ee 0%, #f2e8df 100%);
   color: var(--ink);
 }
 
-.attendance-page {
-  min-height: 100vh;
-  padding: 1rem;
-}
+.attendance-page { min-height: 100vh; padding: 1rem; }
 
 .attendance-shell {
   width: min(100%, 700px);
   margin: 0 auto;
-  padding: 0.9rem 0 2.4rem;
+  padding: .9rem 0 2.4rem;
 }
 
-/* Cabecera */
 .attendance-topbar {
   display: flex;
   justify-content: flex-start;
-  margin-bottom: 1.6rem;
+  margin-bottom: 1.9rem;
 }
 
 .attendance-back {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: .45rem;
   min-height: 42px;
-  padding: 0.65rem 1rem;
+  padding: .65rem 1rem;
   border-radius: 999px;
   background: var(--burgundy);
   color: #fffaf5;
   text-decoration: none;
   font-family: "Cormorant Garamond", serif;
-  font-size: 0.98rem;
+  font-size: .98rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
-  box-shadow: 0 8px 18px rgba(70, 20, 30, 0.11);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.attendance-back:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 11px 22px rgba(70, 20, 30, 0.15);
+  box-shadow: 0 8px 18px rgba(70,20,30,.11);
 }
 
 .attendance-heading {
   text-align: center;
-  padding: 0.4rem 1rem 0;
-  margin-bottom: 2rem;
+  padding: .3rem 1rem 0;
+  margin: 0 auto 2.6rem;
 }
 
 .attendance-signature {
   font-family: "Parisienne", cursive;
-  font-size: clamp(1.7rem, 5vw, 2.4rem);
-  line-height: 1;
-  color: rgba(111, 16, 38, 0.72);
-  margin-bottom: 0.45rem;
+  font-size: clamp(1.8rem, 5vw, 2.55rem);
+  color: rgba(111,16,38,.68);
+  margin-bottom: .5rem;
 }
 
 .attendance-heading h1 {
-  font-family: "Cormorant Garamond", serif;
+  font-family: "Parisienne", cursive;
+  font-size: clamp(3rem, 9vw, 5rem);
+  line-height: .98;
+  font-weight: 400;
   color: var(--burgundy);
-  font-size: clamp(2rem, 7vw, 3.2rem);
-  font-weight: 600;
-  line-height: 1.05;
-  letter-spacing: 0.01em;
 }
 
-/* Tarjeta */
 .attendance-form,
 .attendance-success {
   background: var(--paper);
@@ -95,17 +76,65 @@ body {
   border-radius: 26px;
   box-shadow: var(--shadow);
   backdrop-filter: blur(10px);
-  padding: 1.7rem 1.35rem 1.35rem;
+  padding: 1.8rem 1.35rem 1.35rem;
 }
 
-.form-group {
-  margin-bottom: 1.2rem;
+.people-list { display: grid; gap: 1rem; }
+
+.person-card {
+  position: relative;
+  border-radius: 20px;
+  transition: opacity .32s ease, transform .32s ease;
 }
+
+.person-card-primary { padding: 0; }
+
+.person-card-companion {
+  padding: 1.1rem;
+  background: linear-gradient(145deg, rgba(239,226,214,.78), rgba(248,240,233,.92));
+  border: 1px solid rgba(111,16,38,.13);
+  box-shadow: 0 10px 25px rgba(70,20,30,.06);
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+.person-card-companion.is-visible { opacity: 1; transform: translateY(0); }
+.person-card-companion.is-removing { opacity: 0; transform: translateY(-8px) scale(.985); }
+
+.person-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .8rem;
+  margin-bottom: 1rem;
+}
+
+.person-number {
+  font-family: "Parisienne", cursive;
+  color: var(--burgundy);
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+.person-card-primary .person-number { font-size: 2.05rem; }
+
+.remove-person-button {
+  border: 0;
+  background: transparent;
+  color: rgba(111,16,38,.66);
+  font-family: "Cormorant Garamond", serif;
+  font-size: .95rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: .35rem .1rem;
+}
+
+.form-group { margin-bottom: 1.2rem; }
 
 .form-group label,
 .form-group legend {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: .5rem;
   font-family: "Cormorant Garamond", serif;
   font-size: 1.12rem;
   font-weight: 700;
@@ -115,78 +144,59 @@ body {
 .form-group input[type="text"],
 .form-group textarea {
   width: 100%;
-  border: 1px solid rgba(111, 16, 38, 0.15);
+  border: 1px solid rgba(111,16,38,.15);
   border-radius: 15px;
-  background: rgba(255, 250, 245, 0.86);
+  background: rgba(255,250,245,.9);
   color: var(--ink);
   font-family: "Cormorant Garamond", serif;
   font-size: 1.05rem;
-  padding: 0.9rem 1rem;
+  padding: .9rem 1rem;
   outline: none;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.65);
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
 }
+
+.form-group textarea { resize: vertical; }
 
 .form-group input[type="text"]::placeholder,
 .form-group textarea::placeholder {
-  color: rgba(63, 32, 40, 0.42);
+  color: rgba(63,32,40,.42);
   font-style: italic;
 }
 
 .form-group input[type="text"]:focus,
 .form-group textarea:focus {
-  border-color: rgba(111, 16, 38, 0.45);
-  box-shadow:
-    0 0 0 3px rgba(111, 16, 38, 0.06),
-    inset 0 1px 0 rgba(255,255,255,0.7);
-  background: rgba(255, 252, 248, 0.96);
+  border-color: rgba(111,16,38,.45);
+  box-shadow: 0 0 0 3px rgba(111,16,38,.06);
+  background: rgba(255,252,248,.98);
 }
 
-.form-group textarea {
-  resize: vertical;
-}
-
-/* Opciones */
-.attendance-choice {
-  border: 0;
-  padding: 0;
-}
+.attendance-choice { border: 0; padding: 0; }
 
 .choice-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.7rem;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: .7rem;
 }
 
 .choice-card {
   position: relative;
   min-width: 0;
-  min-height: 78px;
+  min-height: 76px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.48rem;
-  padding: 0.82rem 0.7rem;
+  gap: .48rem;
+  padding: .82rem .7rem;
   text-align: center;
   border-radius: 17px;
-  background: rgba(255, 250, 245, 0.88);
-  border: 1px solid rgba(111, 16, 38, 0.14);
+  background: rgba(255,250,245,.9);
+  border: 1px solid rgba(111,16,38,.14);
   box-shadow: var(--shadow-soft);
   cursor: pointer;
-  transition:
-    transform 0.2s ease,
-    color 0.2s ease,
-    background 0.22s ease,
-    border-color 0.22s ease,
-    box-shadow 0.22s ease;
+  transition: transform .2s ease, background .22s ease, border-color .22s ease, box-shadow .22s ease;
 }
 
-.choice-card:hover {
-  transform: translateY(-1px);
-}
+.choice-card:hover { transform: translateY(-1px); }
 
 .choice-card input {
   position: absolute;
@@ -199,7 +209,7 @@ body {
   font-size: 1.05rem;
   line-height: 1.15;
   color: var(--burgundy);
-  transition: color 0.2s ease;
+  transition: color .2s ease;
 }
 
 .choice-check {
@@ -209,25 +219,20 @@ body {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  border: 1px solid rgba(111, 16, 38, 0.25);
+  border: 1px solid rgba(111,16,38,.25);
   color: transparent;
-  font-size: 0.82rem;
+  font-size: .82rem;
   font-weight: 700;
-  transition:
-    color 0.2s ease,
-    border-color 0.2s ease,
-    background 0.2s ease;
+  transition: color .2s ease, border-color .2s ease, background .2s ease;
 }
 
 .choice-card:has(input:checked) {
   background: var(--burgundy);
   border-color: var(--burgundy);
-  box-shadow: 0 10px 22px rgba(70, 20, 30, 0.16);
+  box-shadow: 0 10px 22px rgba(70,20,30,.16);
 }
 
-.choice-card:has(input:checked) strong {
-  color: #fffaf5;
-}
+.choice-card:has(input:checked) strong { color: #fffaf5; }
 
 .choice-card:has(input:checked) .choice-check {
   color: var(--burgundy);
@@ -235,43 +240,55 @@ body {
   border-color: #fffaf5;
 }
 
-.compact-choice {
-  min-height: 64px;
-}
-
-/* Desplegables sin hueco residual */
 .conditional-fields {
-  display: block;
-  max-height: 0;
+  display: grid;
+  grid-template-rows: 0fr;
   opacity: 0;
-  overflow: hidden;
   transform: translateY(-8px);
   margin: 0;
-  padding: 0;
-  pointer-events: none;
-
   transition:
-    max-height 0.46s cubic-bezier(.22,.8,.2,1),
-    opacity 0.28s ease,
-    transform 0.4s ease,
-    margin 0.4s ease,
-    padding 0.4s ease;
+    grid-template-rows .42s cubic-bezier(.22,.8,.2,1),
+    opacity .28s ease,
+    transform .36s ease,
+    margin .36s ease;
+}
+
+.conditional-inner {
+  min-height: 0;
+  overflow: hidden;
 }
 
 .conditional-fields.is-open {
-  max-height: 1200px;
+  grid-template-rows: 1fr;
   opacity: 1;
   transform: translateY(0);
-  margin-top: 0.25rem;
-  padding-top: 0.2rem;
-  pointer-events: auto;
+  margin-top: .2rem;
 }
 
-.message-group {
-  margin-top: 0.15rem;
+.add-person-button {
+  width: 100%;
+  min-height: 50px;
+  margin: 1.05rem 0 1.35rem;
+  padding: .75rem 1rem;
+  border-radius: 999px;
+  border: 1px dashed rgba(111,16,38,.34);
+  background: rgba(111,16,38,.035);
+  color: var(--burgundy);
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .2s ease, transform .2s ease, border-color .2s ease;
 }
 
-/* Botón */
+.add-person-button:hover {
+  background: rgba(111,16,38,.065);
+  border-color: rgba(111,16,38,.48);
+  transform: translateY(-1px);
+}
+
+.message-group { padding-top: .15rem; }
+
 .attendance-submit {
   width: 100%;
   min-height: 52px;
@@ -283,35 +300,25 @@ body {
   font-family: "Cormorant Garamond", serif;
   font-size: 1.04rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: .04em;
   text-transform: uppercase;
-  box-shadow: 0 11px 24px rgba(70, 20, 30, 0.14);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.attendance-submit:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 14px 28px rgba(70, 20, 30, 0.17);
+  box-shadow: 0 11px 24px rgba(70,20,30,.14);
 }
 
 .attendance-demo-note {
-  margin-top: 0.75rem;
+  margin-top: .75rem;
   text-align: center;
   font-family: "Cormorant Garamond", serif;
-  font-size: 0.88rem;
-  color: rgba(63, 32, 40, 0.48);
+  font-size: .88rem;
+  color: rgba(63,32,40,.48);
 }
 
-/* Confirmación */
-.attendance-success {
-  text-align: center;
-  padding: 2.1rem 1.2rem;
-}
+.attendance-success { text-align: center; padding: 2.1rem 1.2rem; }
 
 .success-icon {
   width: 60px;
   height: 60px;
-  margin: 0 auto 0.7rem;
+  margin: 0 auto .7rem;
   display: grid;
   place-items: center;
   border-radius: 50%;
@@ -324,9 +331,9 @@ body {
 .attendance-success h2 {
   font-family: "Parisienne", cursive;
   color: var(--burgundy);
-  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-size: clamp(2.5rem,8vw,4rem);
   font-weight: 400;
-  margin-bottom: 0.45rem;
+  margin-bottom: .45rem;
 }
 
 .attendance-success p {
@@ -345,111 +352,33 @@ body {
   padding-inline: 1.2rem;
 }
 
-@media (max-width: 560px) {
-  .attendance-page {
-    padding: 0.7rem;
-  }
-
-  .attendance-shell {
-    padding-top: 0.65rem;
-  }
-
-  .attendance-topbar {
-    margin-bottom: 1.35rem;
-  }
-
-  .attendance-heading {
-    margin-bottom: 1.6rem;
-  }
+@media (max-width:560px) {
+  .attendance-page { padding: .7rem; }
+  .attendance-shell { padding-top: .65rem; }
+  .attendance-topbar { margin-bottom: 1.6rem; }
+  .attendance-heading { margin-bottom: 2.2rem; }
 
   .attendance-form,
-  .attendance-success {
-    padding: 1.35rem 1rem 1rem;
-  }
+  .attendance-success { padding: 1.4rem 1rem 1rem; }
 
-  .choice-grid {
-    gap: 0.55rem;
-  }
+  .person-card-companion { padding: 1rem .85rem; }
+
+  .choice-grid { gap: .55rem; }
 
   .choice-card {
     min-height: 72px;
-    padding-inline: 0.45rem;
+    padding-inline: .45rem;
   }
 
-  .choice-card strong {
-    font-size: 0.98rem;
-  }
+  .choice-card strong { font-size: .98rem; }
+  .person-number { font-size: 1.7rem; }
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion:reduce) {
   .conditional-fields,
+  .person-card,
   .choice-card,
   .choice-card strong,
   .choice-check,
-  .attendance-back,
-  .attendance-submit {
-    transition: none;
-  }
-}
-
-
-/* =========================
-   AJUSTES CABECERA Y FLUJO V6
-   ========================= */
-
-.attendance-topbar {
-  margin-bottom: 1.9rem;
-}
-
-.attendance-heading {
-  width: 100%;
-  text-align: center;
-  padding: 0.3rem 1rem 0;
-  margin: 0 auto 2.6rem;
-}
-
-.attendance-signature {
-  font-family: "Parisienne", cursive;
-  font-size: clamp(1.8rem, 5vw, 2.55rem);
-  line-height: 1;
-  color: rgba(111, 16, 38, 0.68);
-  margin-bottom: 0.5rem;
-}
-
-.attendance-heading h1 {
-  margin: 0;
-  text-align: center;
-  font-family: "Parisienne", cursive;
-  font-size: clamp(3rem, 9vw, 5rem);
-  line-height: 0.98;
-  font-weight: 400;
-  color: var(--burgundy);
-  text-shadow: 0 2px 10px rgba(111, 16, 38, 0.06);
-}
-
-.attendance-form {
-  padding-top: 1.9rem;
-}
-
-/* Evita cualquier espacio fantasma cuando un bloque está cerrado */
-.conditional-fields:not(.is-open) {
-  max-height: 0 !important;
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-}
-
-@media (max-width: 560px) {
-  .attendance-topbar {
-    margin-bottom: 1.6rem;
-  }
-
-  .attendance-heading {
-    margin-bottom: 2.2rem;
-  }
-
-  .attendance-form {
-    padding-top: 1.55rem;
-  }
+  .add-person-button { transition: none; }
 }
